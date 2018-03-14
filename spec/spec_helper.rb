@@ -1,5 +1,11 @@
 require "bundler/setup"
 require "AfricasTalking"
+require "Sms"
+require "Airtime"
+require "Payments"
+require "Voice"
+require "support/matchers.rb"
+require "pry"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
