@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    AfricasTalkingg (0.1.0)
+    AfricasTalking (0.1.0)
       httmultiparty (~> 0)
       httparty (~> 0)
 
@@ -42,7 +42,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  AfricasTalkingg!
+  AfricasTalking!
   bundler (~> 1.16)
   pry (~> 0)
   rake (~> 10.0)
