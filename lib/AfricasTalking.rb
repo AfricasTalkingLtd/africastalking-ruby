@@ -3,7 +3,7 @@ require 'httparty'
 require 'httmultiparty'
 require 'json'
 require 'pry'
-# require 'Sms'
+require 'Sms'
 
 module AfricasTalking
 
