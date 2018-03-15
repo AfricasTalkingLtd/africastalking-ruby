@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     AfricasTalking (0.1.0)
-      httmultiparty (~> 0)
-      httparty (~> 0)
+      httmultiparty (= 0.3.16)
+      httparty (= 0.16.1)
 
 GEM
   remote: https://rubygems.org/
