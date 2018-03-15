@@ -1,4 +1,4 @@
-# AfricasTalking Ruby Gem
+# AfricasTalking SDK
 
 > Provides convenient access to the Africa's Talking API from applications written in ruby.
 
@@ -10,7 +10,7 @@ Take a look at the [API docs here](http://docs.africastalking.com).
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "AfricasTalking", :git => "git@github.com:Michaelmwirigi/africastalking-ruby.git"
+gem "AfricasTalking", :git => "git@github.com:AfricasTalking/africastalking-ruby.git"
 ```
 
 And then execute:
@@ -268,12 +268,8 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/Michaelmwirigi/AfricasTalking. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/AfricasTalkingLtd. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the AfricasTalking project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/Michaelmwirigi/AfricasTalking/blob/master/CODE_OF_CONDUCT.md).
