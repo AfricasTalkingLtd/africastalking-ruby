@@ -10,16 +10,16 @@ Take a look at the [API docs here](http://docs.africastalking.com).
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'AfricasTalking'
+gem "AfricasTalking", :git => "git@github.com:Michaelmwirigi/africastalking-ruby.git"
 ```
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
+<!-- Or install it yourself as:
 
-    $ gem install AfricasTalking
+    $ gem install AfricasTalking -->
 
 ## Usage
 
@@ -28,8 +28,8 @@ The SDK needs to be instantiated using your username and API key, which you can 
 > You can use this SDK for either production or sandbox apps. For sandbox, the app username is **ALWAYS** `sandbox`
 
 ```ruby
-username = 'YOUR_USERNAME'; // use 'sandbox' for development in the test environment
-apiKey 	= 'YOUR_API_KEY'; // use your sandbox app API key for development in the test environment
+username = 'YOUR_USERNAME'; # use 'sandbox' for development in the test environment
+apiKey 	= 'YOUR_API_KEY'; # use your sandbox app API key for development in the test environment
 @gateway=AfricasTalking::Gateway.new(username, apiKey)
 ```
 
@@ -150,7 +150,7 @@ payments.validateCardCheckout transactionId, otp
 - `otp`: One Time Password that the card issuer sent to the client. `REQUIRED`
 
 
-##### Initiate bank charge checkout
+#### Initiate bank charge checkout
 ```ruby
 payments.initiateBankChargeCheckout productName, bankAccount, currencyCode, amount, narration, metadata = {}
 ```
@@ -169,7 +169,7 @@ payments.initiateBankChargeCheckout productName, bankAccount, currencyCode, amou
 - `metadata`: Some optional data to associate with transaction
 
 
-##### Validate bank checkout
+#### Validate bank checkout
 ```ruby
 payments.validateBankAccountCheckout transactionId, otp 
 ```
