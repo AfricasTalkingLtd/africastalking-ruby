@@ -13,7 +13,7 @@ RSpec.describe AfricasTalking do
 	it "should be able to send bulk message" do
 		# p @gateway
 		sms = @gateway.sms
-		expect(sms.sendMessage 'sample message', '0722222222, 0733333333', 'sandbox').to inspect_StatusReport(include(status: "Success"))
+		expect(sms.sendMessage 'sample message', ['0722222222, 0733333333'], 'sandbox').to inspect_StatusReport(include(status: "Success"))
 		
 	end
 
