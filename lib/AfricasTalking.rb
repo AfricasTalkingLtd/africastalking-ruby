@@ -4,6 +4,9 @@ require 'httmultiparty'
 require 'json'
 require 'pry'
 require 'Sms'
+require 'Payments'
+require 'Airtime'
+require 'Voice'
 
 module AfricasTalking
 
