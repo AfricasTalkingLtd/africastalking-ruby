@@ -12,25 +12,29 @@ RSpec.describe AfricasTalking do
 
 	it "should be able to send bulk message" do
 		# p @gateway
-		expect(@gateway.send_messages 'sample message', '0722222222, 0733333333', 'sandbox').to inspect_StatusReport(include(status: "Success"))
+		sms = @gateway.sms
+		expect(sms.sendMessage 'sample message', '0722222222, 0733333333', 'sandbox').to inspect_StatusReport(include(status: "Success"))
 		
 	end
 
 	it "should be able to fetch messages" do
-		# p @gateway.fetch_messages
-		expect(@gateway.fetch_messages).to inspect_SMSMessages
+		sms = @gateway.sms
+		expect(sms.fetchMessages)
+		# expect(@gateway.fetch_messages).to inspect_SMSMessages
 	end
 
 	# not completed this test. remember to consider empty responses
 	it "should be able to fetch subscriptions" do
 		# p @gateway.fetch_messages
-		expect(@gateway.fetch_subscriptions '77777', 'gemtests', '')
+		sms = @gateway.sms
+		expect(sms.fetchSubscriptions '77777', 'gemtests', '')
 	end	
 
 	# not complete. you need to check what the checkoutToken is
 	it "should be able to create subscriptions" do
 		# p @gateway.fetch_messages
-		expect(@gateway.create_subcriptions '77777', 'gemtests', '0722222222', 'checkoutToken')
+		sms = @gateway.sms
+		expect(sms.createSubcriptions '77777', 'gemtests', '0722222222', 'checkoutToken')
 	end
 
 	# it "should send premium message" do
@@ -45,11 +49,12 @@ RSpec.describe AfricasTalking do
 	# ///////////////////AIRTIME//////////////////////
 
 	it "should be able to send airtime to a phone number" do 
+		airtime = @gateway.airtime
 		recipients = [
 			{'phoneNumber' => "+25472232#{rand(1000...9999)}", 'amount' => 'KES 100'},
 			{'phoneNumber' => "+25476334#{rand(1000...9999)}", 'amount' => 'KES 100'}
 		]
-		expect(@gateway.send_airtime recipients).to inspect_AirtimeResult(include(status: "Sent"))
+		expect(airtime.sendAirtime recipients).to inspect_AirtimeResult(include(status: "Sent"))
 	end
 
 	# ////////////////////////////////////////////
@@ -57,17 +62,19 @@ RSpec.describe AfricasTalking do
 	# ////////////////////////////VOICE///////////////////////////////////
 
 	it "should be able to make call" do
+		voice = @gateway.voice
 		to = ['+254722222222', '+254733333333']
 		from = '+254722123456'
 
-		expect(@gateway.call to, from).to inspect_CallResponse(include(status: "Queued"))
+		expect(voice.call to, from).to inspect_CallResponse(include(status: "Queued"))
 	end
 
 
 	it "should be able to fetch queued calls" do
+		voice = @gateway.voice
 		phoneNumber = '+254722123456'
 
-		expect(@gateway.fetch_queued_calls phoneNumber, nil)
+		expect(voice.fetchQueuedCalls phoneNumber, nil)
 	end
 
 	# ///////////////////////////////////////////////////////////////////
@@ -76,11 +83,13 @@ RSpec.describe AfricasTalking do
 	# /////////////////////////PAYMENTS////////////////////////////
 
 	it "initiate initiate Mobile Payment Checkout" do
-		expect(@gateway.initiate_mobile_payment_checkout 'RUBY_GEM_TEST', '0722232323',  'KES', '200' )
+		payments = @gateway.payments
+		expect(payments.initiateMobilePaymentCheckout 'RUBY_GEM_TEST', '0722232323',  'KES', '200' )
 
 	end
 
 	it "initiate mobile B2C payment" do
+		payments = @gateway.payments
 		recipients = [
 			{
 				"name" => "Payments Test",
@@ -105,11 +114,12 @@ RSpec.describe AfricasTalking do
 			    }
 			}
 		]
-		expect(@gateway.mobile_b2c_request  'RUBY_GEM_TEST' ,recipients)
+		expect(payments.mobilePaymentB2CRequest  'RUBY_GEM_TEST' ,recipients)
 		
 	end
 
 	it "initiate mobile B2B request" do
+		payments = @gateway.payments
 		providerData = {
 	        'provider' => 'Athena',
 	        'destinationChannel' => '121212',
@@ -120,11 +130,12 @@ RSpec.describe AfricasTalking do
             'shopId' => "1234",
             'itemId' => "abcde"
         }
-		expect(@gateway.mobile_b2b_request 'RUBY_GEM_TEST', providerData, 'KES', '100.50', metadata = {} )
+		expect(payments.mobilePaymentB2BRequest 'RUBY_GEM_TEST', providerData, 'KES', '100.50', metadata = {} )
 		
 	end
 
 	it "initiate bank charge checkout" do
+		payments = @gateway.payments
 		bankAccount = {
 	        'accountName' => 'Test Bank Account',
 	        'accountNumber' => '1234567890',
@@ -137,18 +148,20 @@ RSpec.describe AfricasTalking do
         }
         narration = 'This is a test transaction'
 
-		expect(@gateway.initiate_bank_charge_checkout 'RUBY_GEM_TEST', bankAccount, 'KES', '500.50', narration, metadata = {} )
+		expect(payments.initiateBankChargeCheckout 'RUBY_GEM_TEST', bankAccount, 'KES', '500.50', narration, metadata = {} )
 	end
 
 	it "validate bank account checkout" do
-		expect(@gateway.validate_bank_account_checkout 'ATPid_SampleTxnId1', '1234' )
+		payments = @gateway.payments
+		expect(payments.validateBankAccountCheckout 'ATPid_SampleTxnId1', '1234' )
 	end
 
 	it "initiate bank transfer request" do
+		payments = @gateway.payments
 		recipient1 = {
 			'bankAccount' => {
 				'accountName' => 'Test Bank Account',
-		        'accountNumber' => '1234567890',
+		        'accountNumber' => "123456#{rand(1000...9999)}",
 		        'bankCode' => 234001
 			},
 	        'currencyCode' => 'KES',
@@ -162,7 +175,7 @@ RSpec.describe AfricasTalking do
        	recipient2 = {
        		'bankAccount' => {
 				'accountName' => 'Second Test Bank Account',
-		        'accountNumber' => '0987654321',
+		        'accountNumber' => "098765#{rand(1000...9999)}",
 		        'bankCode' => 234009
 			},
 	        'currencyCode' => 'KES',
@@ -174,10 +187,11 @@ RSpec.describe AfricasTalking do
 	        }
        	}
        	recipients = [ recipient1, recipient2 ]
-		expect(@gateway.initiate_bank_transfer_request 'RUBY_GEM_TEST', recipients )
+		expect(payments.initiateBankTransferRequest 'RUBY_GEM_TEST', recipients )
 	end
 
 	it "initiate card checkout" do
+		payments = @gateway.payments
 		paymentCard = {
 	        "number"=> "5105105105105100",
 	        "cvvNumber"=> 654,
@@ -186,26 +200,28 @@ RSpec.describe AfricasTalking do
 	        "countryCode"=> "NG",
 	        "authToken"=> "12345",
 	    }
-		expect(@gateway.initiate_card_checkout 'RUBY_GEM_TEST', 'KES', '1200', 'test narration', nil, paymentCard, nil )
+		expect(payments.initiateCardCheckout 'RUBY_GEM_TEST', 'KES', '1200', 'test narration', nil, paymentCard, nil )
 	end
 
 	it "validate card checkout" do
-
-		expect(@gateway.validate_card_checkout 'ATPid_39a71bc00951cd1d3ed56d419d0ab3b6', '1234' )
+		payments = @gateway.payments
+		expect(payments.validateCardCheckout 'ATPid_39a71bc00951cd1d3ed56d419d0ab3b6', '1234' )
 	end
 
 	it 'initiate wallet transfer request' do 
+		payments = @gateway.payments
 		metadata = {
 	        "description" => "May Rent"
 	    }
-		expect(@gateway.wallet_transfer_request 'RUBY_GEM_TEST', 2373, 'KES', 2000, metadata )
+		expect(payments.walletTransferRequest 'RUBY_GEM_TEST', 2373, 'KES', 2000, metadata )
 	end
 
 	it 'initiate topup stash request' do 
+		payments = @gateway.payments
 		metadata = {
 	        "description" => "moving money"
 	    }
-		expect(@gateway.topup_stash_request 'RUBY_GEM_TEST', 'KES', 2000, metadata )
+		expect(payments.topupStashRequest 'RUBY_GEM_TEST', 'KES', 2000, metadata )
 	end
 
 	# ///////////////////////////////////////////////////////////////////

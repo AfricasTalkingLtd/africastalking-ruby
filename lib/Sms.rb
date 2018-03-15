@@ -9,13 +9,16 @@ module AfricasTalking
 	
 	# /////////////////////////
 	class Sms < Gateway
-		# attr_accessor :message, :username, :apikey, :environment
+		attr_accessor :message, :username, :apikey, :environment
 		def initialize username, apikey, environment = nil
 			@username    = username
 			@apikey      = apikey
 			@environment  = environment
 		end
 
+		# def initialize
+		# 	super
+		# end
 	
 		
 		def sendMessage message, recipients, senderId, enqueue = nil 
@@ -57,7 +60,7 @@ module AfricasTalking
 		# 	response = executePost(getSmsUrl(), post_body)
 		# end
 
-		def fetchMessages(last_received_id)
+		def fetchMessages last_received_id = nil
 			url = getSmsUrl() + "?username=#{@username}&lastReceivedId=#{last_received_id}"
 			response = executePost(url)
 			if @response_code == HTTP_OK

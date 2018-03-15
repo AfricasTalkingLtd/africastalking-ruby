@@ -3,7 +3,7 @@ require 'httparty'
 require 'httmultiparty'
 require 'json'
 require 'pry'
-# require "Sms"
+# require 'Sms'
 
 module AfricasTalking
 
@@ -22,142 +22,20 @@ module AfricasTalking
 			@response_code = nil
 		end
 
-		# //////////////////////SMS//////////////////////////
-		def send_messages message, recipients, senderId = nil, enqueue = nil 
-			at = AfricasTalking::Sms.new(@username, @apikey, @environment)
-			sms = at.sendMessage message, recipients, senderId, enqueue
-			# binding.pry
-			return sms
-			# returns StatusReport when successful
+		def sms
+			return AfricasTalking::Sms.new @username, @apikey, @environment		
 		end
 
-		def fetch_messages lastReceivedId = nil
-			at = AfricasTalking::Sms.new(@username, @apikey, @environment)
-			sms = at.fetchMessages lastReceivedId
-			# binding.pry
-			return sms
-			# returns SMSMessage when successful
+		def payments
+			return AfricasTalking::Payments.new @username, @apikey, @environment
 		end
 
-		def fetch_subscriptions shortCode, keyword, lastReceivedId = nil
-			at = AfricasTalking::Sms.new(@username, @apikey, @environment)
-			sms = at.fetchSubscriptions shortCode, keyword, lastReceivedId
-			# binding.pry
-			return sms
-			# returns SMSMessage when successful
+		def airtime
+			return AfricasTalking::Airtime.new @username, @apikey, @environment
 		end
 
-		def create_subcriptions shortCode, keyword, phoneNumber, checkoutToken
-			at = AfricasTalking::Sms.new(@username, @apikey, @environment)
-			sms = at.createSubcriptions shortCode, keyword, phoneNumber, checkoutToken
-			# binding.pry
-			return sms
-			# returns SMSMessage when successful
-		end
-
-
-		# /////////////////////////////////////////////////////
-
-		# ///////////////////PAYMENTS//////////////////////////
-
-		def initiate_mobile_payment_checkout productName, phoneNumber,  currencyCode, amount, metadata = {}
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.initiateMobilePaymentCheckout productName, phoneNumber, currencyCode, amount, metadata
-			# binding.pry
-			return payments	
-		end		
-
-		def mobile_b2c_request productName, recipients
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.mobilePaymentB2CRequest productName, recipients
-			# binding.pry
-			return payments			
-		end
-
-		def mobile_b2b_request productName, providerData, currencyCode, amount, metadata = {}
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.mobilePaymentB2BRequest productName, providerData, currencyCode, amount, metadata
-			# binding.pry
-			return payments			
-		end
-
-		def initiate_bank_charge_checkout  productName, bankAccount, currencyCode, amount, narration, metadata = {}
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.initiateBankChargeCheckout productName, bankAccount, currencyCode, amount, narration, metadata
-			# binding.pry
-			return payments	
-		end
-
-		def validate_bank_account_checkout transactionId, otp
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.validateBankAccountCheckout transactionId, otp
-			# binding.pry
-			return payments
-		end
-
-		def initiate_bank_transfer_request productName, recipients
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.initiateBankTransferRequest productName, recipients
-			# binding.pry
-			return payments	
-		end
-
-		def initiate_card_checkout productName, currencyCode, amount, narration, checkoutToken = nil, paymentCard = nil,  metadata = {}
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.initiateCardCheckout productName, currencyCode, amount, narration, checkoutToken, paymentCard, metadata
-			# binding.pry
-			return payments	
-		end
-
-		def validate_card_checkout transactionId, otp
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.validateCardCheckout transactionId, otp
-			# binding.pry
-			return payments	
-		end
-
-		def wallet_transfer_request productName, targetProductCode, currencyCode, amount, metadata
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.walletTransferRequest productName, targetProductCode, currencyCode, amount, metadata
-			# binding.pry
-			return payments	
-		end
-
-		def topup_stash_request productName, currencyCode, amount, metadata
-			at = AfricasTalking::Payments.new(@username, @apikey, @environment)
-			payments = at.topupStashRequest productName, currencyCode, amount, metadata
-			# binding.pry
-			return payments	
-		end
-
-
-		# /////////////////////////////////////////////////////
-
-
-		# /////////////////////AIRTIME///////////////////////
-
-		def send_airtime recipients
-			at = AfricasTalking::Airtime.new @username, @apikey, @environment
-			airtime = at.sendAirtime recipients
-			return airtime
-		end
-
-		# /////////////////////////////////////////////////////
-
-
-		# /////////////////////VOICE///////////////////////////
-
-		def call to, from
-			at = AfricasTalking::Voice.new @username, @apikey, @environment
-			voice = at.call to, from
-			return voice
-		end
-
-		def fetch_queued_calls to, from
-			at = AfricasTalking::Voice.new @username, @apikey, @environment
-			# binding.pry
-			voice = at.fetchQueuedCalls to, from
-			return voice
+		def voice
+			return AfricasTalking::Voice.new @username, @apikey, @environment
 		end
 
 
