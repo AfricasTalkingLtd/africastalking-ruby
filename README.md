@@ -60,8 +60,7 @@ sms = @gateway.sms
 sms.sendMessage message, to, from, enqueue
 ```
 - `message`: SMS content. `REQUIRED`
-- `to`: A single recipient or an array of recipients. `REQUIRED`
-    - array of recipients contains 
+- `to`: A single recipient or a comma separated string of recipients. `REQUIRED`
 - `from`: Shortcode or alphanumeric ID that is registered with Africa's Talking account.
 - `enqueue`: Set to `true` if you would like to deliver as many messages to the API without waiting for an acknowledgement from telcos.
 
