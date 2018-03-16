@@ -10,7 +10,7 @@ Take a look at the [API docs here](http://docs.africastalking.com).
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "AfricasTalking", :git => "git@github.com:AfricasTalking/africastalking-ruby.git"
+gem "AfricasTalking", :git => "git@github.com:AfricasTalkingLtd/aficastalking-ruby.git"
 ```
 
 And then execute:
@@ -61,11 +61,22 @@ sms.sendMessage message, to, from, enqueue
 ```
 - `message`: SMS content. `REQUIRED`
 - `to`: A single recipient or a comma separated string of recipients. `REQUIRED`
-- `from`: Shortcode or alphanumeric ID that is registered with Africa's Talking account.
-- `enqueue`: Set to `true` if you would like to deliver as many messages to the API without waiting for an acknowledgement from telcos.
-
+- `from`: Shortcode or alphanumeric ID that is registered with Africa's Talking account.  `OPTIONAL`
+- `enqueue`: Set to `true` if you would like to deliver as many messages to the API without waiting for an acknowledgement from telcos. `OPTIONAL`
+- `bulkSMSMode`: This parameter will be used by the Mobile Service Provider to determine who gets billed for a message sent using a Mobile-Terminated ShortCode. The default value is 1 (which means that the sender (The AfricasTalking account being used ) gets charged). `OPTIONAL`
 
 #### Send Premium SMS
+```ruby
+sms.sendPremiumMessage message, keyword, linkId, to, from, enqueue, bulkSMSMode, retryDurationInHours
+```
+- `message`: SMS content. `REQUIRED`
+- `keyword`: The keyword to be used for a premium service. `REQUIRED`
+- `linkId`: This parameter is used for premium services to send OnDemand messages. We forward the linkId to your application when the user send a message to your service.. `REQUIRED`
+- `to`: A single recipient or a comma separated string of recipients. `REQUIRED`
+- `from`: Shortcode or alphanumeric ID that is registered with Africa's Talking account.  `OPTIONAL`
+- `enqueue`: Set to `true` if you would like to deliver as many messages to the API without waiting for an acknowledgement from telcos. `OPTIONAL`
+- `bulkSMSMode`: This parameter will be used by the Mobile Service Provider to determine who gets billed for a message sent using a Mobile-Terminated ShortCode. The default value is 1 (which means that the sender (The AfricasTalking account being used ) gets charged). `OPTIONAL`
+- `retryDurationInHours`: t specifies the number of hours your subscription message should be retried in case it's not delivered to the subscriber. `OPTIONAL`
 
 #### Fetch Messsages
 

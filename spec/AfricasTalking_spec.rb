@@ -17,6 +17,11 @@ RSpec.describe AfricasTalking do
 		
 	end
 
+	it "should send premium message" do
+		sms = @gateway.sms
+		expect(sms.sendPremiumMessage 'sample message', 'gemtests', 'a0aad2b0-6615-4552-a415-de636cb92c00', ["+25472232#{rand(1000...9999)}, +25476334#{rand(1000...9999)}"])
+	end
+
 	it "should be able to fetch messages" do
 		sms = @gateway.sms
 		expect(sms.fetchMessages)
@@ -34,12 +39,7 @@ RSpec.describe AfricasTalking do
 	it "should be able to create subscriptions" do
 		# p @gateway.fetch_messages
 		sms = @gateway.sms
-		expect(sms.createSubcriptions '77777', 'gemtests', '0722222222', 'checkoutToken')
-	end
-
-	it "should send premium message" do
-		sms = @gateway.sms
-		expect(sms.sendPremiumMessage 'sample message', 'gemtests', 'linkId', ["+25472232#{rand(1000...9999)}, +25476334#{rand(1000...9999)}"])
+		expect(sms.createSubcriptions '202020', 'premium', '0723232323', 'checkoutToken')
 	end
 
 

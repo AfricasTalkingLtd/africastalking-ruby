@@ -27,6 +27,7 @@ module AfricasTalking
 				'from'     => from, 
 				'to'       => to
 			}
+			# binding.pry
 			response = executePost(getVoiceHost() + "/call", post_body)
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
 				ob = JSON.parse(response, :quirky_mode => true)

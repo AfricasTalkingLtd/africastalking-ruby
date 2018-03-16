@@ -28,7 +28,7 @@ module AfricasTalking
 		# end
 	
 		
-		def sendMessage message, recipients, from = nil, enqueue = nil, bulkSMSMode = nil
+		def sendMessage message, recipients, from = nil, enqueue = nil, bulkSMSMode = nil, retryDurationInHours = nil
 			# binding.pry
 			post_body = {
 
@@ -45,7 +45,9 @@ module AfricasTalking
 			if bulkSMSMode != nil
 				post_body['bulkSMSMode'] = bulkSMSMode
 			end
-
+			if retryDurationInHours != nil
+				post_body['retryDurationInHours'] = retryDurationInHours
+			end
 			
 			response = executePost(getSmsUrl(), post_body)
 			# binding.pry
@@ -68,15 +70,22 @@ module AfricasTalking
 			end
 		end
 
-		def sendPremiumMessage message, keyword, linkId, recipients, from = nil , retryDurationInHours = nil
+		def sendPremiumMessage message, keyword, linkId, to, from = nil, enqueue = nil, bulkSMSMode = nil, retryDurationInHours = nil
 			post_body = {
 				'username'    => @username, 
 				'message'     => message, 
-				'to'          => recipients,
-				'keyword'     => keyword
+				'to'          => to,
+				'keyword'     => keyword,
+				'linkId'      => linkId
 			}
 			if retryDurationInHours != nil
 				post_body['retryDurationInHours'] = retryDurationInHours
+			end
+			if bulkSMSMode != nil
+				post_body['bulkSMSMode'] = bulkSMSMode
+			end
+			if enqueue != nil
+				post_body['enqueue'] = enqueue
 			end
 			if from != nil
 				post_body['from'] = from
