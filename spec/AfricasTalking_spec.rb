@@ -13,7 +13,7 @@ RSpec.describe AfricasTalking do
 	it "should be able to send bulk message" do
 		# p @gateway
 		sms = @gateway.sms
-		expect(sms.sendMessage 'sample message', ['0722222222, 0733333333'], 'sandbox').to inspect_StatusReport(include(status: "Success"))
+		expect(sms.sendMessage 'sample message', "+25472232#{rand(1000...9999)}, +25476334#{rand(1000...9999)}").to inspect_StatusReport(include(status: "Success"))
 		
 	end
 
@@ -37,12 +37,10 @@ RSpec.describe AfricasTalking do
 		expect(sms.createSubcriptions '77777', 'gemtests', '0722222222', 'checkoutToken')
 	end
 
-	# it "should send premium message" do
-		# @gateway=AfricasTalking::Gateway.new('sandbox', 'bed6bd70401f3110e7f8c347b0819efa7012f64f689b3c0fa8dd1f452224861b', 'sandbox')
-	# 	p @gateway
-
-	# 	expect(@gateway.send_premium_message('sample message', 'gemtests', 'linkId', "0722222222", '', '')
-	# end
+	it "should send premium message" do
+		sms = @gateway.sms
+		expect(sms.sendPremiumMessage 'sample message', 'gemtests', 'linkId', ["+25472232#{rand(1000...9999)}, +25476334#{rand(1000...9999)}"])
+	end
 
 
 

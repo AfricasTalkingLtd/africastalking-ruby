@@ -28,7 +28,7 @@ module AfricasTalking
 		# end
 	
 		
-		def sendMessage message, recipients, senderId, enqueue = nil 
+		def sendMessage message, recipients, from = nil, enqueue = nil, bulkSMSMode = nil
 			# binding.pry
 			post_body = {
 
@@ -36,9 +36,19 @@ module AfricasTalking
 				'message'     => message, 
 				'to'          => recipients
 			}
-			
+			if from != nil
+				post_body['from'] = from
+			end
+			if enqueue != nil
+				post_body['enqueue'] = enqueue
+			end
+			if bulkSMSMode != nil
+				post_body['bulkSMSMode'] = bulkSMSMode
+			end
 
+			
 			response = executePost(getSmsUrl(), post_body)
+			# binding.pry
 			if @response_code == HTTP_CREATED
 				messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
 				recipients = messageData["Recipients"]
@@ -58,14 +68,42 @@ module AfricasTalking
 			end
 		end
 
-		# def sendPremiumMessage message, keyword, linkId, recipients, senderId = nil , retryDurationInHours = nil
-		# 	post_body = {
-		# 					'username'    => @username, 
-		# 					'message'     => message, 
-		# 					'to'          => recipients
-		# 				}
-		# 	response = executePost(getSmsUrl(), post_body)
-		# end
+		def sendPremiumMessage message, keyword, linkId, recipients, from = nil , retryDurationInHours = nil
+			post_body = {
+				'username'    => @username, 
+				'message'     => message, 
+				'to'          => recipients,
+				'keyword'     => keyword
+			}
+			if retryDurationInHours != nil
+				post_body['retryDurationInHours'] = retryDurationInHours
+			end
+			if from != nil
+				post_body['from'] = from
+			end
+			# binding.pry
+			response = executePost(getSmsUrl(), post_body)
+			
+			if @response_code == HTTP_CREATED
+				messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
+				recipients = messageData["Recipients"]
+				
+				if recipients.length > 0
+					reports = recipients.collect { |entry|
+						StatusReport.new entry["number"], entry["status"], entry["cost"], entry["messageId"]
+					}
+					# binding.pry
+					return reports
+				end
+				
+				raise AfricasTalkingGatewayException, messageData["Message"]
+				
+			else
+	  			raise AfricasTalkingGatewayException, response
+			end
+
+			# binding.pry
+		end
 
 		def fetchMessages last_received_id = nil
 			url = getSmsUrl() + "?username=#{@username}&lastReceivedId=#{last_received_id}"
