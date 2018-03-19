@@ -114,7 +114,7 @@ module AfricasTalking
 			# binding.pry
 		end
 
-		def fetchMessages last_received_id = nil
+		def fetchMessages last_received_id = 0
 			url = getSmsUrl() + "?username=#{@username}&lastReceivedId=#{last_received_id}"
 			response = executePost(url)
 			if @response_code == HTTP_OK

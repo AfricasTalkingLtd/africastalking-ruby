@@ -8,6 +8,17 @@ RSpec.describe AfricasTalking do
 		expect(AfricasTalking::VERSION).not_to be nil
 	end
 
+	# ///////////////////TOKEN////////////////////////
+	it "should be able to generate checkout token" do
+		# p @gateway
+		token = @gateway.token
+		expect(token.createCheckoutToken "+25472232#{rand(1000...9999)}")
+		
+	end
+
+	# //////////////////////////////////////////////
+
+
 	# ///////////////////SMS////////////////////////
 
 	it "should be able to send bulk message" do
@@ -61,8 +72,8 @@ RSpec.describe AfricasTalking do
 
 	it "should be able to make call" do
 		voice = @gateway.voice
-		to = ['+254722222222', '+254733333333']
-		from = '+254722123456'
+		from = "+25471182#{rand(1000...9999)}"
+		to   = "+25471147#{rand(1000...9999)}, +25473383#{rand(1000...9999)}"
 
 		expect(voice.call to, from).to inspect_CallResponse(include(status: "Queued"))
 	end

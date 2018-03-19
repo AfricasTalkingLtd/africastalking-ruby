@@ -35,6 +35,30 @@ apiKey 	= 'YOUR_API_KEY'; # use your sandbox app API key for development in the 
 
 You can now make API calls using the @gateway object
 
+### Token
+
+```ruby
+token = @gateway.token
+```
+
+#### Create authentication Token
+
+```ruby
+token.createCheckoutToken phoneNumber
+```
+
+- `phoneNumber`: The phone number you want to create a subscription for
+
+#### Create Checkout Token
+
+```ruby
+token.createCheckoutToken phoneNumber
+```
+
+- `phoneNumber`: The phone number you want to create a subscription for
+
+
+
 ### Airtime
 
 Send airtime to phone numbers
@@ -43,11 +67,11 @@ Send airtime to phone numbers
 airtime = @gateway.airtime
 
 airtime.sendAirtime recipients
+```
 
 - `recipients`: Contains an hash of arrays containing the following keys
     - `phoneNumber`: Recipient of airtime
     - `amount`: Amount sent `>= 10 && <= 10K` with currency e.g `KES 100`
-```
 
 ### Sms
 
@@ -57,13 +81,14 @@ sms = @gateway.sms
 #### Send Sms
 
 ```ruby
-sms.sendMessage message, to, from, enqueue
+sms.sendMessage message, to, from, enqueue, bulkSMSMode, retryDurationInHours
 ```
 - `message`: SMS content. `REQUIRED`
 - `to`: A single recipient or a comma separated string of recipients. `REQUIRED`
 - `from`: Shortcode or alphanumeric ID that is registered with Africa's Talking account.  `OPTIONAL`
 - `enqueue`: Set to `true` if you would like to deliver as many messages to the API without waiting for an acknowledgement from telcos. `OPTIONAL`
 - `bulkSMSMode`: This parameter will be used by the Mobile Service Provider to determine who gets billed for a message sent using a Mobile-Terminated ShortCode. The default value is 1 (which means that the sender (The AfricasTalking account being used ) gets charged). `OPTIONAL`
+- `retryDurationInHours`: t specifies the number of hours your subscription message should be retried in case it's not delivered to the subscriber. `OPTIONAL`
 
 #### Send Premium SMS
 ```ruby
@@ -83,7 +108,7 @@ sms.sendPremiumMessage message, keyword, linkId, to, from, enqueue, bulkSMSMode,
 ```ruby
 sms.fetchMessages lastReceivedId
 ```
-- `lastReceivedId`: This is the id of the message that you last processed. The default is 0
+- `lastReceivedId`: This is the id of the message that you last processed. The default is 0  `OPTIONAL`
 
 #### Create subscription
 
