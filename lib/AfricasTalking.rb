@@ -8,6 +8,7 @@ require 'Payments'
 require 'Airtime'
 require 'Voice'
 require 'Token'
+require 'Account'
 
 module AfricasTalking
 
@@ -43,7 +44,11 @@ module AfricasTalking
 		end
 
 		def token
-			return AfricasTalking::Token.new @username, @apikey
+			return AfricasTalking::Token.new @username, @apikey, @environment
+		end
+
+		def account
+			return AfricasTalking::Account.new @username, @apikey, @environment
 		end
 
 

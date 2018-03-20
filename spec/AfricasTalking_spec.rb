@@ -12,8 +12,13 @@ RSpec.describe AfricasTalking do
 	it "should be able to generate checkout token" do
 		# p @gateway
 		token = @gateway.token
-		expect(token.createCheckoutToken "+25472232#{rand(1000...9999)}")
-		
+		expect(token.createCheckoutToken "+25472232#{rand(1000...9999)}")	
+	end
+
+	it "should be able to generate checkout token" do
+		# p @gateway
+		token = @gateway.token
+		expect(token.createAuthToken)	
 	end
 
 	# //////////////////////////////////////////////
@@ -87,6 +92,14 @@ RSpec.describe AfricasTalking do
 	end
 
 	# ///////////////////////////////////////////////////////////////////
+
+	# /////////////////////////ACCOUNT////////////////////////////
+	it "should be able to fetch account details" do
+		account = @gateway.account
+		expect(account.fetchUserData)
+	end
+	# ////////////////////////////////////////////////////////////
+
 
 
 	# /////////////////////////PAYMENTS////////////////////////////

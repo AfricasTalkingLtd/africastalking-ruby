@@ -151,6 +151,14 @@ voice.fetchQueuedCalls to, from
     - array of recipients contains ['2XXXXXXXX', '2XXXXXXXX']
 - `from`: Shortcode or alphanumeric ID that is registered with Africa's Talking account.
 
+### Account
+```ruby
+account = @gateway.account
+```
+#### Fetch User data
+```ruby
+account.fetchUserData
+```
 
 ### Payments
 ```ruby

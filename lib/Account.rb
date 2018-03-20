@@ -7,7 +7,7 @@ require 'pry'
 
 module AfricasTalking
 	
-	class Token
+	class Account
 		HTTP_CREATED     = 201
 		HTTP_OK          = 200
 
@@ -19,28 +19,13 @@ module AfricasTalking
 			@environment = environment
 		end
 
-		def createAuthToken
-			post_body = {
-				'username' => @username
-			}
-			url = getApiHost() + "/auth-token/generate"
-			response = sendJSONRequest(url, post_body)
+		def fetchUserData
+			url      = getUserDataUrl() + '?username='+@username+''
+			response = executePost(url)
 			# binding.pry
-			if(@response_code == HTTP_CREATED)
-				return JSON.parse(response, :quirky_mode => true)
-			else
-				raise AfricasTalkingGatewayException, response
-			end
-		end
-
-		def createCheckoutToken phoneNumber
-			post_body = {
-				'phoneNumber' => phoneNumber
-			}
-			url = getApiHost() + "/checkout/token/create"
-			response = executePost(url, post_body)
-			if(@response_code == HTTP_CREATED)
-				return JSON.parse(response, :quirky_mode => true)
+			if (@response_code == HTTP_OK)
+				result = JSON.parse(response, :quirky_mode =>true)
+				return result
 			else
 				raise AfricasTalkingGatewayException, response
 			end
@@ -74,27 +59,9 @@ module AfricasTalking
 				return response.body
 			end
 
-			def sendJSONRequest(url_, data_)
-				uri	       = URI.parse(url_)
-				http         = Net::HTTP.new(uri.host, uri.port)
-				http.use_ssl = true
-				req          = Net::HTTP::Post.new(uri.request_uri, 'Content-Type'=>"application/json")
-				
-				req["apikey"] = @apikey
-				req["Accept"] = "application/json"
-				
-				req.body = data_.to_json
-
-				response  = http.request(req)
-				# binding.pry
-				if (DEBUG)
-					puts "Full response #{response.body}"
-				end
-
-				@response_code = response.code.to_i
-				return response.body
+			def getUserDataUrl()
+				return getApiHost() + "/version1/user"
 			end
-
 
 			def getApiHost()
 				if(@environment == "sandbox")
