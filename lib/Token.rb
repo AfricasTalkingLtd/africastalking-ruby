@@ -40,7 +40,7 @@ module AfricasTalking
 			}
 			url = getApiHost() + "/checkout/token/create"
 			response = executePost(url, post_body)
-			binding.pry
+			# binding.pry
 			if(@response_code == HTTP_CREATED)
 				r= JSON.parse(response, :quirky_mode => true)
 				return CheckoutTokenResponse.new r['token'], r['description']

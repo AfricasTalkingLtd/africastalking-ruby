@@ -21,11 +21,9 @@ module AfricasTalking
 		end
 
 		def sendAirtime recipients
-			r = recipients.to_json
-			
 			post_body = {
 							'username'   => @username,
-							'recipients' => r
+							'recipients' => recipients.to_json
 						}
 			url      = getAirtimeUrl() + "/send"
 			response = executePost(url, post_body)
@@ -38,9 +36,8 @@ module AfricasTalking
 						# binding.pry
 						AirtimeResponses.new result['status'], result['phoneNumber'],result['amount'],result['requestId'], result['errorMessage'], result['discount']
 					}
-					r = SendAirtimeResult.new responses["errorMessage"], responses["numSent"], responses["totalAmount"], responses["totalDiscount"], results
 					# binding.pry
-					return r
+					return SendAirtimeResult.new responses["errorMessage"], responses["numSent"], responses["totalAmount"], responses["totalDiscount"], results
 				else
 					raise AfricasTalkingGatewayException, responses['errorMessage']
 				end

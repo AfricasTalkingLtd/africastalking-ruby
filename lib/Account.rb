@@ -23,9 +23,9 @@ module AfricasTalking
 			url      = getUserDataUrl() + '?username='+@username+''
 			response = executePost(url)
 			# binding.pry
-			if (@response_code == HTTP_OK)
+			if (@response_code == HTTP_OK )
 				result = JSON.parse(response, :quirky_mode =>true)
-				return result
+				return AccountDataResponse.new result["balance"]
 			else
 				raise AfricasTalkingGatewayException, response
 			end
@@ -72,10 +72,9 @@ module AfricasTalking
 			end
 	end
 	class AccountDataResponse
-		attr_accessor :token, :lifetimeInSeconds
-		def initialize token_, lifetimeInSeconds_
-			@token      = token_
-			@lifetimeInSeconds = lifetimeInSeconds_
+		attr_accessor :balance
+		def initialize balance_
+			@balance      = balance_
 		end
 	end
 end

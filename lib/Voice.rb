@@ -32,14 +32,13 @@ module AfricasTalking
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
 				ob = JSON.parse(response, :quirky_mode => true)
 				# binding.pry
-				if (ob['errorMessage'] == "None")
+				if (ob['entries'].length > 0)
 					results = ob['entries'].collect{|result|
-						CallResponse.new result['status'], result['phoneNumber']
+						CallEntries.new result['status'], result['phoneNumber']
 					}
-					return results
-				else
-					raise AfricasTalkingGatewayException, ob['errorMessage']
 				end
+				return CallResponse.new results, ob['errorMessage']
+				# binding.pry
 			else
 				raise AfricasTalkingGatewayException, response
 			end
@@ -61,14 +60,14 @@ module AfricasTalking
 			ob = JSON.parse(response, :quirky_mode => true)
 			# binding.pry
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
-				if (ob['errorMessage'] == "None")
+				results = []
+				if (ob['entries'].length > 0)
 					results = ob['entries'].collect{|result|
 						QueuedCalls.new result['phoneNumber'], result['numCalls'], result['queueName']
 					}
-					return results
 				end
-
-				raise AfricasTalkingGatewayException, ob['errorMessage']
+				# binding.pry
+				return QueuedCallsResponse.new ob['status'], ob['errorMessage'], results
 			end
 			
 			raise AfricasTalkingGatewayException, response
@@ -120,7 +119,17 @@ module AfricasTalking
 			end
 	end
 
+
 	class CallResponse
+		attr_accessor :errorMessage, :callentries
+
+		def initialize(errorMessage_, callentries_)
+			@errorMessage      = errorMessage_
+			@callentries = callentries_
+		end
+	end
+
+	class CallEntries
 		attr_accessor :phoneNumber, :status
 
 		def initialize(status_, number_)
@@ -136,6 +145,16 @@ module AfricasTalking
 			@phoneNumber = number_
 			@numCalls    = numCalls_
 			@queueName   = queueName_
+		end
+	end
+
+	class QueuedCallsResponse
+		attr_accessor :status, :errorMessage, :queuedcalls
+
+		def initialize(status_, errorMessage_, queuedcalls_)
+			@status = status_
+			@errorMessage    = errorMessage_
+			@queuedcalls   = queuedcalls_
 		end
 	end
 	
