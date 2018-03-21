@@ -31,14 +31,18 @@ module AfricasTalking
 			response = executePost(url, post_body)
 			# binding.pry
 			if (@response_code == HTTP_CREATED)
-				responses = JSON.parse(response, :quirky_mode =>true)['responses']
-				if (responses.length > 0)
-					results = responses.collect{ |result|
-						AirtimeResult.new result['status'], result['phoneNumber'],result['amount'],result['requestId'], result['errorMessage'], result['discount']
+				responses = JSON.parse(response, :quirky_mode =>true)
+				if (responses['responses'].length > 0)
+					# binding.pry
+					results = responses['responses'].collect{ |result|
+						# binding.pry
+						AirtimeResponses.new result['status'], result['phoneNumber'],result['amount'],result['requestId'], result['errorMessage'], result['discount']
 					}
-					return results
+					r = SendAirtimeResult.new responses["errorMessage"], responses["numSent"], responses["totalAmount"], responses["totalDiscount"], results
+					# binding.pry
+					return r
 				else
-					raise AfricasTalkingGatewayException, JSON.parse(response, :quirky_mode =>true)['errorMessage']
+					raise AfricasTalkingGatewayException, responses['errorMessage']
 				end
 			else
 				raise AfricasTalkingGatewayException, response
@@ -84,16 +88,25 @@ module AfricasTalking
 				return response.body
 			end
 	end
-	class AirtimeResult
+	class AirtimeResponses
 		attr_accessor :amount, :phoneNumber, :requestId, :status, :errorMessage, :discount
-
 		def initialize(status_, number_, amount_, requestId_, errorMessage_, discount_)
-				@status       = status_
-				@phoneNumber  = number_
-				@amount       = amount_
-				@requestId    = requestId_
-				@errorMessage = errorMessage_
-				@discount     = discount_
+			@status       = status_
+			@phoneNumber  = number_
+			@amount       = amount_
+			@requestId    = requestId_
+			@errorMessage = errorMessage_
+			@discount     = discount_
+		end
+	end
+	class SendAirtimeResult
+		attr_accessor :errorMessage, :numSent, :totalAmount, :totalDiscount, :responses
+		def initialize errorMessage_, numSent_, totalAmount_, totalDiscount_, responses_
+			@errorMessage   = errorMessage_
+			@numSent        = numSent_
+			@totalAmount    = totalAmount_
+			@totalDiscount  = totalDiscount_
+			@responses      = responses_
 		end
 	end
 end

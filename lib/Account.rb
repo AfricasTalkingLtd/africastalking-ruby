@@ -71,4 +71,11 @@ module AfricasTalking
 				end
 			end
 	end
+	class AccountDataResponse
+		attr_accessor :token, :lifetimeInSeconds
+		def initialize token_, lifetimeInSeconds_
+			@token      = token_
+			@lifetimeInSeconds = lifetimeInSeconds_
+		end
+	end
 end

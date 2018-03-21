@@ -27,7 +27,8 @@ module AfricasTalking
 			response = sendJSONRequest(url, post_body)
 			# binding.pry
 			if(@response_code == HTTP_CREATED)
-				return JSON.parse(response, :quirky_mode => true)
+				r=JSON.parse(response, :quirky_mode => true)
+				return AuthTokenResponse.new r["token"], r["lifetimeInSeconds"]
 			else
 				raise AfricasTalkingGatewayException, response
 			end
@@ -39,8 +40,10 @@ module AfricasTalking
 			}
 			url = getApiHost() + "/checkout/token/create"
 			response = executePost(url, post_body)
+			binding.pry
 			if(@response_code == HTTP_CREATED)
-				return JSON.parse(response, :quirky_mode => true)
+				r= JSON.parse(response, :quirky_mode => true)
+				return CheckoutTokenResponse.new r['token'], r['description']
 			else
 				raise AfricasTalkingGatewayException, response
 			end
@@ -103,5 +106,20 @@ module AfricasTalking
 					return "https://api.africastalking.com"
 				end
 			end
+	end
+
+	class AuthTokenResponse
+		attr_accessor :token, :lifetimeInSeconds
+		def initialize token_, lifetimeInSeconds_
+			@token      = token_
+			@lifetimeInSeconds = lifetimeInSeconds_
+		end
+	end
+	class CheckoutTokenResponse
+		attr_accessor :token, :description
+		def initialize token_, description_
+			@token      = token_
+			@description = description_
+		end
 	end
 end
