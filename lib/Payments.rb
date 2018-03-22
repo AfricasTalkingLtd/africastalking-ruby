@@ -129,6 +129,7 @@ module AfricasTalking
 					results = resultObj['entries'].collect{ |subscriber|
 						MobileB2CResponse.new subscriber['provider'], subscriber['phoneNumber'], subscriber['providerChannel'], subscriber['transactionFee'], subscriber['status'], subscriber['value'], subscriber['transactionId']
 					}
+					# binding.pry
 					return results
 				end
 
@@ -298,7 +299,7 @@ module AfricasTalking
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				return WalletTransferResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
+				return TopupStashResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 			end
 			raise AfricasTalkingGatewayException(response)
 		end
@@ -392,7 +393,7 @@ module AfricasTalking
 				@transactionFee  = transactionFee_
 				@status          = status_
 				@value           = value_
-				@transactionId  = transactionId_
+				@transactionId   = transactionId_
 		end
 	end	
 

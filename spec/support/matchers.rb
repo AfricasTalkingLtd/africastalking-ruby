@@ -12,6 +12,21 @@ RSpec::Matchers.define :inspect_StatusReport do |expected|
   end
 end
 
+RSpec::Matchers.define :inspect_TokenReport do |expected|
+  status = []
+  match do |actual|
+    # status = actual.collect { |item| item.status  }
+    actual.description.eql?(expected.expecteds[0][:description])
+    binding.pry
+    # status.find { |st| st.to_s == expected.expecteds[0][:status] }
+    # binding.pry
+  end
+
+  failure_message_when_negated do |actual|
+    "something went wrong. status false"
+  end
+end
+
 RSpec::Matchers.define :inspect_SMSMessages do |expected|
   ids = []
   match do |actual|

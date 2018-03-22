@@ -12,13 +12,13 @@ RSpec.describe AfricasTalking do
 	it "should be able to generate checkout token" do
 		# p @gateway
 		token = @gateway.token
-		expect(token.createCheckoutToken "+25472232#{rand(1000...9999)}")	
+		expect(token.createCheckoutToken "+25472232#{rand(1000...9999)}").to have_attributes(:description => "Success", :token => a_value)
 	end
 
 	it "should be able to generate checkout token" do
 		# p @gateway
 		token = @gateway.token
-		expect(token.createAuthToken)	
+		expect(token.createAuthToken).to have_attributes(:lifetimeInSeconds => a_value, :token => a_value)
 	end
 
 	# //////////////////////////////////////////////
@@ -54,7 +54,7 @@ RSpec.describe AfricasTalking do
 	it "should be able to create subscriptions" do
 		# p @gateway.fetch_messages
 		sms = @gateway.sms
-		expect(sms.createSubcriptions '202020', 'premium', '0723232323', 'checkoutToken')
+		expect(sms.createSubcriptions '202020', 'premium', '0723232323', 'checkoutToken').to have_attributes(:status => a_value, :description => a_value)
 	end
 
 
@@ -67,7 +67,7 @@ RSpec.describe AfricasTalking do
 			{'phoneNumber' => "+25472232#{rand(1000...9999)}", 'amount' => 'KES 100'},
 			{'phoneNumber' => "+25476334#{rand(1000...9999)}", 'amount' => 'KES 100'}
 		]
-		expect(airtime.sendAirtime recipients)
+		expect(airtime.sendAirtime recipients).to have_attributes(:errorMessage => a_value, :numSent => a_value, :totalAmount => a_value, :totalDiscount => a_value, :responses => a_value)
 	end
 
 	# ////////////////////////////////////////////
@@ -79,14 +79,14 @@ RSpec.describe AfricasTalking do
 		from = "+25471182#{rand(1000...9999)}"
 		to   = "+25471147#{rand(1000...9999)}, +25473383#{rand(1000...9999)}"
 
-		expect(voice.call to, from)
+		expect(voice.call to, from).to have_attributes(:errorMessage => a_value, :callentries => a_value)
 	end
 
 
 	it "should be able to fetch queued calls" do
 		voice = @gateway.voice
 		phoneNumber = '+254722123456'
-		expect(voice.fetchQueuedCalls phoneNumber, nil)
+		expect(voice.fetchQueuedCalls phoneNumber, nil).to have_attributes(:status => a_value, :errorMessage => a_value, :queuedcalls => a_value)
 	end
 
 	# ///////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ RSpec.describe AfricasTalking do
 	# /////////////////////////ACCOUNT////////////////////////////
 	it "should be able to fetch account details" do
 		account = @gateway.account
-		expect(account.fetchUserData).to be_truthy
+		expect(account.fetchUserData).to have_attributes(:balance => a_value)
 	end
 	# ////////////////////////////////////////////////////////////
 
@@ -104,7 +104,7 @@ RSpec.describe AfricasTalking do
 
 	it "initiate Mobile Payment Checkout" do
 		payments = @gateway.payments
-		expect(payments.initiateMobilePaymentCheckout 'RUBY_GEM_TEST', '0722232323',  'KES', '200' )
+		expect(payments.initiateMobilePaymentCheckout 'RUBY_GEM_TEST', '0722232323',  'KES', '200' ).to have_attributes(:status => a_value, :transactionFee => a_value, :transactionId => a_value, :providerChannel => a_value)
 
 	end
 
@@ -134,7 +134,7 @@ RSpec.describe AfricasTalking do
 			    }
 			}
 		]
-		expect(payments.mobilePaymentB2CRequest  'RUBY_GEM_TEST' ,recipients)
+		expect(payments.mobilePaymentB2CRequest 'RUBY_GEM_TEST', recipients)
 		
 	end
 
@@ -150,7 +150,7 @@ RSpec.describe AfricasTalking do
             'shopId' => "1234",
             'itemId' => "abcde"
         }
-		expect(payments.mobilePaymentB2BRequest 'RUBY_GEM_TEST', providerData, 'KES', '100.50', metadata = {} )
+		expect(payments.mobilePaymentB2BRequest 'RUBY_GEM_TEST', providerData, 'KES', '100.50', metadata = {} ).to have_attributes(:status => a_value, :transactionId => a_value, :transactionFee => a_value, :providerChannel => a_value)
 		
 	end
 
@@ -168,12 +168,12 @@ RSpec.describe AfricasTalking do
         }
         narration = 'This is a test transaction'
 
-		expect(payments.initiateBankChargeCheckout 'RUBY_GEM_TEST', bankAccount, 'KES', '500.50', narration, metadata = {} )
+		expect(payments.initiateBankChargeCheckout 'RUBY_GEM_TEST', bankAccount, 'KES', '500.50', narration, metadata = {} ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
 	it "validate bank account checkout" do
 		payments = @gateway.payments
-		expect(payments.validateBankAccountCheckout 'ATPid_SampleTxnId1', '1234')
+		expect(payments.validateBankAccountCheckout 'ATPid_SampleTxnId1', '1234').to have_attributes(:status => a_value, :description => a_value)
 	end
 
 	it "initiate bank transfer request" do
@@ -207,7 +207,7 @@ RSpec.describe AfricasTalking do
 	        }
        	}
        	recipients = [ recipient1, recipient2 ]
-		expect(payments.initiateBankTransferRequest 'RUBY_GEM_TEST', recipients )
+		expect(payments.initiateBankTransferRequest 'RUBY_GEM_TEST', recipients ).to have_attributes(:entries => a_value, :errorMessage => a_value)
 	end
 
 	it "initiate card checkout" do
@@ -220,12 +220,12 @@ RSpec.describe AfricasTalking do
 	        "countryCode"=> "NG",
 	        "authToken"=> "12345",
 	    }
-		expect(payments.initiateCardCheckout 'RUBY_GEM_TEST', 'KES', '1200', 'test narration', nil, paymentCard, nil )
+		expect(payments.initiateCardCheckout 'RUBY_GEM_TEST', 'KES', '1200', 'test narration', nil, paymentCard, nil ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
 	it "validate card checkout" do
 		payments = @gateway.payments
-		expect(payments.validateCardCheckout 'ATPid_39a71bc00951cd1d3ed56d419d0ab3b6', '1234' )
+		expect(payments.validateCardCheckout 'ATPid_39a71bc00951cd1d3ed56d419d0ab3b6', '1234' ).to have_attributes(:status => a_value, :description => a_value, :checkoutToken => a_value)
 	end
 
 	it 'initiate wallet transfer request' do 
@@ -233,7 +233,7 @@ RSpec.describe AfricasTalking do
 		metadata = {
 	        "description" => "May Rent"
 	    }
-		expect(payments.walletTransferRequest 'RUBY_GEM_TEST', 2373, 'KES', 2000, metadata )
+		expect(payments.walletTransferRequest 'RUBY_GEM_TEST', 2373, 'KES', 2000, metadata ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
 	it 'initiate topup stash request' do 
@@ -241,7 +241,7 @@ RSpec.describe AfricasTalking do
 		metadata = {
 	        "description" => "moving money"
 	    }
-		expect(payments.topupStashRequest 'RUBY_GEM_TEST', 'KES', 2000, metadata )
+		expect(payments.topupStashRequest 'RUBY_GEM_TEST', 'KES', 2000, metadata ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
 	# ///////////////////////////////////////////////////////////////////
