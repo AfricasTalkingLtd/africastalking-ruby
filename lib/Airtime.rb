@@ -34,7 +34,7 @@ module AfricasTalking
 					# binding.pry
 					results = responses['responses'].collect{ |result|
 						# binding.pry
-						AirtimeResponses.new result['status'], result['phoneNumber'],result['amount'],result['requestId'], result['errorMessage'], result['discount']
+						AirtimeResponse.new result['status'], result['phoneNumber'],result['amount'],result['requestId'], result['errorMessage'], result['discount']
 					}
 					# binding.pry
 					return SendAirtimeResult.new responses["errorMessage"], responses["numSent"], responses["totalAmount"], responses["totalDiscount"], results
@@ -85,7 +85,7 @@ module AfricasTalking
 				return response.body
 			end
 	end
-	class AirtimeResponses
+	class AirtimeResponse
 		attr_accessor :amount, :phoneNumber, :requestId, :status, :errorMessage, :discount
 		def initialize(status_, number_, amount_, requestId_, errorMessage_, discount_)
 			@status       = status_

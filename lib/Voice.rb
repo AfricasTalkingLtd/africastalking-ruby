@@ -74,6 +74,21 @@ module AfricasTalking
 			
 		end
 
+		def uploadMediaFile url, phoneNumber
+			post_body = {
+							'username' => @username,
+							'url'      => url,
+							'phoneNumber' => phoneNumber
+						}
+			url      = getVoiceHost() + "/mediaUpload"
+			response = executePost(url, post_body)
+			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
+				return UploadMediaResponse.new response
+			end
+			# binding.pry
+			raise AfricasTalkingGatewayException, response
+		end
+
 
 		private
 			def getVoiceHost()
@@ -121,16 +136,16 @@ module AfricasTalking
 
 
 	class CallResponse
-		attr_accessor :errorMessage, :callentries
+		attr_accessor :errorMessage, :entries
 
-		def initialize(errorMessage_, callentries_)
+		def initialize(entries_, errorMessage_)
 			@errorMessage      = errorMessage_
-			@callentries = callentries_
+			@entries = entries_
 		end
 	end
 
 	class CallEntries
-		attr_accessor :phoneNumber, :status
+		attr_accessor :status, :phoneNumber
 
 		def initialize(status_, number_)
 			@status      = status_
@@ -149,12 +164,19 @@ module AfricasTalking
 	end
 
 	class QueuedCallsResponse
-		attr_accessor :status, :errorMessage, :queuedcalls
+		attr_accessor :status, :errorMessage, :entries
 
-		def initialize(status_, errorMessage_, queuedcalls_)
+		def initialize(status_, errorMessage_, entries_)
 			@status = status_
 			@errorMessage    = errorMessage_
-			@queuedcalls   = queuedcalls_
+			@entries   = entries_
+		end
+	end
+
+	class UploadMediaResponse
+		attr_accessor :status
+		def initialize status
+			@status = status
 		end
 	end
 	

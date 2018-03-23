@@ -195,7 +195,7 @@ module AfricasTalking
 					results = resultObj['entries'].collect{ |subscriber|
 						BankTransferEntries.new subscriber['accountNumber'], subscriber['status'], subscriber['transactionId'], subscriber['transactionFee'], subscriber['errorMessage']
 					}
-					# binding.pry
+					
 
 					return BankTransferResponse.new results, resultObj['errorMessage']
 				end

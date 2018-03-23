@@ -29,17 +29,17 @@ RSpec.describe AfricasTalking do
 	it "should be able to send bulk message" do
 		# p @gateway
 		sms = @gateway.sms
-		expect(sms.sendMessage 'sample message', "+25472232#{rand(1000...9999)}, +25476334#{rand(1000...9999)}").to inspect_StatusReport(include(status: "Success"))	
+		expect(sms.sendMessage 'sample message', "+25472232#{rand(1000...9999)}, +25476334#{rand(1000...9999)}").to inspect_BulkMessageResponse
 	end
 
 	it "should send premium message" do
 		sms = @gateway.sms
-		expect(sms.sendPremiumMessage 'sample message', 'gemtests', 'a0aad2b0-6615-4552-a415-de636cb92c00', ["+25472232#{rand(1000...9999)}, +25476334#{rand(1000...9999)}"])
+		expect(sms.sendPremiumMessage 'sample message', 'gemtests', 'a0aad2b0-6615-4552-a415-de636cb92c00', ["+25472232#{rand(1000...9999)}, +25476334#{rand(1000...9999)}"]).to inspect_PremiumMessageResponse
 	end
 
 	it "should be able to fetch messages" do
 		sms = @gateway.sms
-		expect(sms.fetchMessages)
+		expect(sms.fetchMessages).to inspect_FetchMessageResponse
 		# expect(@gateway.fetch_messages).to inspect_SMSMessages
 	end
 
@@ -47,7 +47,7 @@ RSpec.describe AfricasTalking do
 	it "should be able to fetch subscriptions" do
 		# p @gateway.fetch_messages
 		sms = @gateway.sms
-		expect(sms.fetchSubscriptions '77777', 'gemtests', '')
+		expect(sms.fetchSubscriptions '77777', 'gemtests', '').to inspect_FetchSubscriptionResponse
 	end	
 
 	# not complete. you need to check what the checkoutToken is
@@ -67,26 +67,34 @@ RSpec.describe AfricasTalking do
 			{'phoneNumber' => "+25472232#{rand(1000...9999)}", 'amount' => 'KES 100'},
 			{'phoneNumber' => "+25476334#{rand(1000...9999)}", 'amount' => 'KES 100'}
 		]
-		expect(airtime.sendAirtime recipients).to have_attributes(:errorMessage => a_value, :numSent => a_value, :totalAmount => a_value, :totalDiscount => a_value, :responses => a_value)
+		expect(airtime.sendAirtime recipients).to inspect_SendAirtimeResult
 	end
 
 	# ////////////////////////////////////////////
 
 	# ////////////////////////////VOICE///////////////////////////////////
 
+	# returns a string instead of 
 	it "should be able to make call" do
 		voice = @gateway.voice
-		from = "+25471182#{rand(1000...9999)}"
+		from = "+254722123456"
 		to   = "+25471147#{rand(1000...9999)}, +25473383#{rand(1000...9999)}"
 
-		expect(voice.call to, from).to have_attributes(:errorMessage => a_value, :callentries => a_value)
+		expect(voice.call to, from).to inspect_CallResponse
 	end
 
-
+	# can still return empty array of entries. check into it
 	it "should be able to fetch queued calls" do
 		voice = @gateway.voice
 		phoneNumber = '+254722123456'
-		expect(voice.fetchQueuedCalls phoneNumber, nil).to have_attributes(:status => a_value, :errorMessage => a_value, :queuedcalls => a_value)
+		expect(voice.fetchQueuedCalls phoneNumber, nil).to inspect_QueuedCallsResponse
+	end
+
+	it "should be able to upload media files" do
+		voice = @gateway.voice
+		url = 'http://onlineMediaUrl.com/file.wav'
+		phoneNumber = '+254722123456'
+		expect(voice.uploadMediaFile url, phoneNumber).to have_attributes(:status => a_value)
 	end
 
 	# ///////////////////////////////////////////////////////////////////
@@ -134,7 +142,7 @@ RSpec.describe AfricasTalking do
 			    }
 			}
 		]
-		expect(payments.mobilePaymentB2CRequest 'RUBY_GEM_TEST', recipients)
+		expect(payments.mobilePaymentB2CRequest 'RUBY_GEM_TEST', recipients).to inspect_MobileB2CResponse
 		
 	end
 
@@ -207,7 +215,7 @@ RSpec.describe AfricasTalking do
 	        }
        	}
        	recipients = [ recipient1, recipient2 ]
-		expect(payments.initiateBankTransferRequest 'RUBY_GEM_TEST', recipients ).to have_attributes(:entries => a_value, :errorMessage => a_value)
+		expect(payments.initiateBankTransferRequest 'RUBY_GEM_TEST', recipients ).to inspect_BankTransferResponse
 	end
 
 	it "initiate card checkout" do

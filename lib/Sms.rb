@@ -92,7 +92,7 @@ module AfricasTalking
 			end
 			# binding.pry
 			response = executePost(getSmsUrl(), post_body)
-			
+			# binding.pry
 			if @response_code == HTTP_CREATED
 				messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
 				recipients = messageData["Recipients"]
@@ -121,6 +121,7 @@ module AfricasTalking
 					SMSMessages.new msg["id"], msg["text"], msg["from"] , msg["to"], msg["linkId"], msg["date"]
 				}
 				 # messages
+
 				return FetchMessagesResponse.new messages
 
 			else
@@ -236,9 +237,9 @@ module AfricasTalking
 
 
 	class FetchMessagesResponse
-		attr_accessor :messages, :status 
-		def initialize messages_, status_= nil
-			@messages = messages_
+		attr_accessor :responses, :status 
+		def initialize responses_, status_= nil
+			@responses = responses_
 			@status = status_
 		end
 	end
@@ -253,9 +254,9 @@ module AfricasTalking
 
 
 	class SendPremiumMessagesResponse
-		attr_accessor :reports, :overview 
-		def initialize reports_, overview_
-			@reports = reports_
+		attr_accessor :recipients, :overview 
+		def initialize recipients_, overview_
+			@recipients = recipients_
 			@overview = overview_
 		end
 	end
