@@ -87,13 +87,15 @@ RSpec.describe AfricasTalking do
 	it "should be able to fetch queued calls" do
 		voice = @gateway.voice
 		phoneNumber = '+254722123456'
-		expect(voice.fetchQueuedCalls phoneNumber, nil).to inspect_QueuedCallsResponse
+		expect(voice.fetchQueuedCalls phoneNumber).to inspect_QueuedCallsResponse
 	end
 
 	it "should be able to upload media files" do
 		voice = @gateway.voice
 		url = 'http://onlineMediaUrl.com/file.wav'
-		phoneNumber = '+254722123456'
+		# phoneNumber = "%2B254724434562"
+		phoneNumber = "+254722123456"
+		# phoneNumber = "0712345678 "
 		expect(voice.uploadMediaFile url, phoneNumber).to have_attributes(:status => a_value)
 	end
 

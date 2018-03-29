@@ -44,22 +44,17 @@ module AfricasTalking
 			end
 		end
 
-		def fetchQueuedCalls phoneNumber, queueName = nil
+		def fetchQueuedCalls phoneNumber
 			post_body = {
 				'username'    => @username,
 				'phoneNumbers' => phoneNumber,
 			}
 
-			if (queueName != nil)
-				post_body['queueName'] = queueName
-			end
-
 			url = getVoiceHost() + "/queueStatus"
 			response = executePost(url, post_body)
-
-			ob = JSON.parse(response, :quirky_mode => true)
 			# binding.pry
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
+				ob = JSON.parse(response, :quirky_mode => true)
 				results = []
 				if (ob['entries'].length > 0)
 					results = ob['entries'].collect{|result|
@@ -81,11 +76,13 @@ module AfricasTalking
 							'phoneNumber' => phoneNumber
 						}
 			url      = getVoiceHost() + "/mediaUpload"
+			# binding.pry
 			response = executePost(url, post_body)
+			# ob = JSON.parse(response, :quirky_mode => true)
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
 				return UploadMediaResponse.new response
 			end
-			# binding.pry
+			binding.pry
 			raise AfricasTalkingGatewayException, response
 		end
 
@@ -115,6 +112,7 @@ module AfricasTalking
 				   "apikey" => @apikey,
 				   "Accept" => "application/json"
 				}
+				# binding.pry
 				if(data_ != nil)
 					request = Net::HTTP::Post.new(uri.request_uri)
 					request.set_form_data(data_)
