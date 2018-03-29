@@ -92,7 +92,7 @@ module AfricasTalking
 			end
 			# binding.pry
 			response = executePost(getSmsUrl(), post_body)
-			
+			# binding.pry
 			if @response_code == HTTP_CREATED
 				messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
 				recipients = messageData["Recipients"]
@@ -101,8 +101,7 @@ module AfricasTalking
 					reports = recipients.collect { |entry|
 						StatusReport.new entry["number"], entry["status"], entry["cost"], entry["messageId"]
 					}
-					# binding.pry
-					return reports
+					return SendPremiumMessagesResponse.new reports, messageData["Message"]
 				end
 				
 				raise AfricasTalkingGatewayException, messageData["Message"]
@@ -114,15 +113,17 @@ module AfricasTalking
 			# binding.pry
 		end
 
-		def fetchMessages last_received_id = nil
+		def fetchMessages last_received_id = 0
 			url = getSmsUrl() + "?username=#{@username}&lastReceivedId=#{last_received_id}"
 			response = executePost(url)
 			if @response_code == HTTP_OK
 				messages = JSON.parse(response, :quirky_mode => true)["SMSMessageData"]["Messages"].collect { |msg|
 					SMSMessages.new msg["id"], msg["text"], msg["from"] , msg["to"], msg["linkId"], msg["date"]
 				}
-				# binding.pry
-				return messages
+				 # messages
+
+				return FetchMessagesResponse.new messages
+
 			else
 				raise AfricasTalkingGatewayException, response
 			end
@@ -135,10 +136,12 @@ module AfricasTalking
 			url = getSmsSubscriptionUrl() + "?username=#{@username}&shortCode=#{shortCode}&keyword=#{keyword}&lastReceivedId=#{lastReceivedId}"
 			response = executePost(url)
 			if(@response_code == HTTP_OK)
+				# binding.pry
 				subscriptions = JSON.parse(response)['responses'].collect{ |subscriber|
-					PremiumSubscriptionNumbers.new subscriber['phoneNumber'], subscriber['id']
+					PremiumSubscriptionNumbers.new subscriber['phoneNumber'], subscriber['id'], subscriber['date']
 				}
 				# binding.pry
+
 				return subscriptions
 			else
 				raise AfricasTalkingGatewayException, response
@@ -159,7 +162,8 @@ module AfricasTalking
 			url      = getSmsSubscriptionUrl() + "/create"
 			response = executePost(url, post_body)
 			if(@response_code == HTTP_CREATED)
-				return JSON.parse(response, :quirky_mode => true)
+				r = JSON.parse(response, :quirky_mode => true)
+				return CreateSubscriptionResponse.new r['status'], r['description'] 
 			else
 				raise AfricasTalkingGatewayException, response
 			end
@@ -222,11 +226,38 @@ module AfricasTalking
 	end
 
 	class PremiumSubscriptionNumbers
-		attr_accessor :phoneNumber, :id
+		attr_accessor :phoneNumber, :id, :date
 
-		def initialize(number_, id_)
+		def initialize number_, id_, date_
 			@phoneNumber = number_
 			@id     = id_
+			@date = date_
+		end
+	end
+
+
+	class FetchMessagesResponse
+		attr_accessor :responses, :status 
+		def initialize responses_, status_= nil
+			@responses = responses_
+			@status = status_
+		end
+	end
+
+	class CreateSubscriptionResponse
+		attr_accessor :status, :description
+		def initialize status_, description_
+			@description = description_
+			@status = status_
+		end
+	end
+
+
+	class SendPremiumMessagesResponse
+		attr_accessor :recipients, :overview 
+		def initialize recipients_, overview_
+			@recipients = recipients_
+			@overview = overview_
 		end
 	end
 

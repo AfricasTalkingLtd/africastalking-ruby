@@ -32,47 +32,58 @@ module AfricasTalking
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
 				ob = JSON.parse(response, :quirky_mode => true)
 				# binding.pry
-				if (ob['errorMessage'] == "None")
+				if (ob['entries'].length > 0)
 					results = ob['entries'].collect{|result|
-						CallResponse.new result['status'], result['phoneNumber']
+						CallEntries.new result['status'], result['phoneNumber']
 					}
-					return results
-				else
-					raise AfricasTalkingGatewayException, ob['errorMessage']
 				end
+				return CallResponse.new results, ob['errorMessage']
+				# binding.pry
 			else
 				raise AfricasTalkingGatewayException, response
 			end
 		end
 
-		def fetchQueuedCalls phoneNumber, queueName = nil
+		def fetchQueuedCalls phoneNumber
 			post_body = {
 				'username'    => @username,
 				'phoneNumbers' => phoneNumber,
 			}
 
-			if (queueName != nil)
-				post_body['queueName'] = queueName
-			end
-
 			url = getVoiceHost() + "/queueStatus"
 			response = executePost(url, post_body)
-
-			ob = JSON.parse(response, :quirky_mode => true)
 			# binding.pry
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
-				if (ob['errorMessage'] == "None")
+				ob = JSON.parse(response, :quirky_mode => true)
+				results = []
+				if (ob['entries'].length > 0)
 					results = ob['entries'].collect{|result|
 						QueuedCalls.new result['phoneNumber'], result['numCalls'], result['queueName']
 					}
-					return results
 				end
-
-				raise AfricasTalkingGatewayException, ob['errorMessage']
+				# binding.pry
+				return QueuedCallsResponse.new ob['status'], ob['errorMessage'], results
 			end
 			
 			raise AfricasTalkingGatewayException, response
 			
+		end
+
+		def uploadMediaFile url, phoneNumber
+			post_body = {
+							'username' => @username,
+							'url'      => url,
+							'phoneNumber' => phoneNumber
+						}
+			url      = getVoiceHost() + "/mediaUpload"
+			# binding.pry
+			response = executePost(url, post_body)
+			# ob = JSON.parse(response, :quirky_mode => true)
+			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
+				return UploadMediaResponse.new response
+			end
+			binding.pry
+			raise AfricasTalkingGatewayException, response
 		end
 
 
@@ -101,6 +112,7 @@ module AfricasTalking
 				   "apikey" => @apikey,
 				   "Accept" => "application/json"
 				}
+				# binding.pry
 				if(data_ != nil)
 					request = Net::HTTP::Post.new(uri.request_uri)
 					request.set_form_data(data_)
@@ -120,8 +132,18 @@ module AfricasTalking
 			end
 	end
 
+
 	class CallResponse
-		attr_accessor :phoneNumber, :status
+		attr_accessor :errorMessage, :entries
+
+		def initialize(entries_, errorMessage_)
+			@errorMessage      = errorMessage_
+			@entries = entries_
+		end
+	end
+
+	class CallEntries
+		attr_accessor :status, :phoneNumber
 
 		def initialize(status_, number_)
 			@status      = status_
@@ -136,6 +158,23 @@ module AfricasTalking
 			@phoneNumber = number_
 			@numCalls    = numCalls_
 			@queueName   = queueName_
+		end
+	end
+
+	class QueuedCallsResponse
+		attr_accessor :status, :errorMessage, :entries
+
+		def initialize(status_, errorMessage_, entries_)
+			@status = status_
+			@errorMessage    = errorMessage_
+			@entries   = entries_
+		end
+	end
+
+	class UploadMediaResponse
+		attr_accessor :status
+		def initialize status
+			@status = status
 		end
 	end
 	

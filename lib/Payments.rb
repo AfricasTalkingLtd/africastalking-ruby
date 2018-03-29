@@ -61,9 +61,9 @@ module AfricasTalking
 			
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
+				# binding.pry
 				if (resultObj['status'] == 'PendingConfirmation')
-					# binding.pry
-					return resultObj['transactionId']
+					return MobileCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId'], resultObj['providerChannel']
 				end
 				raise AfricasTalkingGatewayException, resultObj['description']
 			end
@@ -105,7 +105,7 @@ module AfricasTalking
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				# binding.pry
-				return resultObj
+				return MobileB2BResponse.new resultObj['status'], resultObj['transactionId'], resultObj['transactionFee'], resultObj['providerChannel']
 			end
 			raise AfricasTalkingGatewayException(response)
 		end
@@ -129,6 +129,7 @@ module AfricasTalking
 					results = resultObj['entries'].collect{ |subscriber|
 						MobileB2CResponse.new subscriber['provider'], subscriber['phoneNumber'], subscriber['providerChannel'], subscriber['transactionFee'], subscriber['status'], subscriber['value'], subscriber['transactionId']
 					}
+					# binding.pry
 					return results
 				end
 
@@ -153,7 +154,8 @@ module AfricasTalking
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				return resultObj
+				# binding.pry
+				return InitiateBankCheckoutResponse.new resultObj['status'], resultObj['transactionId'], resultObj['description']
 			end
 			raise AfricasTalkingGatewayException(response)
 			
@@ -171,7 +173,7 @@ module AfricasTalking
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				return resultObj
+				return ValidateBankCheckoutResponse.new resultObj['status'], resultObj['description']
 			end
 			raise AfricasTalkingGatewayException(response)
 		end
@@ -191,9 +193,11 @@ module AfricasTalking
 
 				if (resultObj['entries'].length > 0)
 					results = resultObj['entries'].collect{ |subscriber|
-						BankTransferResponse.new subscriber['accountNumber'], subscriber['status'], subscriber['transactionId'], subscriber['transactionFee'], subscriber['errorMessage']
+						BankTransferEntries.new subscriber['accountNumber'], subscriber['status'], subscriber['transactionId'], subscriber['transactionFee'], subscriber['errorMessage']
 					}
-					return results
+					
+
+					return BankTransferResponse.new results, resultObj['errorMessage']
 				end
 
 				raise AfricasTalkingGatewayException, resultObj['errorMessage']
@@ -232,7 +236,8 @@ module AfricasTalking
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				return resultObj
+				# binding.pry
+				return InitiateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 			end
 			raise AfricasTalkingGatewayException(response)
 
@@ -251,7 +256,8 @@ module AfricasTalking
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				return resultObj
+				return ValidateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['checkoutToken']
+				# binding.pry
 			end
 			raise AfricasTalkingGatewayException(response)
 		end
@@ -272,7 +278,8 @@ module AfricasTalking
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				return resultObj
+				# binding.pry
+				return WalletTransferResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 			end
 			raise AfricasTalkingGatewayException(response)
 		end
@@ -292,7 +299,7 @@ module AfricasTalking
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				return resultObj
+				return TopupStashResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 			end
 			raise AfricasTalkingGatewayException(response)
 		end
@@ -386,19 +393,98 @@ module AfricasTalking
 				@transactionFee  = transactionFee_
 				@status          = status_
 				@value           = value_
-				@transactionFee  = transactionFee_
+				@transactionId   = transactionId_
 		end
 	end	
 
-	class BankTransferResponse
-		attr_accessor :accountNumber, :status, :transactionId, :transactionFee, :errorMessage
+	class MobileB2BResponse
+		attr_accessor :status, :transactionId, :transactionFee, :providerChannel
+				
+		def initialize status_, transactionId_, transactionFee_, providerChannel_
+				@providerChannel    = providerChannel_
+				@transactionId = transactionId_
+				@transactionFee  = transactionFee_
+				@status          = status_
+		end
+	end	
 
+	class BankTransferEntries
+		attr_accessor :accountNumber, :status, :transactionId, :transactionFee, :errorMessage
 		def initialize accountNumber, status, transactionId, transactionFee, errorMessage
 				@accountNumber = accountNumber
 				@status = status
 				@transactionId  = transactionId
 				@transactionFee  = transactionFee
 				@errorMessage   = errorMessage
+		end
+	end
+
+	class BankTransferResponse
+		attr_accessor :entries, :errorMessage
+		def initialize entries_, errorMessage_
+				@entries = entries_
+				@errorMessage   = errorMessage_
+		end
+	end
+
+	class MobileCheckoutResponse
+		attr_accessor :status, :transactionFee, :transactionId, :providerChannel
+		def initialize accountNumber_, status_, transactionId_, transactionFee_
+				@accountNumber = accountNumber_
+				@status = status_
+				@transactionId  = transactionId_
+				@transactionFee  = transactionFee_
+		end
+	end
+	class InitiateBankCheckoutResponse
+		attr_accessor :status, :description, :transactionId
+		def initialize status_, transactionId_, description_
+				@description = description_
+				@status = status_
+				@transactionId  = transactionId_
+		end
+	end
+	class ValidateBankCheckoutResponse
+		attr_accessor :status, :description
+		def initialize status_, description_
+				@description = description_
+				@status = status_
+		end
+	end
+
+	class InitiateCardCheckoutResponse
+		attr_accessor :status, :description, :transactionId
+		def initialize status_, description_, transactionId_
+				@description = description_
+				@status = status_
+				@transactionId = transactionId_
+		end
+	end
+
+	class ValidateCardCheckoutResponse
+		attr_accessor :status, :description, :checkoutToken
+		def initialize status_, description_, checkoutToken_
+				@description = description_
+				@status = status_
+				@checkoutToken = checkoutToken_
+		end
+	end
+
+	class WalletTransferResponse
+		attr_accessor :status, :description, :transactionId
+		def initialize status_, description_, transactionId_
+				@description = description_
+				@status = status_
+				@transactionId = transactionId_
+		end
+	end
+
+	class TopupStashResponse
+		attr_accessor :status, :description, :transactionId
+		def initialize status_, description_, transactionId_
+				@description = description_
+				@status = status_
+				@transactionId = transactionId_
 		end
 	end
 end
