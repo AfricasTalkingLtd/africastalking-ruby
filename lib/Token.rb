@@ -34,9 +34,9 @@ module AfricasTalking
 			end
 		end
 
-		def createCheckoutToken phoneNumber
+		def createCheckoutToken options
 			post_body = {
-				'phoneNumber' => phoneNumber
+				'phoneNumber' => options['phoneNumber']
 			}
 			url = getApiHost() + "/checkout/token/create"
 			response = executePost(url, post_body)
@@ -51,7 +51,7 @@ module AfricasTalking
 
 		private
 
-			def executePost(url_, data_ = nil)
+			def executePost url_, data_ = nil
 				uri		 	     = URI.parse(url_)
 				http		     = Net::HTTP.new(uri.host, uri.port)
 				http.use_ssl     = true

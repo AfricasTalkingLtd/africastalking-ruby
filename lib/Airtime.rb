@@ -20,7 +20,8 @@ module AfricasTalking
 			@environment  = environment
 		end
 
-		def sendAirtime recipients
+		def sendAirtime options
+			recipients = options.collect{ |r| r }
 			post_body = {
 							'username'   => @username,
 							'recipients' => recipients.to_json

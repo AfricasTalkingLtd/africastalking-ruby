@@ -46,14 +46,14 @@ module AfricasTalking
 			@environment  = environment
 		end
 
-		def initiateMobilePaymentCheckout(productName_, phoneNumber_,  currencyCode_, amount_, metadata_ = {})
+		def initiateMobilePaymentCheckout options
 			parameters = {
 				'username'     => @username,
-				'productName'  => productName_,
-				'phoneNumber'  => phoneNumber_,
-				'currencyCode' => currencyCode_,
-				'amount'       => amount_,
-				'metadata'     => metadata_
+				'productName'  => options['productName'],
+				'phoneNumber'  => options['phoneNumber'],
+				'currencyCode' => options['currencyCode'],
+				'amount'       => options['amount'],
+				'metadata'     => options['metadata']
 			}
 			
 			url      = getMobilePaymentCheckoutUrl()
@@ -70,33 +70,33 @@ module AfricasTalking
 			raise AfricasTalkingGatewayException, response
 		end
 
-		def mobilePaymentB2BRequest(productName_, providerData_, currencyCode_, amount_, metadata_ = {})
-			if (!providerData_.key?('provider'))
+		def mobilePaymentB2BRequest options
+			if (!options['providerData'].key?('provider'))
 				raise AfricasTalkingGatewayException("Missing field provider")
 			end
 				
-			if (!providerData_.key?('destinationChannel'))
+			if (!options['providerData'].key?('destinationChannel'))
 				raise AfricasTalkingGatewayException("Missing field destinationChannel")
 			end
 
-			if (!providerData_.key?('destinationAccount'))
+			if (!options['providerData'].key?('destinationAccount'))
 				raise AfricasTalkingGatewayException("Missing field destinationAccount")
 			end
 			
-			if (!providerData_.key?('transferType'))
+			if (!options['providerData'].key?('transferType'))
 				raise AfricasTalkingGatewayException("Missing field transferType")
 			end
 			
 			parameters = {
 			              'username'           => @username,
-			              'productName'        => productName_,
-			              'provider'           => providerData_['provider'],
-			              'destinationChannel' => providerData_['destinationChannel'],
-			              'destinationAccount' => providerData_['destinationAccount'],
-			              'transferType'       => providerData_['transferType'],
-			              'currencyCode'       => currencyCode_,
-			              'amount'             =>amount_,
-			              'metadata'           =>metadata_
+			              'productName'        => options['productName'],
+			              'provider'           => options['providerData']['provider'],
+			              'destinationChannel' => options['providerData']['destinationChannel'],
+			              'destinationAccount' => options['providerData']['destinationAccount'],
+			              'transferType'       => options['providerData']['transferType'],
+			              'currencyCode'       => options['currencyCode'],
+			              'amount'             => options['amount'],
+			              'metadata'           => options['metadata']
 			}
 			
 			url      = getMobilePaymentB2BUrl()
@@ -111,11 +111,11 @@ module AfricasTalking
 		end
 
 
-		def mobilePaymentB2CRequest(productName_, recipients_)
+		def mobilePaymentB2CRequest options
 			parameters = {
 				'username'    => @username,
-				'productName' => productName_,
-				'recipients'  => recipients_
+				'productName' => options['productName'],
+				'recipients'  => options['recipients']
 			}
 			# binding.pry
 			url      = getMobilePaymentB2CUrl()
@@ -138,16 +138,16 @@ module AfricasTalking
 			raise AfricasTalkingGatewayException, response
 		end
 
-		def initiateBankChargeCheckout productName, bankAccount, currencyCode, amount, narration, metadata = {}
+		def initiateBankChargeCheckout options
 
 			parameters = {
 				'username'    => @username,
-				'productName' => productName,
-				'bankAccount'  => bankAccount,
-				'currencyCode' => currencyCode,
-				'amount' => amount,
-				'narration' => narration,
-				'metadata' => metadata
+				'productName' => options['productName'],
+				'bankAccount'  => options['bankAccount'],
+				'currencyCode' => options['currencyCode'],
+				'amount' => options['amount'],
+				'narration' => options['narration'],
+				'metadata' => options['metadata']
 			}
 			url      = getBankChargeCheckoutUrl()
 			response = sendJSONRequest(url, parameters)
@@ -161,11 +161,11 @@ module AfricasTalking
 			
 		end	
 
-		def validateBankAccountCheckout transactionId, otp
+		def validateBankAccountCheckout options
 			parameters = {
 				'username'    => @username,
-				'transactionId' => transactionId,
-				'otp'  => otp
+				'transactionId' => options['transactionId'],
+				'otp'  => options['otp']
 			}
 			# binding.pry
 			url      = getValidateBankCheckoutUrl()
@@ -178,11 +178,11 @@ module AfricasTalking
 			raise AfricasTalkingGatewayException(response)
 		end
 
-		def initiateBankTransferRequest productName, recipients
+		def initiateBankTransferRequest options
 			parameters = {
 				'username'    => @username,
-				'productName' => productName,
-				'recipients'  => recipients
+				'productName' => options['productName'],
+				'recipients'  => options['recipients']
 			}
 			
 			url      = getBankTransferRequestUrl()
@@ -192,8 +192,8 @@ module AfricasTalking
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 
 				if (resultObj['entries'].length > 0)
-					results = resultObj['entries'].collect{ |subscriber|
-						BankTransferEntries.new subscriber['accountNumber'], subscriber['status'], subscriber['transactionId'], subscriber['transactionFee'], subscriber['errorMessage']
+					results = resultObj['entries'].collect{ |item|
+						BankTransferEntries.new item['accountNumber'], item['status'], item['transactionId'], item['transactionFee'], item['errorMessage']
 					}
 					
 
@@ -206,28 +206,28 @@ module AfricasTalking
 			
 		end
 
-		def initiateCardCheckout productName, currencyCode, amount, narration, checkoutToken = nil, paymentCard = nil, metadata = {}
+		def initiateCardCheckout options
 			
 			parameters = {
 				'username'    => @username,
-				'productName' => productName,
-				'currencyCode' => currencyCode,
-				'amount' => amount,
-				'narration' => narration,
-				'metadata' => metadata
+				'productName' => options['productName'],
+				'currencyCode' => options['currencyCode'],
+				'amount' => options['amount'],
+				'narration' => options['narration'],
+				'metadata' => options['metadata']
 			}
 			# binding.pry
-			if (checkoutToken == nil && paymentCard == nil)
+			if (options['checkoutToken'] == nil && options['paymentCard'] == nil)
 				raise AfricasTalkingGatewayException "Please make sure either the checkoutToken or paymentCard parameter is not empty"
-			elsif (checkoutToken != nil && paymentCard != nil)
+			elsif (options['checkoutToken'] != nil && options['paymentCard'] != nil)
 				raise AfricasTalkingGatewayException "If you have a checkoutToken please make sure paymentCard parameter is empty"
 			end
-			if (checkoutToken != nil)
-				parameters['checkoutToken'] = checkoutToken
+			if (options['checkoutToken'] != nil)
+				parameters['checkoutToken'] = options['checkoutToken']
 			end
 
-			if (paymentCard != nil)
-				parameters['paymentCard'] = paymentCard
+			if (options['paymentCard'] != nil)
+				parameters['paymentCard'] = options['paymentCard']
 			end
 			
 			url      = getCardCheckoutChargeUrl()
@@ -243,13 +243,12 @@ module AfricasTalking
 
 		end
 
-		def validateCardCheckout transactionId, otp
+		def validateCardCheckout options
 			parameters = {
 				'username'    => @username,
-				'transactionId' => transactionId,
-				'otp' => otp
+				'transactionId' => options['transactionId'],
+				'otp'  => options['otp']
 			}
-
 			url      = getValidateCardCheckoutUrl()
 			# binding.pry
 			response = sendJSONRequest(url, parameters)
@@ -262,14 +261,14 @@ module AfricasTalking
 			raise AfricasTalkingGatewayException(response)
 		end
 
-		def walletTransferRequest productName, targetProductCode, currencyCode, amount, metadata
+		def walletTransferRequest options
 			parameters = {
 				'username'    => @username,
-				'productName' => productName,
-				'targetProductCode' => targetProductCode,
-				'currencyCode' => currencyCode,
-				'amount' => amount,
-				'metadata' => metadata 
+				'productName' => options['productName'],
+				'targetProductCode' => options['targetProductCode'],
+				'currencyCode' => options['currencyCode'],
+				'amount' => options['amount'],
+				'metadata' => options['metadata'] 
 			}
 
 			url      = getWalletTransferUrl()
@@ -284,13 +283,13 @@ module AfricasTalking
 			raise AfricasTalkingGatewayException(response)
 		end
 
-		def topupStashRequest productName, currencyCode, amount, metadata
+		def topupStashRequest options
 			parameters = {
 				'username'    => @username,
-				'productName' => productName,
-				'currencyCode' => currencyCode,
-				'amount' => amount,
-				'metadata' => metadata 
+				'productName' => options['productName'],
+				'currencyCode' => options['currencyCode'],
+				'amount' => options['amount'],
+				'metadata' => options['metadata'] 
 			}
 
 			url      = getTopupStashUrl()

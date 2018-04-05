@@ -21,11 +21,11 @@ module AfricasTalking
 			@environment  = environment
 		end
 
-		def call to, from
+		def call options
 			post_body = {
 				'username' => @username, 
-				'from'     => from, 
-				'to'       => to
+				'from'     => options['from'], 
+				'to'       => options['to']
 			}
 			# binding.pry
 			response = executePost(getVoiceHost() + "/call", post_body)
@@ -44,10 +44,10 @@ module AfricasTalking
 			end
 		end
 
-		def fetchQueuedCalls phoneNumber
+		def fetchQueuedCalls options
 			post_body = {
 				'username'    => @username,
-				'phoneNumbers' => phoneNumber,
+				'phoneNumbers' => options['phoneNumber'],
 			}
 
 			url = getVoiceHost() + "/queueStatus"
@@ -69,11 +69,11 @@ module AfricasTalking
 			
 		end
 
-		def uploadMediaFile url, phoneNumber
+		def uploadMediaFile options
 			post_body = {
 							'username' => @username,
-							'url'      => url,
-							'phoneNumber' => phoneNumber
+							'url'      => options['url'],
+							'phoneNumber' => options['phoneNumber']
 						}
 			url      = getVoiceHost() + "/mediaUpload"
 			# binding.pry
@@ -82,7 +82,7 @@ module AfricasTalking
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
 				return UploadMediaResponse.new response
 			end
-			binding.pry
+			# binding.pry
 			raise AfricasTalkingGatewayException, response
 		end
 

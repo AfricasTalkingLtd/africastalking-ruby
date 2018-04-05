@@ -28,25 +28,25 @@ module AfricasTalking
 		# end
 	
 		
-		def sendMessage message, recipients, from = nil, enqueue = nil, bulkSMSMode = nil, retryDurationInHours = nil
+		def sendMessage options
 			# binding.pry
 			post_body = {
 
 				'username'    => @username, 
-				'message'     => message, 
-				'to'          => recipients
+				'message'     => options['message'], 
+				'to'          => options['to']
 			}
-			if from != nil
-				post_body['from'] = from
+			if options['from'] != nil
+				post_body['from'] = options['from']
 			end
-			if enqueue != nil
-				post_body['enqueue'] = enqueue
+			if options['enqueue'] != nil
+				post_body['enqueue'] = options['enqueue']
 			end
-			if bulkSMSMode != nil
-				post_body['bulkSMSMode'] = bulkSMSMode
+			if options['bulkSMSMode'] != nil
+				post_body['bulkSMSMode'] = options['bulkSMSMode']
 			end
-			if retryDurationInHours != nil
-				post_body['retryDurationInHours'] = retryDurationInHours
+			if options['retryDurationInHours'] != nil
+				post_body['retryDurationInHours'] = options['retryDurationInHours']
 			end
 			
 			response = executePost(getSmsUrl(), post_body)
@@ -70,25 +70,25 @@ module AfricasTalking
 			end
 		end
 
-		def sendPremiumMessage message, keyword, linkId, to, from = nil, enqueue = nil, bulkSMSMode = nil, retryDurationInHours = nil
+		def sendPremiumMessage options
 			post_body = {
 				'username'    => @username, 
-				'message'     => message, 
-				'to'          => to,
-				'keyword'     => keyword,
-				'linkId'      => linkId
+				'message'     => options['message'], 
+				'to'          => options['to'],
+				'keyword'     => options['keyword'],
+				'linkId'      => options['linkId'],
 			}
-			if retryDurationInHours != nil
-				post_body['retryDurationInHours'] = retryDurationInHours
+			if options['retryDurationInHours'] != nil
+				post_body['retryDurationInHours'] = options['retryDurationInHours']
 			end
-			if bulkSMSMode != nil
-				post_body['bulkSMSMode'] = bulkSMSMode
+			if options['bulkSMSMode'] != nil
+				post_body['bulkSMSMode'] = options['bulkSMSMode']
 			end
-			if enqueue != nil
-				post_body['enqueue'] = enqueue
+			if options['enqueue'] != nil
+				post_body['enqueue'] = options['enqueue']
 			end
-			if from != nil
-				post_body['from'] = from
+			if options['from'] != nil
+				post_body['from'] = options['from']
 			end
 			# binding.pry
 			response = executePost(getSmsUrl(), post_body)
@@ -113,8 +113,8 @@ module AfricasTalking
 			# binding.pry
 		end
 
-		def fetchMessages last_received_id = 0
-			url = getSmsUrl() + "?username=#{@username}&lastReceivedId=#{last_received_id}"
+		def fetchMessages options
+			url = getSmsUrl() + "?username=#{@username}&lastReceivedId=#{options['last_received_id']}"
 			response = executePost(url)
 			if @response_code == HTTP_OK
 				messages = JSON.parse(response, :quirky_mode => true)["SMSMessageData"]["Messages"].collect { |msg|
@@ -129,11 +129,11 @@ module AfricasTalking
 			end
 		end
 
-		def fetchSubscriptions(shortCode, keyword, lastReceivedId)
-			if(shortCode.length == 0 || keyword.length == 0)
+		def fetchSubscriptions options = nil
+			if(options['shortCode'].length == 0 || options['keyword'].length == 0)
 				raise AfricasTalkingGatewayException, "Please supply the short code and keyword"
 			end
-			url = getSmsSubscriptionUrl() + "?username=#{@username}&shortCode=#{shortCode}&keyword=#{keyword}&lastReceivedId=#{lastReceivedId}"
+			url = getSmsSubscriptionUrl() + "?username=#{@username}&shortCode=#{options['shortCode']}&keyword=#{options['keyword']}&lastReceivedId=#{options['lastReceivedId']}"
 			response = executePost(url)
 			if(@response_code == HTTP_OK)
 				# binding.pry
@@ -148,16 +148,17 @@ module AfricasTalking
 			end
 		end
 
-		def createSubcriptions(shortCode, keyword, phoneNumber, checkoutToken)
-			if(phoneNumber.length == 0 || shortCode.length == 0 || keyword.length == 0)
+		def createSubcriptions options
+			if(options['phoneNumber'].length == 0 || options['shortCode'].length == 0 || options['keyword'].length == 0)
 				raise AfricasTalkingGatewayException, "Please supply phone number, short code and keyword"
 			end
 			
 			post_body = {
 							'username'    => @username,
-							'phoneNumber' => phoneNumber,
-							'shortCode'   => shortCode,
-							'keyword'     => keyword
+							'phoneNumber' => options['phoneNumber'],
+							'shortCode'   => options['shortCode'],
+							'keyword'     => options['keyword'],
+							'checkoutToken' => options['checkoutToken']
 						}
 			url      = getSmsSubscriptionUrl() + "/create"
 			response = executePost(url, post_body)
