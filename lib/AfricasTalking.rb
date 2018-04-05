@@ -8,47 +8,46 @@ require 'Payments'
 require 'Airtime'
 require 'Voice'
 require 'Token'
-require 'Account'
+require 'Application'
 
 module AfricasTalking
 
 	class Gateway
-		attr_accessor :username, :apikey, :environment
+		attr_accessor :username, :apikey
 		HTTP_CREATED     = 201
 		HTTP_OK          = 200
 
 		#Set debug flag to to true to view response body
 		DEBUG            = true
 
-		def initialize username, apikey, environment = nil
+		def initialize username, apikey
 			@username    = username
-			@apikey      = apikey
-			@environment  = environment
+			@apikey      = apikey 
 			@response_code = nil
 		end
 
 		def sms
-			return AfricasTalking::Sms.new @username, @apikey, @environment		
+			return AfricasTalking::Sms.new @username, @apikey		
 		end
 
 		def payments
-			return AfricasTalking::Payments.new @username, @apikey, @environment
+			return AfricasTalking::Payments.new @username, @apikey
 		end
 
 		def airtime
-			return AfricasTalking::Airtime.new @username, @apikey, @environment
+			return AfricasTalking::Airtime.new @username, @apikey
 		end
 
 		def voice
-			return AfricasTalking::Voice.new @username, @apikey, @environment
+			return AfricasTalking::Voice.new @username, @apikey
 		end
 
 		def token
-			return AfricasTalking::Token.new @username, @apikey, @environment
+			return AfricasTalking::Token.new @username, @apikey
 		end
 
-		def account
-			return AfricasTalking::Account.new @username, @apikey, @environment
+		def application
+			return AfricasTalking::Application.new @username, @apikey
 		end
 
 
@@ -58,7 +57,7 @@ module AfricasTalking
 
 	
 		def getApiHost()
-			if(@environment == "sandbox")
+			if(@username == "sandbox")
 				return "https://api.sandbox.africastalking.com"
 			else
 				return "https://api.africastalking.com"

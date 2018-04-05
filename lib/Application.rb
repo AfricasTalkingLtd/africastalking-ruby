@@ -7,25 +7,24 @@ require 'pry'
 
 module AfricasTalking
 	
-	class Account
+	class Application
 		HTTP_CREATED     = 201
 		HTTP_OK          = 200
 
 		#Set debug flag to to true to view response body
 		DEBUG            = true
-		def initialize username, apikey, environment
+		def initialize username, apikey
 			@username    = username
 			@apikey      = apikey
-			@environment = environment
 		end
 
-		def fetchUserData
+		def fetchApplicationData
 			url      = getUserDataUrl() + '?username='+@username+''
 			response = executePost(url)
 			# binding.pry
 			if (@response_code == HTTP_OK )
 				result = JSON.parse(response, :quirky_mode =>true)
-				return AccountDataResponse.new result["balance"]
+				return ApplicationDataResponse.new result["balance"]
 			else
 				raise AfricasTalkingGatewayException, response
 			end
@@ -64,14 +63,14 @@ module AfricasTalking
 			end
 
 			def getApiHost()
-				if(@environment == "sandbox")
+				if(@username == "sandbox")
 					return "https://api.sandbox.africastalking.com"
 				else
 					return "https://api.africastalking.com"
 				end
 			end
 	end
-	class AccountDataResponse
+	class ApplicationDataResponse
 		attr_accessor :balance
 		def initialize balance_
 			@balance      = balance_

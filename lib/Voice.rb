@@ -15,10 +15,9 @@ module AfricasTalking
 		#Set debug flag to to true to view response body
 		DEBUG            = true
 
-		def initialize username, apikey, environment = nil
+		def initialize username, apikey
 			@username    = username
 			@apikey      = apikey
-			@environment  = environment
 		end
 
 		def call options
@@ -97,7 +96,7 @@ module AfricasTalking
 			end
 			
 			def getApiHost()
-				if(@environment == "sandbox")
+				if(@username == "sandbox")
 					return "https://api.sandbox.africastalking.com"
 				else
 					return "https://api.africastalking.com"

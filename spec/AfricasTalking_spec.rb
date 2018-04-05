@@ -1,7 +1,7 @@
 RSpec.describe AfricasTalking do
 
 	before(:each) do
-	    @gateway=AfricasTalking::Gateway.new('sandbox', 'bed6bd70401f3110e7f8c347b0819efa7012f64f689b3c0fa8dd1f452224861b', 'sandbox')
+	    @gateway=AfricasTalking::Gateway.new('sandbox', 'bed6bd70401f3110e7f8c347b0819efa7012f64f689b3c0fa8dd1f452224861b')
 	end
 
 	it "has a version number" do
@@ -140,9 +140,9 @@ RSpec.describe AfricasTalking do
 	# ///////////////////////////////////////////////////////////////////
 
 	# /////////////////////////ACCOUNT////////////////////////////
-	it "should be able to fetch account details" do
-		account = @gateway.account
-		expect(account.fetchUserData).to have_attributes(:balance => a_value)
+	it "should be able to fetch application details" do
+		account = @gateway.application
+		expect(account.fetchApplicationData).to have_attributes(:balance => a_value)
 	end
 	# ////////////////////////////////////////////////////////////
 

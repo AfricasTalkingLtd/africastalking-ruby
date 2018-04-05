@@ -5,7 +5,7 @@ require "Airtime"
 require "Payments"
 require "Voice"
 require "Token"
-require "Account"
+require "Application"
 require "support/matchers.rb"
 require "pry"
 

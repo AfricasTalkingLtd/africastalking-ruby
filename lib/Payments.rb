@@ -40,10 +40,9 @@ module AfricasTalking
 	      'WEMA_NG' => 234021,
 	      'FIRST_NG' => 234022,
 		}
-		def initialize username, apikey, environment = nil
+		def initialize username, apikey
 			@username    = username
 			@apikey      = apikey
-			@environment  = environment
 		end
 
 		def initiateMobilePaymentCheckout options
@@ -305,7 +304,7 @@ module AfricasTalking
 
 		private
 			def getPaymentHost()
-				if(@environment == "sandbox")
+				if(@username == "sandbox")
 					return "https://payments.sandbox.africastalking.com"
 				else
 					return "https://payments.africastalking.com"
@@ -353,7 +352,7 @@ module AfricasTalking
 			end
 
 			def getApiHost()
-				if(@environment == "sandbox")
+				if(@username == "sandbox")
 					return "https://api.sandbox.africastalking.com"
 				else
 					return "https://api.africastalking.com"
