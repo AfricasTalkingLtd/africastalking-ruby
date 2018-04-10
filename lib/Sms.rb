@@ -28,13 +28,15 @@ module AfricasTalking
 	
 		
 		def sendMessage options
-			# binding.pry
+			# 
 			post_body = {
 
 				'username'    => @username, 
 				'message'     => options['message'], 
 				'to'          => options['to']
 			}
+			validateParamsPresence options, ['username', 'message', 'to']
+
 			if options['from'] != nil
 				post_body['from'] = options['from']
 			end
@@ -48,8 +50,8 @@ module AfricasTalking
 				post_body['retryDurationInHours'] = options['retryDurationInHours']
 			end
 			
-			response = executePost(getSmsUrl(), post_body)
-			# binding.pry
+			response = sendNormalRequest(getSmsUrl(), post_body)
+			# 
 			if @response_code == HTTP_CREATED
 				messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
 				recipients = messageData["Recipients"]
@@ -58,7 +60,7 @@ module AfricasTalking
 					reports = recipients.collect { |entry|
 						StatusReport.new entry["number"], entry["status"], entry["cost"], entry["messageId"]
 					}
-					# binding.pry
+					# 
 					return reports
 				end
 				
@@ -89,9 +91,9 @@ module AfricasTalking
 			if options['from'] != nil
 				post_body['from'] = options['from']
 			end
-			# binding.pry
-			response = executePost(getSmsUrl(), post_body)
-			# binding.pry
+			# 
+			response = sendNormalRequest(getSmsUrl(), post_body)
+			# 
 			if @response_code == HTTP_CREATED
 				messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
 				recipients = messageData["Recipients"]
@@ -109,12 +111,12 @@ module AfricasTalking
 	  			raise AfricasTalkingGatewayException, response
 			end
 
-			# binding.pry
+			# 
 		end
 
 		def fetchMessages options
 			url = getSmsUrl() + "?username=#{@username}&lastReceivedId=#{options['last_received_id']}"
-			response = executePost(url)
+			response = sendNormalRequest(url)
 			if @response_code == HTTP_OK
 				messages = JSON.parse(response, :quirky_mode => true)["SMSMessageData"]["Messages"].collect { |msg|
 					SMSMessages.new msg["id"], msg["text"], msg["from"] , msg["to"], msg["linkId"], msg["date"]
@@ -133,13 +135,13 @@ module AfricasTalking
 				raise AfricasTalkingGatewayException, "Please supply the short code and keyword"
 			end
 			url = getSmsSubscriptionUrl() + "?username=#{@username}&shortCode=#{options['shortCode']}&keyword=#{options['keyword']}&lastReceivedId=#{options['lastReceivedId']}"
-			response = executePost(url)
+			response = sendNormalRequest(url)
 			if(@response_code == HTTP_OK)
-				# binding.pry
+				# 
 				subscriptions = JSON.parse(response)['responses'].collect{ |subscriber|
 					PremiumSubscriptionNumbers.new subscriber['phoneNumber'], subscriber['id'], subscriber['date']
 				}
-				# binding.pry
+				# 
 
 				return subscriptions
 			else
@@ -160,7 +162,7 @@ module AfricasTalking
 							'checkoutToken' => options['checkoutToken']
 						}
 			url      = getSmsSubscriptionUrl() + "/create"
-			response = executePost(url, post_body)
+			response = sendNormalRequest(url, post_body)
 			if(@response_code == HTTP_CREATED)
 				r = JSON.parse(response, :quirky_mode => true)
 				return CreateSubscriptionResponse.new r['status'], r['description'] 
@@ -170,6 +172,19 @@ module AfricasTalking
 		end
 
 		private
+
+			def validateParamsPresence params, values
+				status =  values.collect{ |v|
+					params.key?(v)
+				}
+				if status.include? false
+					# false_status = status.map{|v| values.index(v['false'])}
+					# status[false].index
+				end
+				
+				# if status.
+			end
+
 			def getSmsUrl()
 				return  getApiHost() + "/version1/messaging"
 			end
@@ -186,7 +201,7 @@ module AfricasTalking
 				end
 			end
 
-			def executePost(url_, data_ = nil)
+			def sendNormalRequest(url_, data_ = nil)
 				uri		 	     = URI.parse(url_)
 				http		     = Net::HTTP.new(uri.host, uri.port)
 				http.use_ssl     = true

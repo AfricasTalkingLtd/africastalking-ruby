@@ -53,9 +53,6 @@ module AfricasTalking
 
 
 		# /////////////////////////////////////////////////////
-
-
-	
 		def getApiHost()
 			if(@username == "sandbox")
 				return "https://api.sandbox.africastalking.com"
@@ -64,7 +61,7 @@ module AfricasTalking
 			end
 		end
 
-		def executePost(url_, data_ = nil)
+		def sendNormalRequest(url_, data_ = nil)
 			uri		 	     = URI.parse(url_)
 			http		     = Net::HTTP.new(uri.host, uri.port)
 			http.use_ssl     = true

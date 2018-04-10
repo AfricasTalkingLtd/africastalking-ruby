@@ -1,8 +1,8 @@
 RSpec.describe AfricasTalking do
-
 	before(:each) do
 	    @gateway=AfricasTalking::Gateway.new('sandbox', 'bed6bd70401f3110e7f8c347b0819efa7012f64f689b3c0fa8dd1f452224861b')
 	end
+
 
 	it "has a version number" do
 		expect(AfricasTalking::VERSION).not_to be nil
@@ -12,9 +12,7 @@ RSpec.describe AfricasTalking do
 	it "should be able to generate checkout token" do
 		# p @gateway
 		token = @gateway.token
-		options = {
-			'phoneNumber' => "+25472232#{rand(1000...9999)}"
-		}
+		options ={ 'phoneNumber'=> "+25476334#{rand(1000...9999)}"}
 		expect(token.createCheckoutToken options).to have_attributes(:description => "Success", :token => a_value)
 	end
 

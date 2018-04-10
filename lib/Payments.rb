@@ -60,7 +60,7 @@ module AfricasTalking
 			
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				# binding.pry
+				# 
 				if (resultObj['status'] == 'PendingConfirmation')
 					return MobileCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId'], resultObj['providerChannel']
 				end
@@ -103,7 +103,7 @@ module AfricasTalking
 			
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				# binding.pry
+				# 
 				return MobileB2BResponse.new resultObj['status'], resultObj['transactionId'], resultObj['transactionFee'], resultObj['providerChannel']
 			end
 			raise AfricasTalkingGatewayException(response)
@@ -116,7 +116,7 @@ module AfricasTalking
 				'productName' => options['productName'],
 				'recipients'  => options['recipients']
 			}
-			# binding.pry
+			# 
 			url      = getMobilePaymentB2CUrl()
 			response = sendJSONRequest(url, parameters)
 
@@ -128,7 +128,7 @@ module AfricasTalking
 					results = resultObj['entries'].collect{ |subscriber|
 						MobileB2CResponse.new subscriber['provider'], subscriber['phoneNumber'], subscriber['providerChannel'], subscriber['transactionFee'], subscriber['status'], subscriber['value'], subscriber['transactionId']
 					}
-					# binding.pry
+					# 
 					return results
 				end
 
@@ -153,7 +153,7 @@ module AfricasTalking
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				# binding.pry
+				# 
 				return InitiateBankCheckoutResponse.new resultObj['status'], resultObj['transactionId'], resultObj['description']
 			end
 			raise AfricasTalkingGatewayException(response)
@@ -166,7 +166,7 @@ module AfricasTalking
 				'transactionId' => options['transactionId'],
 				'otp'  => options['otp']
 			}
-			# binding.pry
+			# 
 			url      = getValidateBankCheckoutUrl()
 			response = sendJSONRequest(url, parameters)
 
@@ -215,7 +215,7 @@ module AfricasTalking
 				'narration' => options['narration'],
 				'metadata' => options['metadata']
 			}
-			# binding.pry
+			# 
 			if (options['checkoutToken'] == nil && options['paymentCard'] == nil)
 				raise AfricasTalkingGatewayException "Please make sure either the checkoutToken or paymentCard parameter is not empty"
 			elsif (options['checkoutToken'] != nil && options['paymentCard'] != nil)
@@ -230,12 +230,12 @@ module AfricasTalking
 			end
 			
 			url      = getCardCheckoutChargeUrl()
-			# binding.pry
+			# 
 			response = sendJSONRequest(url, parameters)
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				# binding.pry
+				# 
 				return InitiateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 			end
 			raise AfricasTalkingGatewayException(response)
@@ -249,13 +249,13 @@ module AfricasTalking
 				'otp'  => options['otp']
 			}
 			url      = getValidateCardCheckoutUrl()
-			# binding.pry
+			# 
 			response = sendJSONRequest(url, parameters)
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				return ValidateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['checkoutToken']
-				# binding.pry
+				# 
 			end
 			raise AfricasTalkingGatewayException(response)
 		end
@@ -271,12 +271,12 @@ module AfricasTalking
 			}
 
 			url      = getWalletTransferUrl()
-			# binding.pry
+			# 
 			response = sendJSONRequest(url, parameters)
 
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
-				# binding.pry
+				# 
 				return WalletTransferResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 			end
 			raise AfricasTalkingGatewayException(response)
@@ -292,7 +292,7 @@ module AfricasTalking
 			}
 
 			url      = getTopupStashUrl()
-			# binding.pry
+			# 
 			response = sendJSONRequest(url, parameters)
 
 			if (@response_code == HTTP_CREATED)

@@ -26,18 +26,18 @@ module AfricasTalking
 				'from'     => options['from'], 
 				'to'       => options['to']
 			}
-			# binding.pry
-			response = executePost(getVoiceHost() + "/call", post_body)
+			# 
+			response = sendNormalRequest(getVoiceHost() + "/call", post_body)
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
 				ob = JSON.parse(response, :quirky_mode => true)
-				# binding.pry
+				# 
 				if (ob['entries'].length > 0)
 					results = ob['entries'].collect{|result|
 						CallEntries.new result['status'], result['phoneNumber']
 					}
 				end
 				return CallResponse.new results, ob['errorMessage']
-				# binding.pry
+				# 
 			else
 				raise AfricasTalkingGatewayException, response
 			end
@@ -50,8 +50,8 @@ module AfricasTalking
 			}
 
 			url = getVoiceHost() + "/queueStatus"
-			response = executePost(url, post_body)
-			# binding.pry
+			response = sendNormalRequest(url, post_body)
+			# 
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
 				ob = JSON.parse(response, :quirky_mode => true)
 				results = []
@@ -60,7 +60,7 @@ module AfricasTalking
 						QueuedCalls.new result['phoneNumber'], result['numCalls'], result['queueName']
 					}
 				end
-				# binding.pry
+				# 
 				return QueuedCallsResponse.new ob['status'], ob['errorMessage'], results
 			end
 			
@@ -75,13 +75,13 @@ module AfricasTalking
 							'phoneNumber' => options['phoneNumber']
 						}
 			url      = getVoiceHost() + "/mediaUpload"
-			# binding.pry
-			response = executePost(url, post_body)
+			# 
+			response = sendNormalRequest(url, post_body)
 			# ob = JSON.parse(response, :quirky_mode => true)
 			if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
 				return UploadMediaResponse.new response
 			end
-			# binding.pry
+			# 
 			raise AfricasTalkingGatewayException, response
 		end
 
@@ -103,7 +103,7 @@ module AfricasTalking
 				end
 			end
 
-			def executePost(url_, data_ = nil)
+			def sendNormalRequest(url_, data_ = nil)
 				uri		 	     = URI.parse(url_)
 				http		     = Net::HTTP.new(uri.host, uri.port)
 				http.use_ssl     = true
@@ -111,7 +111,7 @@ module AfricasTalking
 				   "apikey" => @apikey,
 				   "Accept" => "application/json"
 				}
-				# binding.pry
+				# 
 				if(data_ != nil)
 					request = Net::HTTP::Post.new(uri.request_uri)
 					request.set_form_data(data_)

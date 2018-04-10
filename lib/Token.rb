@@ -24,7 +24,7 @@ module AfricasTalking
 			}
 			url = getApiHost() + "/auth-token/generate"
 			response = sendJSONRequest(url, post_body)
-			# binding.pry
+			# 
 			if(@response_code == HTTP_CREATED)
 				r=JSON.parse(response, :quirky_mode => true)
 				return AuthTokenResponse.new r["token"], r["lifetimeInSeconds"]
@@ -38,8 +38,8 @@ module AfricasTalking
 				'phoneNumber' => options['phoneNumber']
 			}
 			url = getApiHost() + "/checkout/token/create"
-			response = executePost(url, post_body)
-			# binding.pry
+			response = sendNormalRequest(url, post_body)
+			# 
 			if(@response_code == HTTP_CREATED)
 				r= JSON.parse(response, :quirky_mode => true)
 				return CheckoutTokenResponse.new r['token'], r['description']
@@ -50,7 +50,7 @@ module AfricasTalking
 
 		private
 
-			def executePost url_, data_ = nil
+			def sendNormalRequest url_, data_ = nil
 				uri		 	     = URI.parse(url_)
 				http		     = Net::HTTP.new(uri.host, uri.port)
 				http.use_ssl     = true
@@ -88,7 +88,7 @@ module AfricasTalking
 				req.body = data_.to_json
 
 				response  = http.request(req)
-				# binding.pry
+				# 
 				if (DEBUG)
 					puts "Full response #{response.body}"
 				end

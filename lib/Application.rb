@@ -20,8 +20,8 @@ module AfricasTalking
 
 		def fetchApplicationData
 			url      = getUserDataUrl() + '?username='+@username+''
-			response = executePost(url)
-			# binding.pry
+			response = sendNormalRequest(url)
+			# 
 			if (@response_code == HTTP_OK )
 				result = JSON.parse(response, :quirky_mode =>true)
 				return ApplicationDataResponse.new result["balance"]
@@ -32,7 +32,7 @@ module AfricasTalking
 
 		private
 
-			def executePost(url_, data_ = nil)
+			def sendNormalRequest(url_, data_ = nil)
 				uri		 	     = URI.parse(url_)
 				http		     = Net::HTTP.new(uri.host, uri.port)
 				http.use_ssl     = true

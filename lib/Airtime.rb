@@ -26,17 +26,17 @@ module AfricasTalking
 							'recipients' => recipients.to_json
 						}
 			url      = getAirtimeUrl() + "/send"
-			response = executePost(url, post_body)
-			# binding.pry
+			response = sendNormalRequest(url, post_body)
+			# 
 			if (@response_code == HTTP_CREATED)
 				responses = JSON.parse(response, :quirky_mode =>true)
 				if (responses['responses'].length > 0)
-					# binding.pry
+					# 
 					results = responses['responses'].collect{ |result|
-						# binding.pry
+						# 
 						AirtimeResponse.new result['status'], result['phoneNumber'],result['amount'],result['requestId'], result['errorMessage'], result['discount']
 					}
-					# binding.pry
+					# 
 					return SendAirtimeResult.new responses["errorMessage"], responses["numSent"], responses["totalAmount"], responses["totalDiscount"], results
 				else
 					raise AfricasTalkingGatewayException, responses['errorMessage']
@@ -59,7 +59,7 @@ module AfricasTalking
 				end
 			end
 
-			def executePost(url_, data_ = nil)
+			def sendNormalRequest(url_, data_ = nil)
 				uri		 	     = URI.parse(url_)
 				http		     = Net::HTTP.new(uri.host, uri.port)
 				http.use_ssl     = true
