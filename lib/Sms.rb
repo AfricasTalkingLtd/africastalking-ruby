@@ -34,9 +34,7 @@ module AfricasTalking
 				'username'    => @username, 
 				'message'     => options['message'], 
 				'to'          => options['to']
-			}
-			validateParamsPresence options, ['username', 'message', 'to']
-
+			}	
 			if options['from'] != nil
 				post_body['from'] = options['from']
 			end
@@ -49,9 +47,10 @@ module AfricasTalking
 			if options['retryDurationInHours'] != nil
 				post_body['retryDurationInHours'] = options['retryDurationInHours']
 			end
-			
-			response = sendNormalRequest(getSmsUrl(), post_body)
 			# 
+			if validateParamsPresence?(options, ['message', 'to'])
+				response = sendNormalRequest(getSmsUrl(), post_body)
+			end
 			if @response_code == HTTP_CREATED
 				messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
 				recipients = messageData["Recipients"]
@@ -92,7 +91,10 @@ module AfricasTalking
 				post_body['from'] = options['from']
 			end
 			# 
-			response = sendNormalRequest(getSmsUrl(), post_body)
+			if validateParamsPresence?(options, ['message', 'to', 'keyword', 'linkId'])
+				response = sendNormalRequest(getSmsUrl(), post_body)
+			end
+			
 			# 
 			if @response_code == HTTP_CREATED
 				messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
@@ -130,19 +132,17 @@ module AfricasTalking
 			end
 		end
 
-		def fetchSubscriptions options = nil
-			if(options['shortCode'].length == 0 || options['keyword'].length == 0)
-				raise AfricasTalkingGatewayException, "Please supply the short code and keyword"
+		def fetchSubscriptions options
+			if validateParamsPresence?(options, ['shortCode', 'keyword'])
+				url = getSmsSubscriptionUrl() + "?username=#{@username}&shortCode=#{options['shortCode']}&keyword=#{options['keyword']}&lastReceivedId=#{options['lastReceivedId']}"
+				response = sendNormalRequest(url)
 			end
-			url = getSmsSubscriptionUrl() + "?username=#{@username}&shortCode=#{options['shortCode']}&keyword=#{options['keyword']}&lastReceivedId=#{options['lastReceivedId']}"
-			response = sendNormalRequest(url)
 			if(@response_code == HTTP_OK)
 				# 
 				subscriptions = JSON.parse(response)['responses'].collect{ |subscriber|
 					PremiumSubscriptionNumbers.new subscriber['phoneNumber'], subscriber['id'], subscriber['date']
 				}
 				# 
-
 				return subscriptions
 			else
 				raise AfricasTalkingGatewayException, response
@@ -150,19 +150,19 @@ module AfricasTalking
 		end
 
 		def createSubcriptions options
-			if(options['phoneNumber'].length == 0 || options['shortCode'].length == 0 || options['keyword'].length == 0)
-				raise AfricasTalkingGatewayException, "Please supply phone number, short code and keyword"
-			end
-			
 			post_body = {
 							'username'    => @username,
 							'phoneNumber' => options['phoneNumber'],
 							'shortCode'   => options['shortCode'],
-							'keyword'     => options['keyword'],
-							'checkoutToken' => options['checkoutToken']
+							'keyword'     => options['keyword']
 						}
-			url      = getSmsSubscriptionUrl() + "/create"
-			response = sendNormalRequest(url, post_body)
+			if options['checkoutToken'] != nil
+				post_body['checkoutToken'] = options['checkoutToken']
+			end
+			url = getSmsSubscriptionUrl() + "/create"
+			if validateParamsPresence?(options, ['shortCode', 'keyword', 'phoneNumber'])
+				response = sendNormalRequest(url, post_body)
+			end
 			if(@response_code == HTTP_CREATED)
 				r = JSON.parse(response, :quirky_mode => true)
 				return CreateSubscriptionResponse.new r['status'], r['description'] 
@@ -173,16 +173,15 @@ module AfricasTalking
 
 		private
 
-			def validateParamsPresence params, values
-				status =  values.collect{ |v|
-					params.key?(v)
+			def validateParamsPresence? params, values
+				status =  values.each{ |v|
+					if !params.key?(v)
+						raise AfricasTalkingGatewayException, `Please make sure your params has key #{v}`
+					elsif v.empty?
+						raise AfricasTalkingGatewayException, `Please make sure your key #{v} is not empty`
+					end
 				}
-				if status.include? false
-					# false_status = status.map{|v| values.index(v['false'])}
-					# status[false].index
-				end
-				
-				# if status.
+				return true
 			end
 
 			def getSmsUrl()

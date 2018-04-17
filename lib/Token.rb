@@ -50,6 +50,18 @@ module AfricasTalking
 
 		private
 
+			def validateParamsPresence? params, values
+				status =  values.each{ |v|
+					if !params.key?(v)
+						raise AfricasTalkingGatewayException, `Please make sure your params has key #{v}`
+					elsif v.empty?
+						raise AfricasTalkingGatewayException, `Please make sure your key #{v} is not empty`
+					
+					end
+				}
+				return true
+			end
+
 			def sendNormalRequest url_, data_ = nil
 				uri		 	     = URI.parse(url_)
 				http		     = Net::HTTP.new(uri.host, uri.port)

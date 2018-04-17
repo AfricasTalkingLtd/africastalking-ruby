@@ -46,18 +46,19 @@ module AfricasTalking
 		end
 
 		def initiateMobilePaymentCheckout options
-			parameters = {
-				'username'     => @username,
-				'productName'  => options['productName'],
-				'phoneNumber'  => options['phoneNumber'],
-				'currencyCode' => options['currencyCode'],
-				'amount'       => options['amount'],
-				'metadata'     => options['metadata']
-			}
-			
 			url      = getMobilePaymentCheckoutUrl()
-			response = sendJSONRequest(url, parameters)
-			
+			if validateParamsPresence?(options, ['productName', 'phoneNumber', 'currencyCode', 'amount', 'metadata'])
+				parameters = {
+					'username'     => @username,
+					'productName'  => options['productName'],
+					'phoneNumber'  => options['phoneNumber'],
+					'currencyCode' => options['currencyCode'],
+					'amount'       => options['amount'],
+					'metadata'     => options['metadata']
+				}
+				response = sendJSONRequest(url, parameters)
+			end
+
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				# 
@@ -70,37 +71,24 @@ module AfricasTalking
 		end
 
 		def mobilePaymentB2BRequest options
-			if (!options['providerData'].key?('provider'))
-				raise AfricasTalkingGatewayException("Missing field provider")
-			end
-				
-			if (!options['providerData'].key?('destinationChannel'))
-				raise AfricasTalkingGatewayException("Missing field destinationChannel")
+			validOptions = validateParamsPresence?(options, ['productName', 'providerData', 'currencyCode', 'amount', 'metadata'])
+			validProviderData = validateParamsPresence?(options['providerData'], ['provider', 'destinationAccount', 'destinationChannel', 'transferType'])
+			if validOptions && validProviderData
+				parameters = {
+					'username'           => @username,
+					'productName'        => options['productName'],
+					'provider'           => options['providerData']['provider'],
+					'destinationChannel' => options['providerData']['destinationChannel'],
+					'destinationAccount' => options['providerData']['destinationAccount'],
+					'transferType'       => options['providerData']['transferType'],
+					'currencyCode'       => options['currencyCode'],
+					'amount'             => options['amount'],
+					'metadata'           => options['metadata']
+				}
+				url      = getMobilePaymentB2BUrl()   
+				response = sendJSONRequest(url, parameters)
 			end
 
-			if (!options['providerData'].key?('destinationAccount'))
-				raise AfricasTalkingGatewayException("Missing field destinationAccount")
-			end
-			
-			if (!options['providerData'].key?('transferType'))
-				raise AfricasTalkingGatewayException("Missing field transferType")
-			end
-			
-			parameters = {
-			              'username'           => @username,
-			              'productName'        => options['productName'],
-			              'provider'           => options['providerData']['provider'],
-			              'destinationChannel' => options['providerData']['destinationChannel'],
-			              'destinationAccount' => options['providerData']['destinationAccount'],
-			              'transferType'       => options['providerData']['transferType'],
-			              'currencyCode'       => options['currencyCode'],
-			              'amount'             => options['amount'],
-			              'metadata'           => options['metadata']
-			}
-			
-			url      = getMobilePaymentB2BUrl()
-			response = sendJSONRequest(url, parameters)
-			
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				# 
@@ -111,17 +99,15 @@ module AfricasTalking
 
 
 		def mobilePaymentB2CRequest options
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'recipients'  => options['recipients']
-			}
-			# 
-			url      = getMobilePaymentB2CUrl()
-			response = sendJSONRequest(url, parameters)
-
-			
-			
+			if validateParamsPresence?(options, ['recipients', 'productName'])
+				parameters = {
+					'username'    => @username,
+					'productName' => options['productName'],
+					'recipients'  => options['recipients']
+				}
+				url      = getMobilePaymentB2CUrl()
+				response = sendJSONRequest(url, parameters)
+			end
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				if (resultObj['entries'].length > 0)
@@ -138,38 +124,38 @@ module AfricasTalking
 		end
 
 		def initiateBankChargeCheckout options
-
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'bankAccount'  => options['bankAccount'],
-				'currencyCode' => options['currencyCode'],
-				'amount' => options['amount'],
-				'narration' => options['narration'],
-				'metadata' => options['metadata']
-			}
-			url      = getBankChargeCheckoutUrl()
-			response = sendJSONRequest(url, parameters)
-
+			if validateParamsPresence?(options, ['bankAccount', 'productName', 'currencyCode', 'amount', 'narration', 'metadata'])
+				parameters = {
+					'username'    => @username,
+					'productName' => options['productName'],
+					'bankAccount'  => options['bankAccount'],
+					'currencyCode' => options['currencyCode'],
+					'amount' => options['amount'],
+					'narration' => options['narration'],
+					'metadata' => options['metadata']
+				}
+				url      = getBankChargeCheckoutUrl()
+				response = sendJSONRequest(url, parameters)
+			end
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				# 
 				return InitiateBankCheckoutResponse.new resultObj['status'], resultObj['transactionId'], resultObj['description']
 			end
 			raise AfricasTalkingGatewayException(response)
-			
 		end	
 
 		def validateBankAccountCheckout options
-			parameters = {
-				'username'    => @username,
-				'transactionId' => options['transactionId'],
-				'otp'  => options['otp']
-			}
-			# 
-			url      = getValidateBankCheckoutUrl()
-			response = sendJSONRequest(url, parameters)
-
+			if validateParamsPresence?(options, ['transactionId', 'otp'])
+				parameters = {
+					'username'    => @username,
+					'transactionId' => options['transactionId'],
+					'otp'  => options['otp']
+				}
+				# 
+				url      = getValidateBankCheckoutUrl()
+				response = sendJSONRequest(url, parameters)
+			end
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				return ValidateBankCheckoutResponse.new resultObj['status'], resultObj['description']
@@ -178,15 +164,15 @@ module AfricasTalking
 		end
 
 		def initiateBankTransferRequest options
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'recipients'  => options['recipients']
-			}
-			
-			url      = getBankTransferRequestUrl()
-			response = sendJSONRequest(url, parameters)		
-
+			if validateParamsPresence?(options, ['productName', 'recipients'])
+				parameters = {
+					'username'    => @username,
+					'productName' => options['productName'],
+					'recipients'  => options['recipients']
+				}
+				url      = getBankTransferRequestUrl()
+				response = sendJSONRequest(url, parameters)		
+			end
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 
@@ -206,33 +192,29 @@ module AfricasTalking
 		end
 
 		def initiateCardCheckout options
-			
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'currencyCode' => options['currencyCode'],
-				'amount' => options['amount'],
-				'narration' => options['narration'],
-				'metadata' => options['metadata']
-			}
-			# 
-			if (options['checkoutToken'] == nil && options['paymentCard'] == nil)
-				raise AfricasTalkingGatewayException "Please make sure either the checkoutToken or paymentCard parameter is not empty"
-			elsif (options['checkoutToken'] != nil && options['paymentCard'] != nil)
-				raise AfricasTalkingGatewayException "If you have a checkoutToken please make sure paymentCard parameter is empty"
+			if validateParamsPresence?(options, ['productName', 'currencyCode', 'amount', 'narration', 'metadata'])
+				parameters = {
+					'username'    => @username,
+					'productName' => options['productName'],
+					'currencyCode' => options['currencyCode'],
+					'amount' => options['amount'],
+					'narration' => options['narration'],
+					'metadata' => options['metadata']
+				}
+				if (options['checkoutToken'] == nil && options['paymentCard'] == nil)
+					raise AfricasTalkingGatewayException "Please make sure either the checkoutToken or paymentCard parameter is not empty"
+				elsif (options['checkoutToken'] != nil && options['paymentCard'] != nil)
+					raise AfricasTalkingGatewayException "If you have a checkoutToken please make sure paymentCard parameter is empty"
+				end
+				if (options['checkoutToken'] != nil)
+					parameters['checkoutToken'] = options['checkoutToken']
+				end
+				if (options['paymentCard'] != nil)
+					parameters['paymentCard'] = options['paymentCard']
+				end
+				url      = getCardCheckoutChargeUrl()
+				response = sendJSONRequest(url, parameters)
 			end
-			if (options['checkoutToken'] != nil)
-				parameters['checkoutToken'] = options['checkoutToken']
-			end
-
-			if (options['paymentCard'] != nil)
-				parameters['paymentCard'] = options['paymentCard']
-			end
-			
-			url      = getCardCheckoutChargeUrl()
-			# 
-			response = sendJSONRequest(url, parameters)
-
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				# 
@@ -243,15 +225,16 @@ module AfricasTalking
 		end
 
 		def validateCardCheckout options
-			parameters = {
-				'username'    => @username,
-				'transactionId' => options['transactionId'],
-				'otp'  => options['otp']
-			}
-			url      = getValidateCardCheckoutUrl()
-			# 
-			response = sendJSONRequest(url, parameters)
-
+			if validateParamsPresence?(options, ['transactionId', 'otp'])
+				parameters = {
+					'username'    => @username,
+					'transactionId' => options['transactionId'],
+					'otp'  => options['otp']
+				}
+				url      = getValidateCardCheckoutUrl()
+				# 
+				response = sendJSONRequest(url, parameters)
+			end
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				return ValidateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['checkoutToken']
@@ -261,19 +244,18 @@ module AfricasTalking
 		end
 
 		def walletTransferRequest options
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'targetProductCode' => options['targetProductCode'],
-				'currencyCode' => options['currencyCode'],
-				'amount' => options['amount'],
-				'metadata' => options['metadata'] 
-			}
-
-			url      = getWalletTransferUrl()
-			# 
-			response = sendJSONRequest(url, parameters)
-
+			if validateParamsPresence?(options, ['productName', 'targetProductCode', 'currencyCode', 'amount', 'metadata'])
+				parameters = {
+					'username'    => @username,
+					'productName' => options['productName'],
+					'targetProductCode' => options['targetProductCode'],
+					'currencyCode' => options['currencyCode'],
+					'amount' => options['amount'],
+					'metadata' => options['metadata'] 
+				}
+				url      = getWalletTransferUrl()
+				response = sendJSONRequest(url, parameters)
+			end
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				# 
@@ -283,18 +265,17 @@ module AfricasTalking
 		end
 
 		def topupStashRequest options
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'currencyCode' => options['currencyCode'],
-				'amount' => options['amount'],
-				'metadata' => options['metadata'] 
-			}
-
-			url      = getTopupStashUrl()
-			# 
-			response = sendJSONRequest(url, parameters)
-
+			if validateParamsPresence?(options, ['productName', 'currencyCode', 'amount', 'metadata'])
+				parameters = {
+					'username'    => @username,
+					'productName' => options['productName'],
+					'currencyCode' => options['currencyCode'],
+					'amount' => options['amount'],
+					'metadata' => options['metadata'] 
+				}
+				url      = getTopupStashUrl() 
+				response = sendJSONRequest(url, parameters)
+			end
 			if (@response_code == HTTP_CREATED)
 				resultObj = JSON.parse(response, :quirky_mode =>true)
 				return TopupStashResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
@@ -303,6 +284,18 @@ module AfricasTalking
 		end
 
 		private
+
+			def validateParamsPresence? params, values
+				status =  values.each{ |v|
+					if !params.key?(v)
+						raise AfricasTalkingGatewayException, "Please make sure your params has key #{v}"
+					elsif v.empty?
+						raise AfricasTalkingGatewayException, "Please make sure your key #{v} is not empty"
+					end
+				}
+				return true
+			end
+
 			def getPaymentHost()
 				if(@username == "sandbox")
 					return "https://payments.sandbox.africastalking.com"

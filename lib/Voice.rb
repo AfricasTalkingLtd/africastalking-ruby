@@ -112,7 +112,7 @@ module AfricasTalking
 				   "Accept" => "application/json"
 				}
 				# 
-				if(data_ != nil)
+				if data_ != nil
 					request = Net::HTTP::Post.new(uri.request_uri)
 					request.set_form_data(data_)
 				else

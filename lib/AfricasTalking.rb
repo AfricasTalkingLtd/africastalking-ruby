@@ -14,9 +14,6 @@ module AfricasTalking
 
 	class Gateway
 		attr_accessor :username, :apikey
-		HTTP_CREATED     = 201
-		HTTP_OK          = 200
-
 		#Set debug flag to to true to view response body
 		DEBUG            = true
 
