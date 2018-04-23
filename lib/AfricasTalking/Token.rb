@@ -41,54 +41,6 @@ class Token
 
 	private
 
-		def sendNormalRequest url_, data_ = nil
-			uri		 	     = URI.parse(url_)
-			http		     = Net::HTTP.new(uri.host, uri.port)
-			http.use_ssl     = true
-			headers = {
-				"apikey" => @apikey,
-				"Accept" => "application/json"
-			}
-			if(data_ != nil)
-				request = Net::HTTP::Post.new(uri.request_uri)
-				request.set_form_data(data_)
-			else
-				request = Net::HTTP::Get.new(uri.request_uri)
-			end
-			request["apikey"] = @apikey
-			request["Accept"] = "application/json"
-			response          = http.request(request)
-
-			if (DEBUG)
-				puts "Full response #{response.body}"
-			end
-
-			@response_code = response.code.to_i
-			return response.body
-		end
-
-		def sendJSONRequest(url_, data_)
-			uri	       = URI.parse(url_)
-			http         = Net::HTTP.new(uri.host, uri.port)
-			http.use_ssl = true
-			req          = Net::HTTP::Post.new(uri.request_uri, 'Content-Type'=>"application/json")
-			
-			req["apikey"] = @apikey
-			req["Accept"] = "application/json"
-			
-			req.body = data_.to_json
-
-			response  = http.request(req)
-			# 
-			if (DEBUG)
-				puts "Full response #{response.body}"
-			end
-
-			@response_code = response.code.to_i
-			return response.body
-		end
-
-
 		def getApiHost()
 			if(@username == "sandbox")
 				return "https://api.sandbox.africastalking.com"

@@ -1,6 +1,6 @@
 RSpec.describe AfricasTalking do
 	before(:each) do
-	    @AT=AfricasTalking::AfricasTalking.new 'sandbox', 'bed6bd70401f3110e7f8c347b0819efa7012f64f689b3c0fa8dd1f452224861b'
+	    @AT=AfricasTalking::Initialize.new 'sandbox', 'bed6bd70401f3110e7f8c347b0819efa7012f64f689b3c0fa8dd1f452224861b'
 	end
 
 	it "has a version number" do

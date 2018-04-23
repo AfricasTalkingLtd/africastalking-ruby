@@ -36,7 +36,7 @@ class Application
 		end
 end
 class ApplicationDataResponse
-	attr_accessor :balance
+	attr_reader :balance
 	def initialize balance_
 		@balance      = balance_
 	end

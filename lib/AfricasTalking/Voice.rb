@@ -95,7 +95,7 @@ end
 
 
 class CallResponse
-	attr_accessor :errorMessage, :entries
+	attr_reader :errorMessage, :entries
 
 	def initialize(entries_, errorMessage_)
 		@errorMessage      = errorMessage_
@@ -104,7 +104,7 @@ class CallResponse
 end
 
 class CallEntries
-	attr_accessor :status, :phoneNumber
+	attr_reader :status, :phoneNumber
 
 	def initialize(status_, number_)
 		@status      = status_
@@ -113,7 +113,7 @@ class CallEntries
 end
 
 class QueuedCalls
-	attr_accessor :numCalls, :phoneNumber, :queueName
+	attr_reader :numCalls, :phoneNumber, :queueName
 	
 	def initialize(number_, numCalls_, queueName_)
 		@phoneNumber = number_
@@ -123,7 +123,7 @@ class QueuedCalls
 end
 
 class QueuedCallsResponse
-	attr_accessor :status, :errorMessage, :entries
+	attr_reader :status, :errorMessage, :entries
 
 	def initialize(status_, errorMessage_, entries_)
 		@status = status_
@@ -133,7 +133,7 @@ class QueuedCallsResponse
 end
 
 class UploadMediaResponse
-	attr_accessor :status
+	attr_reader :status
 	def initialize status
 		@status = status
 	end

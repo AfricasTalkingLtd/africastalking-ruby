@@ -1,11 +1,11 @@
 require "AfricasTalking/version"
 require 'httparty'
-require "Sms"
-require "Airtime"
-require "Payments"
-require "Voice"
-require "Token"
-require "Application"
+require "AfricasTalking/Sms"
+require "AfricasTalking/Airtime"
+require "AfricasTalking/Payments"
+require "AfricasTalking/Voice"
+require "AfricasTalking/Token"
+require "AfricasTalking/Application"
 
 module AfricasTalking
 	DEBUG            = true
@@ -13,7 +13,7 @@ module AfricasTalking
 	@apikey = nil
 	@response_code = nil
 
-	class AfricasTalking
+	class Initialize
 		attr_accessor :username, :apikey
 		def initialize username, apikey
 			@username    = username

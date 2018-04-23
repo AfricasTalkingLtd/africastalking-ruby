@@ -50,7 +50,7 @@ class Airtime
 		end
 end
 class AirtimeResponse
-	attr_accessor :amount, :phoneNumber, :requestId, :status, :errorMessage, :discount
+	attr_reader :amount, :phoneNumber, :requestId, :status, :errorMessage, :discount
 	def initialize(status_, number_, amount_, requestId_, errorMessage_, discount_)
 		@status       = status_
 		@phoneNumber  = number_
@@ -61,7 +61,7 @@ class AirtimeResponse
 	end
 end
 class SendAirtimeResult
-	attr_accessor :errorMessage, :numSent, :totalAmount, :totalDiscount, :responses
+	attr_reader :errorMessage, :numSent, :totalAmount, :totalDiscount, :responses
 	def initialize errorMessage_, numSent_, totalAmount_, totalDiscount_, responses_
 		@errorMessage   = errorMessage_
 		@numSent        = numSent_

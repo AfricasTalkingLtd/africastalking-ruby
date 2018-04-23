@@ -30,7 +30,7 @@ The SDK needs to be instantiated using your username and API key, which you can 
 ```ruby
 username = 'YOUR_USERNAME' # use 'sandbox' for development in the test environment
 apiKey 	= 'YOUR_API_KEY' # use your sandbox app API key for development in the test environment
-@AT=AfricasTalking::AfricasTalking.new(username, apiKey)
+@AT=AfricasTalking::Initialize.new(username, apiKey)
 ```
 
 You can now make API calls using the @AT object

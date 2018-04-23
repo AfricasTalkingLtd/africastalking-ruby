@@ -207,7 +207,7 @@ end
 # ////////////////////////
 
 class StatusReport
-	attr_accessor :number, :status, :cost, :messageId
+	attr_reader :number, :status, :cost, :messageId
 
 	def initialize(number_, status_, cost_,messageId_)
 		@number = number_
@@ -218,7 +218,7 @@ class StatusReport
 end
 
 class PremiumSubscriptionNumbers
-	attr_accessor :phoneNumber, :id, :date
+	attr_reader :phoneNumber, :id, :date
 
 	def initialize number_, id_, date_
 		@phoneNumber = number_
@@ -229,7 +229,7 @@ end
 
 
 class FetchMessagesResponse
-	attr_accessor :responses, :status 
+	attr_reader :responses, :status 
 	def initialize responses_, status_= nil
 		@responses = responses_
 		@status = status_
@@ -237,7 +237,7 @@ class FetchMessagesResponse
 end
 
 class CreateSubscriptionResponse
-	attr_accessor :status, :description
+	attr_reader :status, :description
 	def initialize status_, description_
 		@description = description_
 		@status = status_
@@ -246,7 +246,7 @@ end
 
 
 class SendPremiumMessagesResponse
-	attr_accessor :recipients, :overview 
+	attr_reader :recipients, :overview 
 	def initialize recipients_, overview_
 		@recipients = recipients_
 		@overview = overview_
@@ -254,7 +254,7 @@ class SendPremiumMessagesResponse
 end
 
 class SMSMessages
-	attr_accessor :id, :text, :from, :to, :linkId, :date
+	attr_reader :id, :text, :from, :to, :linkId, :date
 
 	def initialize(id_, text_, from_, to_, linkId_, date_)
 		@id     = id_

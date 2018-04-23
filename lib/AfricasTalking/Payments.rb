@@ -331,7 +331,7 @@ class Payments
 end
 
 class MobileB2CResponse
-	attr_accessor :provider, :phoneNumber, :providerChannel, :transactionFee, :status, :value, :transactionId
+	attr_reader :provider, :phoneNumber, :providerChannel, :transactionFee, :status, :value, :transactionId
 
 	def initialize provider_, phoneNumber_, providerChannel_, transactionFee_, status_, value_, transactionId_
 			@provider        = provider_
@@ -345,7 +345,7 @@ class MobileB2CResponse
 end	
 
 class MobileB2BResponse
-	attr_accessor :status, :transactionId, :transactionFee, :providerChannel
+	attr_reader :status, :transactionId, :transactionFee, :providerChannel
 			
 	def initialize status_, transactionId_, transactionFee_, providerChannel_
 			@providerChannel    = providerChannel_
@@ -356,7 +356,7 @@ class MobileB2BResponse
 end	
 
 class BankTransferEntries
-	attr_accessor :accountNumber, :status, :transactionId, :transactionFee, :errorMessage
+	attr_reader :accountNumber, :status, :transactionId, :transactionFee, :errorMessage
 	def initialize accountNumber, status, transactionId, transactionFee, errorMessage
 			@accountNumber = accountNumber
 			@status = status
@@ -367,7 +367,7 @@ class BankTransferEntries
 end
 
 class BankTransferResponse
-	attr_accessor :entries, :errorMessage
+	attr_reader :entries, :errorMessage
 	def initialize entries_, errorMessage_
 			@entries = entries_
 			@errorMessage   = errorMessage_
@@ -375,7 +375,7 @@ class BankTransferResponse
 end
 
 class MobileCheckoutResponse
-	attr_accessor :status, :transactionFee, :transactionId, :providerChannel
+	attr_reader :status, :transactionFee, :transactionId, :providerChannel
 	def initialize accountNumber_, status_, transactionId_, transactionFee_
 			@accountNumber = accountNumber_
 			@status = status_
@@ -384,7 +384,7 @@ class MobileCheckoutResponse
 	end
 end
 class InitiateBankCheckoutResponse
-	attr_accessor :status, :description, :transactionId
+	attr_reader :status, :description, :transactionId
 	def initialize status_, transactionId_, description_
 			@description = description_
 			@status = status_
@@ -392,7 +392,7 @@ class InitiateBankCheckoutResponse
 	end
 end
 class ValidateBankCheckoutResponse
-	attr_accessor :status, :description
+	attr_reader :status, :description
 	def initialize status_, description_
 			@description = description_
 			@status = status_
@@ -400,7 +400,7 @@ class ValidateBankCheckoutResponse
 end
 
 class InitiateCardCheckoutResponse
-	attr_accessor :status, :description, :transactionId
+	attr_reader :status, :description, :transactionId
 	def initialize status_, description_, transactionId_
 			@description = description_
 			@status = status_
@@ -409,7 +409,7 @@ class InitiateCardCheckoutResponse
 end
 
 class ValidateCardCheckoutResponse
-	attr_accessor :status, :description, :checkoutToken
+	attr_reader :status, :description, :checkoutToken
 	def initialize status_, description_, checkoutToken_
 			@description = description_
 			@status = status_
@@ -418,7 +418,7 @@ class ValidateCardCheckoutResponse
 end
 
 class WalletTransferResponse
-	attr_accessor :status, :description, :transactionId
+	attr_reader :status, :description, :transactionId
 	def initialize status_, description_, transactionId_
 			@description = description_
 			@status = status_
@@ -427,7 +427,7 @@ class WalletTransferResponse
 end
 
 class TopupStashResponse
-	attr_accessor :status, :description, :transactionId
+	attr_reader :status, :description, :transactionId
 	def initialize status_, description_, transactionId_
 			@description = description_
 			@status = status_
