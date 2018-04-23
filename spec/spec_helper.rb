@@ -1,11 +1,5 @@
 require "bundler/setup"
-require "AfricasTalking"
-require "Sms"
-require "Airtime"
-require "Payments"
-require "Voice"
-require "Token"
-require "Application"
+require "Africastalking"
 require "support/matchers.rb"
 require "pry"
 

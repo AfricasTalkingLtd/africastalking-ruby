@@ -1,8 +1,7 @@
 PATH
   remote: .
   specs:
-    AfricasTalking (0.1.0)
-      httmultiparty (= 0.3.16)
+    AfricasTalking (2.0.0.pre.alpha)
       httparty (= 0.16.1)
 
 GEM
@@ -33,10 +32,6 @@ GEM
     crass (1.0.4)
     diff-lcs (1.3)
     erubi (1.7.1)
-    httmultiparty (0.3.16)
-      httparty (>= 0.7.3)
-      mimemagic
-      multipart-post
     httparty (0.16.1)
       multi_xml (>= 0.5.2)
     i18n (1.0.0)
@@ -45,11 +40,9 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     method_source (0.9.0)
-    mimemagic (0.3.2)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
     multi_xml (0.6.0)
-    multipart-post (2.0.0)
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     parallel (1.12.1)

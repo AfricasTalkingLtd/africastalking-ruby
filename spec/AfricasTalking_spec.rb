@@ -1,8 +1,7 @@
 RSpec.describe AfricasTalking do
 	before(:each) do
-	    @gateway=AfricasTalking::Gateway.new('sandbox', 'bed6bd70401f3110e7f8c347b0819efa7012f64f689b3c0fa8dd1f452224861b')
+	    @AT=AfricasTalking::AfricasTalking.new 'sandbox', 'bed6bd70401f3110e7f8c347b0819efa7012f64f689b3c0fa8dd1f452224861b'
 	end
-
 
 	it "has a version number" do
 		expect(AfricasTalking::VERSION).not_to be nil
@@ -10,15 +9,15 @@ RSpec.describe AfricasTalking do
 
 	# ///////////////////TOKEN////////////////////////
 	it "should be able to generate checkout token" do
-		# p @gateway
-		token = @gateway.token
+		# p @AT
+		token = @AT.token
 		options ={ 'phoneNumber'=> "+25476334#{rand(1000...9999)}"}
 		expect(token.createCheckoutToken options).to have_attributes(:description => "Success", :token => a_value)
 	end
 
 	it "should be able to generate checkout token" do
-		# p @gateway
-		token = @gateway.token
+		# p @AT
+		token = @AT.token
 		expect(token.createAuthToken).to have_attributes(:lifetimeInSeconds => a_value, :token => a_value)
 	end
 
@@ -28,8 +27,8 @@ RSpec.describe AfricasTalking do
 	# ///////////////////SMS////////////////////////
 
 	it "should be able to send bulk message" do
-		# p @gateway
-		sms = @gateway.sms
+		# p @AT
+		sms = @AT.sms
 		options = {
 			'message' => 'sample message',
 			'to' => "+25472232#{rand(1000...9999)}, +25476334#{rand(1000...9999)}",
@@ -42,7 +41,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "should send premium message" do
-		sms = @gateway.sms
+		sms = @AT.sms
 		options = {
 			'message' => 'sample message',
 			'keyword' => 'gemtests',
@@ -57,18 +56,18 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "should be able to fetch messages" do
-		sms = @gateway.sms
+		sms = @AT.sms
 		options = {
 			'last_received_id' => nil
 		}
 		expect(sms.fetchMessages options).to inspect_FetchMessageResponse
-		# expect(@gateway.fetch_messages).to inspect_SMSMessages
+		# expect(@AT.fetch_messages).to inspect_SMSMessages
 	end
 
 	# not completed this test. remember to consider empty responses
 	it "should be able to fetch subscriptions" do
-		# p @gateway.fetch_messages
-		sms = @gateway.sms
+		# p @AT.fetch_messages
+		sms = @AT.sms
 		options = {
 			'shortCode' => '77777',
 			'keyword' => 'gemtests',
@@ -79,8 +78,8 @@ RSpec.describe AfricasTalking do
 
 	# not complete. you need to check what the checkoutToken is
 	it "should be able to create subscriptions" do
-		# p @gateway.fetch_messages
-		sms = @gateway.sms
+		# p @AT.fetch_messages
+		sms = @AT.sms
 		options = {
 			'shortCode' => '202020',
 			'keyword' => 'premium',
@@ -95,7 +94,7 @@ RSpec.describe AfricasTalking do
 	# ///////////////////AIRTIME//////////////////////
 
 	it "should be able to send airtime to a phone number" do 
-		airtime = @gateway.airtime
+		airtime = @AT.airtime
 		options = [
 			{'phoneNumber' => "+25472232#{rand(1000...9999)}", 'amount' => 'KES 100'},
 			{'phoneNumber' => "+25476334#{rand(1000...9999)}", 'amount' => 'KES 100'}
@@ -109,7 +108,7 @@ RSpec.describe AfricasTalking do
 
 	# returns a string instead of 
 	it "should be able to make call" do
-		voice = @gateway.voice
+		voice = @AT.voice
 		options = {
 			'from' => "+254722123456",
 			'to'   => "+25471147#{rand(1000...9999)}, +25473383#{rand(1000...9999)}"
@@ -119,7 +118,7 @@ RSpec.describe AfricasTalking do
 
 	# can still return empty array of entries. check into it
 	it "should be able to fetch queued calls" do
-		voice = @gateway.voice
+		voice = @AT.voice
 		options = {
 			'phoneNumber' => '+254722123456'
 		}
@@ -127,7 +126,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "should be able to upload media files" do
-		voice = @gateway.voice
+		voice = @AT.voice
 		options = {
 			'url' => 'http://onlineMediaUrl.com/file.wav',
 			'phoneNumber' => "+254722123456"
@@ -139,7 +138,7 @@ RSpec.describe AfricasTalking do
 
 	# /////////////////////////ACCOUNT////////////////////////////
 	it "should be able to fetch application details" do
-		account = @gateway.application
+		account = @AT.application
 		expect(account.fetchApplicationData).to have_attributes(:balance => a_value)
 	end
 	# ////////////////////////////////////////////////////////////
@@ -149,7 +148,7 @@ RSpec.describe AfricasTalking do
 	# /////////////////////////PAYMENTS////////////////////////////
 
 	it "initiate Mobile Payment Checkout" do
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'phoneNumber' => '0722232323',
@@ -162,7 +161,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "initiate mobile B2C payment" do
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'recipients' => [
@@ -195,7 +194,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "initiate mobile B2B request" do
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'currencyCode' => 'KES',
@@ -216,7 +215,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "initiate bank charge checkout" do
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'currencyCode'=> 'KES',
@@ -237,7 +236,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "validate bank account checkout" do
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'transactionId' => 'ATPid_SampleTxnId1',
 			'otp' => '1234'
@@ -246,7 +245,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "initiate bank transfer request" do
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'recipients' => [
@@ -284,7 +283,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "initiate card checkout" do
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'currencyCode'=> 'KES',
@@ -305,7 +304,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "validate card checkout" do
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'transactionId' => 'ATPid_39a71bc00951cd1d3ed56d419d0ab3b6',
 			'otp' => '1234'
@@ -314,7 +313,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it 'initiate wallet transfer request' do 
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'targetProductCode' => 2373,
@@ -328,7 +327,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	it 'initiate topup stash request' do 
-		payments = @gateway.payments
+		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'currencyCode' => 'KES',

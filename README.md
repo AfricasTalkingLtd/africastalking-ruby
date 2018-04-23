@@ -30,15 +30,15 @@ The SDK needs to be instantiated using your username and API key, which you can 
 ```ruby
 username = 'YOUR_USERNAME' # use 'sandbox' for development in the test environment
 apiKey 	= 'YOUR_API_KEY' # use your sandbox app API key for development in the test environment
-@gateway=AfricasTalking::Gateway.new(username, apiKey)
+@AT=AfricasTalking::AfricasTalking.new(username, apiKey)
 ```
 
-You can now make API calls using the @gateway object
+You can now make API calls using the @AT object
 
 ### Token
 
 ```ruby
-token = @gateway.token
+token = @AT.token
 ```
 
 #### Create authentication Token
@@ -61,7 +61,7 @@ token.createCheckoutToken phoneNumber
 Send airtime to phone numbers
 
 ```ruby
-airtime = @gateway.airtime
+airtime = @AT.airtime
 
 airtime.sendAirtime options
 ```
@@ -73,7 +73,7 @@ airtime.sendAirtime options
 ### Sms
 
 ```ruby
-sms = @gateway.sms
+sms = @AT.sms
 ```
 #### Send Sms
 
@@ -132,7 +132,7 @@ sms.fetchSubscriptions options
 
 ### Voice
 ```ruby
-voice = @gateway.voice
+voice = @AT.voice
 ```
 
 #### Making a call
@@ -163,7 +163,7 @@ voice.uploadMediaFile options
 
 ### Account
 ```ruby
-account = @gateway.account
+account = @AT.account
 ```
 #### Fetch User data
 ```ruby
@@ -172,7 +172,7 @@ account.fetchUserData
 
 ### Payments
 ```ruby
-payments = @gateway.payments
+payments = @AT.payments
 ```
 #### Credit card checkout
 ```ruby
