@@ -18,7 +18,7 @@ RSpec.describe AfricasTalking do
 	it "should be able to generate checkout token" do
 		# p @AT
 		token = @AT.token
-		expect(token.createAuthToken).to have_attributes(:lifetimeInSeconds => a_value, :token => a_value)
+		expect(token.generateAuthToken).to have_attributes(:lifetimeInSeconds => a_value, :token => a_value)
 	end
 
 	# //////////////////////////////////////////////
@@ -37,7 +37,7 @@ RSpec.describe AfricasTalking do
 			'bulkSMSMode' => nil,
 			'retryDurationInHours' => nil
 		}
-		expect(sms.sendMessage options).to inspect_BulkMessageResponse
+		expect(sms.send options).to inspect_BulkMessageResponse
 	end
 
 	it "should send premium message" do
@@ -52,7 +52,7 @@ RSpec.describe AfricasTalking do
 			'bulkSMSMode' => nil,
 			'retryDurationInHours' => nil
 		}
-		expect(sms.sendPremiumMessage options).to inspect_PremiumMessageResponse
+		expect(sms.sendPremium options).to inspect_PremiumMessageResponse
 	end
 
 	it "should be able to fetch messages" do
@@ -86,7 +86,7 @@ RSpec.describe AfricasTalking do
 			'phoneNumber' => '0723232323',
 			'checkoutToken' => 'checkoutToken'
 		}
-		expect(sms.createSubcriptions options).to have_attributes(:status => a_value, :description => a_value)
+		expect(sms.createSubcription options).to have_attributes(:status => a_value, :description => a_value)
 	end
 
 
@@ -99,7 +99,7 @@ RSpec.describe AfricasTalking do
 			{'phoneNumber' => "+25472232#{rand(1000...9999)}", 'amount' => 'KES 100'},
 			{'phoneNumber' => "+25476334#{rand(1000...9999)}", 'amount' => 'KES 100'}
 		]
-		expect(airtime.sendAirtime options).to inspect_SendAirtimeResult
+		expect(airtime.send options).to inspect_SendAirtimeResult
 	end
 
 	# ////////////////////////////////////////////
@@ -156,7 +156,7 @@ RSpec.describe AfricasTalking do
 			'amount' => '200',
 			'metadata'=> {}
 		}
-		expect(payments.initiateMobilePaymentCheckout options ).to have_attributes(:status => a_value, :transactionFee => a_value, :transactionId => a_value, :providerChannel => a_value)
+		expect(payments.mobileCheckout options ).to have_attributes(:status => a_value, :transactionFee => a_value, :transactionId => a_value, :providerChannel => a_value)
 
 	end
 
@@ -189,7 +189,7 @@ RSpec.describe AfricasTalking do
 				}
 			]
 		}
-		expect(payments.mobilePaymentB2CRequest options).to inspect_MobileB2CResponse
+		expect(payments.mobileB2C options).to inspect_MobileB2CResponse
 		
 	end
 
@@ -210,7 +210,7 @@ RSpec.describe AfricasTalking do
 				'transferType' => 'BusinessToBusinessTransfer'
 			}
 		}
-		expect(payments.mobilePaymentB2BRequest options).to have_attributes(:status => a_value, :transactionId => a_value, :transactionFee => a_value, :providerChannel => a_value)
+		expect(payments.mobileB2B options).to have_attributes(:status => a_value, :transactionId => a_value, :transactionFee => a_value, :providerChannel => a_value)
 		
 	end
 
@@ -232,7 +232,7 @@ RSpec.describe AfricasTalking do
 				'dateOfBirth' => '2017-11-22'
 			}
 		}
-		expect(payments.initiateBankChargeCheckout options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
+		expect(payments.bankCheckout options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
 	it "validate bank account checkout" do
@@ -241,7 +241,7 @@ RSpec.describe AfricasTalking do
 			'transactionId' => 'ATPid_SampleTxnId1',
 			'otp' => '1234'
 		}
-		expect(payments.validateBankAccountCheckout options).to have_attributes(:status => a_value, :description => a_value)
+		expect(payments.validateBankCheckout options).to have_attributes(:status => a_value, :description => a_value)
 	end
 
 	it "initiate bank transfer request" do
@@ -279,7 +279,7 @@ RSpec.describe AfricasTalking do
 				}
 			]
 		}
-		expect(payments.initiateBankTransferRequest options ).to inspect_BankTransferResponse
+		expect(payments.bankTransfer options ).to inspect_BankTransferResponse
 	end
 
 	it "initiate card checkout" do
@@ -300,7 +300,7 @@ RSpec.describe AfricasTalking do
 				"authToken"=> "12345",
 			}
 		}
-		expect(payments.initiateCardCheckout options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
+		expect(payments.cardCheckout options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
 	it "validate card checkout" do

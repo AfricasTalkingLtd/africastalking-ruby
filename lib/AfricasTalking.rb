@@ -44,9 +44,45 @@ module AfricasTalking
 			return Application.new @username, @apikey
 		end
 	end
+
+	class AfricasTalkingGatewayException < Exception
+		# error handling appear here
+		# def initialize(msg="My default message")
+		#     super
+		# end
+
+	end
+
+
 	private 
 		
-		def (url_, data_)
+		def sendNormalRequest url_, data_ = nil
+			uri		 	     = URI.parse(url_)
+			http		     = Net::HTTP.new(uri.host, uri.port)
+			http.use_ssl     = true
+			headers = {
+				"apikey" => @apikey,
+				"Accept" => "application/json"
+			}
+			if(data_ != nil)
+				request = Net::HTTP::Post.new(uri.request_uri)
+				request.set_form_data(data_)
+			else
+				request = Net::HTTP::Get.new(uri.request_uri)
+			end
+			request["apikey"] = @apikey
+			request["Accept"] = "application/json"
+			response          = http.request(request)
+
+			if (DEBUG)
+				puts "Full response #{response.body}"
+			end
+
+			@response_code = response.code.to_i
+			return response.body
+		end
+
+		def sendJSONRequest (url_, data_)
 			uri	       = URI.parse(url_)
 			http         = Net::HTTP.new(uri.host, uri.port)
 			http.use_ssl = true
@@ -70,12 +106,13 @@ module AfricasTalking
 		def validateParamsPresence? params, values
 			status =  values.each{ |v|
 				if !params.key?(v)
-					raise AfricasTalkingGatewayException, "Please make sure your params has key #{v}"
+					raise AfricasTalkingException, "Please make sure your params has key #{v}"
 				elsif v.empty?
-					raise AfricasTalkingGatewayException, "Please make sure your key #{v} is not empty"
+					raise AfricasTalkingException, "Please make sure your key #{v} is not empty"
 				end
 			}
 			return true
-		end
 
+		end
+			
 end

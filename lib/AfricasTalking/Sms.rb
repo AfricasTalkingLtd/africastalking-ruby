@@ -16,7 +16,7 @@ class Sms
 	# end
 
 	
-	def sendMessage options
+	def send options
 		# 
 		post_body = {
 
@@ -52,14 +52,14 @@ class Sms
 				return reports
 			end
 			
-			raise AfricasTalkingGatewayException, messageData["Message"]
+			raise AfricasTalkingException, messageData["Message"]
 			
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 	end
 
-	def sendPremiumMessage options
+	def sendPremium options
 		post_body = {
 			'username'    => @username, 
 			'message'     => options['message'], 
@@ -96,10 +96,10 @@ class Sms
 				return SendPremiumMessagesResponse.new reports, messageData["Message"]
 			end
 			
-			raise AfricasTalkingGatewayException, messageData["Message"]
+			raise AfricasTalkingException, messageData["Message"]
 			
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 
 		# 
@@ -117,7 +117,7 @@ class Sms
 			return FetchMessagesResponse.new messages
 
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 	end
 
@@ -134,11 +134,11 @@ class Sms
 			# 
 			return subscriptions
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 	end
 
-	def createSubcriptions options
+	def createSubcription options
 		post_body = {
 						'username'    => @username,
 						'phoneNumber' => options['phoneNumber'],
@@ -156,7 +156,7 @@ class Sms
 			r = JSON.parse(response, :quirky_mode => true)
 			return CreateSubscriptionResponse.new r['status'], r['description'] 
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 	end
 
@@ -176,32 +176,6 @@ class Sms
 			else
 				return "https://api.africastalking.com"
 			end
-		end
-
-		def sendNormalRequest(url_, data_ = nil)
-			uri		 	     = URI.parse(url_)
-			http		     = Net::HTTP.new(uri.host, uri.port)
-			http.use_ssl     = true
-			headers = {
-				"apikey" => @apikey,
-				"Accept" => "application/json"
-			}
-			if(data_ != nil)
-				request = Net::HTTP::Post.new(uri.request_uri)
-				request.set_form_data(data_)
-			else
-				request = Net::HTTP::Get.new(uri.request_uri)
-			end
-			request["apikey"] = @apikey
-			request["Accept"] = "application/json"
-			response          = http.request(request)
-
-			if (DEBUG)
-				puts "Full response #{response.body}"
-			end
-
-			@response_code = response.code.to_i
-			return response.body
 		end
 end
 # ////////////////////////

@@ -9,7 +9,7 @@ class Airtime
 		@apikey      = apikey
 	end
 
-	def sendAirtime options
+	def send options
 		recipients = options.collect{ |r| r }
 		post_body = {
 						'username'   => @username,
@@ -29,10 +29,10 @@ class Airtime
 				# 
 				return SendAirtimeResult.new responses["errorMessage"], responses["numSent"], responses["totalAmount"], responses["totalDiscount"], results
 			else
-				raise AfricasTalkingGatewayException, responses['errorMessage']
+				raise AfricasTalkingException, responses['errorMessage']
 			end
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 	end
 

@@ -32,7 +32,7 @@ class Payments
 		@apikey      = apikey
 	end
 
-	def initiateMobilePaymentCheckout options
+	def mobileCheckout options
 		url      = getMobilePaymentCheckoutUrl()
 		if validateParamsPresence?(options, ['productName', 'phoneNumber', 'currencyCode', 'amount', 'metadata'])
 			parameters = {
@@ -52,12 +52,12 @@ class Payments
 			if (resultObj['status'] == 'PendingConfirmation')
 				return MobileCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId'], resultObj['providerChannel']
 			end
-			raise AfricasTalkingGatewayException, resultObj['description']
+			raise AfricasTalkingException, resultObj['description']
 		end
-		raise AfricasTalkingGatewayException, response
+		raise AfricasTalkingException, response
 	end
 
-	def mobilePaymentB2BRequest options
+	def mobileB2B options
 		validOptions = validateParamsPresence?(options, ['productName', 'providerData', 'currencyCode', 'amount', 'metadata'])
 		validProviderData = validateParamsPresence?(options['providerData'], ['provider', 'destinationAccount', 'destinationChannel', 'transferType'])
 		if validOptions && validProviderData
@@ -81,11 +81,11 @@ class Payments
 			# 
 			return MobileB2BResponse.new resultObj['status'], resultObj['transactionId'], resultObj['transactionFee'], resultObj['providerChannel']
 		end
-		raise AfricasTalkingGatewayException(response)
+		raise AfricasTalkingException(response)
 	end
 
 
-	def mobilePaymentB2CRequest options
+	def mobileB2C options
 		if validateParamsPresence?(options, ['recipients', 'productName'])
 			parameters = {
 				'username'    => @username,
@@ -105,12 +105,12 @@ class Payments
 				return results
 			end
 
-			raise AfricasTalkingGatewayException, resultObj['errorMessage']
+			raise AfricasTalkingException, resultObj['errorMessage']
 		end
-		raise AfricasTalkingGatewayException, response
+		raise AfricasTalkingException, response
 	end
 
-	def initiateBankChargeCheckout options
+	def bankCheckout options
 		if validateParamsPresence?(options, ['bankAccount', 'productName', 'currencyCode', 'amount', 'narration', 'metadata'])
 			parameters = {
 				'username'    => @username,
@@ -129,10 +129,10 @@ class Payments
 			# 
 			return InitiateBankCheckoutResponse.new resultObj['status'], resultObj['transactionId'], resultObj['description']
 		end
-		raise AfricasTalkingGatewayException(response)
+		raise AfricasTalkingException(response)
 	end	
 
-	def validateBankAccountCheckout options
+	def validateBankCheckout options
 		if validateParamsPresence?(options, ['transactionId', 'otp'])
 			parameters = {
 				'username'    => @username,
@@ -147,10 +147,10 @@ class Payments
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			return ValidateBankCheckoutResponse.new resultObj['status'], resultObj['description']
 		end
-		raise AfricasTalkingGatewayException(response)
+		raise AfricasTalkingException(response)
 	end
 
-	def initiateBankTransferRequest options
+	def bankTransfer options
 		if validateParamsPresence?(options, ['productName', 'recipients'])
 			parameters = {
 				'username'    => @username,
@@ -172,13 +172,13 @@ class Payments
 				return BankTransferResponse.new results, resultObj['errorMessage']
 			end
 
-			raise AfricasTalkingGatewayException, resultObj['errorMessage']
+			raise AfricasTalkingException, resultObj['errorMessage']
 		end
-		raise AfricasTalkingGatewayException, response
+		raise AfricasTalkingException, response
 		
 	end
 
-	def initiateCardCheckout options
+	def cardCheckout options
 		if validateParamsPresence?(options, ['productName', 'currencyCode', 'amount', 'narration', 'metadata'])
 			parameters = {
 				'username'    => @username,
@@ -189,9 +189,9 @@ class Payments
 				'metadata' => options['metadata']
 			}
 			if (options['checkoutToken'] == nil && options['paymentCard'] == nil)
-				raise AfricasTalkingGatewayException "Please make sure either the checkoutToken or paymentCard parameter is not empty"
+				raise AfricasTalkingException "Please make sure either the checkoutToken or paymentCard parameter is not empty"
 			elsif (options['checkoutToken'] != nil && options['paymentCard'] != nil)
-				raise AfricasTalkingGatewayException "If you have a checkoutToken please make sure paymentCard parameter is empty"
+				raise AfricasTalkingException "If you have a checkoutToken please make sure paymentCard parameter is empty"
 			end
 			if (options['checkoutToken'] != nil)
 				parameters['checkoutToken'] = options['checkoutToken']
@@ -207,7 +207,7 @@ class Payments
 			# 
 			return InitiateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 		end
-		raise AfricasTalkingGatewayException(response)
+		raise AfricasTalkingException(response)
 
 	end
 
@@ -227,7 +227,7 @@ class Payments
 			return ValidateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['checkoutToken']
 			# 
 		end
-		raise AfricasTalkingGatewayException(response)
+		raise AfricasTalkingException(response)
 	end
 
 	def walletTransferRequest options
@@ -248,7 +248,7 @@ class Payments
 			# 
 			return WalletTransferResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 		end
-		raise AfricasTalkingGatewayException(response)
+		raise AfricasTalkingException(response)
 	end
 
 	def topupStashRequest options
@@ -267,7 +267,7 @@ class Payments
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			return TopupStashResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 		end
-		raise AfricasTalkingGatewayException(response)
+		raise AfricasTalkingException(response)
 	end
 
 	private

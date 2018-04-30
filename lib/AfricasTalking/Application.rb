@@ -17,7 +17,7 @@ class Application
 			result = JSON.parse(response, :quirky_mode =>true)
 			return ApplicationDataResponse.new result["balance"]
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 	end
 

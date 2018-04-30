@@ -9,7 +9,7 @@ class Token
 		@apikey      = apikey
 	end
 
-	def createAuthToken
+	def generateAuthToken
 		post_body = {
 			'username' => @username
 		}
@@ -20,7 +20,7 @@ class Token
 			r=JSON.parse(response, :quirky_mode => true)
 			return AuthTokenResponse.new r["token"], r["lifetimeInSeconds"]
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 	end
 
@@ -35,7 +35,7 @@ class Token
 			r= JSON.parse(response, :quirky_mode => true)
 			return CheckoutTokenResponse.new r['token'], r['description']
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 	end
 

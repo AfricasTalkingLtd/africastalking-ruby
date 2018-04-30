@@ -31,7 +31,7 @@ class Voice
 			return CallResponse.new results, ob['errorMessage']
 			# 
 		else
-			raise AfricasTalkingGatewayException, response
+			raise AfricasTalkingException, response
 		end
 	end
 
@@ -58,7 +58,7 @@ class Voice
 			return QueuedCallsResponse.new ob['status'], ob['errorMessage'], results
 		end
 		
-		raise AfricasTalkingGatewayException, response
+		raise AfricasTalkingException, response
 		
 	end
 
@@ -78,7 +78,7 @@ class Voice
 			return UploadMediaResponse.new response
 		end
 		# 
-		raise AfricasTalkingGatewayException, response
+		raise AfricasTalkingException, response
 	end
 
 
