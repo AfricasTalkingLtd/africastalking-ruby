@@ -9,7 +9,7 @@ class Airtime
 		@apikey      = apikey
 	end
 
-	def sendAirtime options
+	def send options
 		recipients = options.collect{ |r| r }
 		post_body = {
 						'username'   => @username,

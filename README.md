@@ -52,7 +52,7 @@ token.createCheckoutToken options
 #### Create Checkout Token
 
 ```ruby
-token.createCheckoutToken phoneNumber
+token.generateAuthToken phoneNumber
 ```
 
 
@@ -63,7 +63,7 @@ Send airtime to phone numbers
 ```ruby
 airtime = @AT.airtime
 
-airtime.sendAirtime options
+airtime.send options
 ```
 - `options`
     - `recipients`: Contains an hash of arrays containing the following keys
@@ -78,7 +78,7 @@ sms = @AT.sms
 #### Send Sms
 
 ```ruby
-sms.sendMessage options
+sms.send options
 ```
 - `options`
     - `message`: SMS content. `REQUIRED`
@@ -90,7 +90,7 @@ sms.sendMessage options
 
 #### Send Premium SMS
 ```ruby
-sms.sendPremiumMessage options
+sms.sendPremium options
 ```
 - `options`
     - `message`: SMS content. `REQUIRED`
@@ -113,7 +113,7 @@ sms.fetchMessages options
 #### Create subscription
 
 ```ruby
-sms.createSubcriptions options
+sms.createSubcription options
 ```
 - `options`
     - `shortCode`: This is a premium short code mapped to your account. `REQUIRED`
@@ -176,7 +176,7 @@ payments = @AT.payments
 ```
 #### Credit card checkout
 ```ruby
-payments.initiateCardCheckout options
+payments.cardCheckout options
 ```
 - `options`
     - `productName`: Payment Product as setup on your account. `REQUIRED`
@@ -223,7 +223,7 @@ payments.initiateBankChargeCheckout options
 
 #### Validate bank checkout
 ```ruby
-payments.validateBankAccountCheckout options
+payments.validateBankCheckout options
 ```
 - `options`
     - `transactionId`: The transaction that your application wants to validate. `REQUIRED`
@@ -233,7 +233,7 @@ payments.validateBankAccountCheckout options
 #### Bank transfer
 
 ```ruby
-payments.initiateBankTransferRequest options
+payments.bankTransfer options
 ```
 - `options`
     - `productName`: Payment Product as setup on your account. `REQUIRED`
@@ -250,7 +250,7 @@ payments.initiateBankTransferRequest options
 #### Mobile Checkout
 
 ```ruby
-payments.initiateMobilePaymentCheckout options
+payments.mobileCheckout options
 ```
 - `options`
     - `productName`: Your Payment Product. `REQUIRED`
@@ -261,7 +261,7 @@ payments.initiateMobilePaymentCheckout options
 
 #### Mobile B2C
 ```ruby
-payments.mobilePaymentB2CRequest options
+payments.mobileB2C options
 ```
 - `options`
     - `productName`: Your Payment Product. `REQUIRED`
@@ -284,7 +284,7 @@ payments.mobilePaymentB2CRequest options
 
 #### Mobile B2B
 ```ruby
-payments.mobilePaymentB2BRequest options
+payments.mobileB2B options
 ```
 - `options`
     - `productName`: Your Payment Product as setup on your account. `REQUIRED`

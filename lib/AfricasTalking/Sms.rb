@@ -16,7 +16,7 @@ class Sms
 	# end
 
 	
-	def sendMessage options
+	def send options
 		# 
 		post_body = {
 
@@ -59,7 +59,7 @@ class Sms
 		end
 	end
 
-	def sendPremiumMessage options
+	def sendPremium options
 		post_body = {
 			'username'    => @username, 
 			'message'     => options['message'], 
@@ -138,7 +138,7 @@ class Sms
 		end
 	end
 
-	def createSubcriptions options
+	def createSubcription options
 		post_body = {
 						'username'    => @username,
 						'phoneNumber' => options['phoneNumber'],

@@ -32,7 +32,7 @@ class Payments
 		@apikey      = apikey
 	end
 
-	def initiateMobilePaymentCheckout options
+	def mobileCheckout options
 		url      = getMobilePaymentCheckoutUrl()
 		if validateParamsPresence?(options, ['productName', 'phoneNumber', 'currencyCode', 'amount', 'metadata'])
 			parameters = {
@@ -57,7 +57,7 @@ class Payments
 		raise AfricasTalkingGatewayException, response
 	end
 
-	def mobilePaymentB2BRequest options
+	def mobileB2B options
 		validOptions = validateParamsPresence?(options, ['productName', 'providerData', 'currencyCode', 'amount', 'metadata'])
 		validProviderData = validateParamsPresence?(options['providerData'], ['provider', 'destinationAccount', 'destinationChannel', 'transferType'])
 		if validOptions && validProviderData
@@ -85,7 +85,7 @@ class Payments
 	end
 
 
-	def mobilePaymentB2CRequest options
+	def mobileB2C options
 		if validateParamsPresence?(options, ['recipients', 'productName'])
 			parameters = {
 				'username'    => @username,
@@ -110,7 +110,7 @@ class Payments
 		raise AfricasTalkingGatewayException, response
 	end
 
-	def initiateBankChargeCheckout options
+	def bankCheckout options
 		if validateParamsPresence?(options, ['bankAccount', 'productName', 'currencyCode', 'amount', 'narration', 'metadata'])
 			parameters = {
 				'username'    => @username,
@@ -132,7 +132,7 @@ class Payments
 		raise AfricasTalkingGatewayException(response)
 	end	
 
-	def validateBankAccountCheckout options
+	def validateBankCheckout options
 		if validateParamsPresence?(options, ['transactionId', 'otp'])
 			parameters = {
 				'username'    => @username,
@@ -150,7 +150,7 @@ class Payments
 		raise AfricasTalkingGatewayException(response)
 	end
 
-	def initiateBankTransferRequest options
+	def bankTransfer options
 		if validateParamsPresence?(options, ['productName', 'recipients'])
 			parameters = {
 				'username'    => @username,
@@ -178,7 +178,7 @@ class Payments
 		
 	end
 
-	def initiateCardCheckout options
+	def cardCheckout options
 		if validateParamsPresence?(options, ['productName', 'currencyCode', 'amount', 'narration', 'metadata'])
 			parameters = {
 				'username'    => @username,
