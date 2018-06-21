@@ -270,6 +270,7 @@ payments.mobileB2C options
         - `phoneNumber`: The payee phone number (in international format; e.g. `25471xxxxxxx`). `REQUIRED`
         - `currencyCode`: 3-digit ISO format currency code (e.g `KES`, `USD`, `UGX` etc.) `REQUIRED`
         - `amount`: Payment amount. `REQUIRED`
+        - `providerChannel`: This represents the payment channel the payment will be made from. eg paybill number. The payment channel must be mapped to you. The AfricasTalking default provider channel is used if not specified.
         - `reason`: This field contains a string showing the purpose for the payment. If set, it should be one of the following
             
             ```
