@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    AfricasTalking (2.0.0.pre.alpha)
+    AfricasTalking (2.0.0)
       httparty (= 0.16.1)
 
 GEM

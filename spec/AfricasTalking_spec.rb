@@ -1,6 +1,9 @@
 RSpec.describe AfricasTalking do
 	before(:each) do
-	    @AT=AfricasTalking::Initialize.new 'sandbox', 'bed6bd70401f3110e7f8c347b0819efa7012f64f689b3c0fa8dd1f452224861b'
+		username = 'username'
+		apiKey = 'apiKey'
+		@AT=AfricasTalking::Initialize.new username, apiKey
+	   
 	end
 
 	it "has a version number" do

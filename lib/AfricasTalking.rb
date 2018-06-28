@@ -8,7 +8,7 @@ require "AfricasTalking/Token"
 require "AfricasTalking/Application"
 
 module AfricasTalking
-	DEBUG            = true
+	DEBUG            = false
 	@username = nil
 	@apikey = nil
 	@response_code = nil
@@ -45,7 +45,7 @@ module AfricasTalking
 		end
 	end
 
-	class AfricasTalkingGatewayException < Exception
+	class AfricasTalkingException < Exception
 		# error handling appear here
 		# def initialize(msg="My default message")
 		#     super
