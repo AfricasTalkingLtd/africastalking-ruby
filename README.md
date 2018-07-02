@@ -28,6 +28,8 @@ The SDK needs to be instantiated using your username and API key, which you can 
 > You can use this SDK for either production or sandbox apps. For sandbox, the app username is **ALWAYS** `sandbox`
 
 ```ruby
+require "AfricasTalking"
+
 username = 'YOUR_USERNAME' # use 'sandbox' for development in the test environment
 apiKey 	= 'YOUR_API_KEY' # use your sandbox app API key for development in the test environment
 @AT=AfricasTalking::Initialize.new(username, apiKey)
