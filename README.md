@@ -1,9 +1,11 @@
+
 # AfricasTalking SDK
 
 > Provides convenient access to the Africa's Talking API from applications written in ruby.
 
 ## Documentation
 Take a look at the [API docs here](http://docs.africastalking.com).
+[![Gem Version](https://badge.fury.io/rb/africastalking-ruby.svg)](https://badge.fury.io/rb/africastalking-ruby)
 
 ## Installation
 
