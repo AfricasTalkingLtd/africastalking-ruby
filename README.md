@@ -10,7 +10,7 @@ Take a look at the [API docs here](http://docs.africastalking.com).
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "AfricasTalking", :git => "git@github.com:AfricasTalkingLtd/africastalking-ruby.git"
+gem "africastalking-ruby", :git => "git@github.com:AfricasTalkingLtd/africastalking-ruby.git"
 ```
 
 And then execute:

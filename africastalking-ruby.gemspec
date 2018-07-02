@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "AfricasTalking/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "AfricasTalking"
+  spec.name          = "africastalking-ruby"
   spec.version       = AfricasTalking::VERSION
   spec.authors       = ["Michael Mwirigi"]
   spec.email         = ["mmwirigi@africastalking.com"]
@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "rspec-rails"
+  spec.add_development_dependency "rspec-rails", "~> 3.7.2"
   spec.add_development_dependency "rubocop", "~> 0.54.0"
   spec.add_development_dependency "pry" , "~> 0"
   spec.add_dependency "httparty", "0.16.1"

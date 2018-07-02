@@ -81,7 +81,7 @@ class Payments
 			# 
 			return MobileB2BResponse.new resultObj['status'], resultObj['transactionId'], resultObj['transactionFee'], resultObj['providerChannel']
 		end
-		raise AfricasTalkingException(response)
+		raise AfricasTalkingException, response
 	end
 
 
@@ -129,7 +129,7 @@ class Payments
 			# 
 			return InitiateBankCheckoutResponse.new resultObj['status'], resultObj['transactionId'], resultObj['description']
 		end
-		raise AfricasTalkingException(response)
+		raise AfricasTalkingException, response
 	end	
 
 	def validateBankCheckout options
@@ -147,7 +147,7 @@ class Payments
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			return ValidateBankCheckoutResponse.new resultObj['status'], resultObj['description']
 		end
-		raise AfricasTalkingException(response)
+		raise AfricasTalkingException, response
 	end
 
 	def bankTransfer options
@@ -207,7 +207,7 @@ class Payments
 			# 
 			return InitiateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 		end
-		raise AfricasTalkingException(response)
+		raise AfricasTalkingException, response
 
 	end
 
@@ -227,7 +227,7 @@ class Payments
 			return ValidateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['checkoutToken']
 			# 
 		end
-		raise AfricasTalkingException(response)
+		raise AfricasTalkingException, response
 	end
 
 	def walletTransferRequest options
@@ -248,7 +248,7 @@ class Payments
 			# 
 			return WalletTransferResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 		end
-		raise AfricasTalkingException(response)
+		raise AfricasTalkingException, response
 	end
 
 	def topupStashRequest options
@@ -267,7 +267,7 @@ class Payments
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			return TopupStashResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
 		end
-		raise AfricasTalkingException(response)
+		raise AfricasTalkingException, response
 	end
 
 	private

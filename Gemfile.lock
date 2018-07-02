@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    AfricasTalking (2.0.0)
+    africastalking-ruby (2.0.0)
       httparty (= 0.16.1)
 
 GEM
@@ -107,12 +107,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  AfricasTalking!
+  africastalking-ruby!
   bundler (~> 1.16)
   pry (~> 0)
   rake (~> 10.0)
   rspec (~> 3.0)
-  rspec-rails
+  rspec-rails (~> 3.7.2)
   rubocop (~> 0.54.0)
 
 BUNDLED WITH
