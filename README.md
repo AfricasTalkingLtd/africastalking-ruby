@@ -5,6 +5,7 @@
 
 ## Documentation
 Take a look at the [API docs here](http://docs.africastalking.com).
+
 [![Gem Version](https://badge.fury.io/rb/africastalking-ruby.svg)](https://badge.fury.io/rb/africastalking-ruby)
 
 ## Installation
