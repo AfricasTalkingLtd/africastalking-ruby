@@ -1,7 +1,7 @@
 RSpec.describe AfricasTalking do
 	before(:each) do
-		username = 'username'
-		apiKey = 'apiKey'
+		username = 'sandbox'
+		apiKey = 'b74f8d0f1e6695bcd264e14e74f8a78db8685451a836b83d6ac0e8e6baec5b97'
 		@AT=AfricasTalking::Initialize.new username, apiKey
 	   
 	end
@@ -64,7 +64,6 @@ RSpec.describe AfricasTalking do
 			'last_received_id' => nil
 		}
 		expect(sms.fetchMessages options).to inspect_FetchMessageResponse
-		# expect(@AT.fetch_messages).to inspect_SMSMessages
 	end
 
 	# not completed this test. remember to consider empty responses
@@ -159,7 +158,7 @@ RSpec.describe AfricasTalking do
 			'amount' => '200',
 			'metadata'=> {}
 		}
-		expect(payments.mobileCheckout options ).to have_attributes(:status => a_value, :transactionFee => a_value, :transactionId => a_value, :providerChannel => a_value)
+		expect(payments.mobileCheckout options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value, :providerChannel => a_value)
 
 	end
 
@@ -169,25 +168,23 @@ RSpec.describe AfricasTalking do
 			'productName' => 'RUBY_GEM_TEST',
 			'recipients' => [
 				{
-					"name" => "Payments Test",
 					"phoneNumber"=> '+254722222222',
 					"currencyCode"=> "KES",
 					"amount"=> '100',
 					"reason"=> "SalaryPayment",
 					"metadata" => {
-					"description" => "test employee",
-					"employeeId" => "123"
+						"description" => "test employee",
+						"employeeId" => "123"
 					}
 				},
 				{
-					"name" => "Payments Test",
 					"phoneNumber"=> '+254722333322',
 					"currencyCode"=> "KES",
 					"amount"=> '2000',
 					"reason"=> "SalaryPayment",
 					"metadata" => {
-					"description" => "test employee",
-					"employeeId" => "123"
+						"description" => "test employee",
+						"employeeId" => "123"
 					}
 				}
 			]
@@ -231,7 +228,7 @@ RSpec.describe AfricasTalking do
 			'bankAccount' => {
 				'accountName' => 'Test Bank Account',
 				'accountNumber' => "1234567#{rand(100...999)}",
-				'bankCode' => 234001,
+				'bankCode' => payments.class::BANK_CODES['FCMB_NG'],
 				'dateOfBirth' => '2017-11-22'
 			}
 		}
@@ -263,7 +260,7 @@ RSpec.describe AfricasTalking do
 					'bankAccount' => {
 						'accountName' => 'Test Bank Account',
 						'accountNumber' => "123456#{rand(1000...9999)}",
-						'bankCode' => 234001
+						'bankCode' => payments.class::BANK_CODES['FIDELITY_NG']
 					}
 				},
 				{
@@ -277,7 +274,7 @@ RSpec.describe AfricasTalking do
 					'bankAccount' => {
 						'accountName' => 'Second Test Bank Account',
 						'accountNumber' => "098765#{rand(1000...9999)}",
-						'bankCode' => 234009
+						'bankCode' => payments.class::BANK_CODES['UBA_NG']
 					}
 				}
 			]

@@ -75,11 +75,10 @@ class Payments
 			url      = getMobilePaymentB2BUrl()   
 			response = sendJSONRequest(url, parameters)
 		end
-
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			# 
-			return MobileB2BResponse.new resultObj['status'], resultObj['transactionId'], resultObj['transactionFee'], resultObj['providerChannel']
+			return MobileB2BResponse.new resultObj['status'], resultObj['transactionId'], resultObj['transactionFee'], resultObj['providerChannel'], resultObj['errorMessage']
 		end
 		raise AfricasTalkingException, response
 	end
@@ -99,7 +98,7 @@ class Payments
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			if (resultObj['entries'].length > 0)
 				results = resultObj['entries'].collect{ |subscriber|
-					MobileB2CResponse.new subscriber['provider'], subscriber['phoneNumber'], subscriber['providerChannel'], subscriber['transactionFee'], subscriber['status'], subscriber['value'], subscriber['transactionId']
+					MobileB2CResponse.new subscriber['provider'], subscriber['phoneNumber'], subscriber['providerChannel'], subscriber['transactionFee'], subscriber['status'], subscriber['value'], subscriber['transactionId'], subscriber['errorMessage']
 				}
 				# 
 				return results
@@ -189,15 +188,18 @@ class Payments
 				'metadata' => options['metadata']
 			}
 			if (options['checkoutToken'] == nil && options['paymentCard'] == nil)
-				raise AfricasTalkingException "Please make sure either the checkoutToken or paymentCard parameter is not empty"
+				raise AfricasTalkingException, "Please make sure either the checkoutToken or paymentCard parameter is not empty"
 			elsif (options['checkoutToken'] != nil && options['paymentCard'] != nil)
-				raise AfricasTalkingException "If you have a checkoutToken please make sure paymentCard parameter is empty"
+
+				raise AfricasTalkingException, "If you have a checkoutToken please make sure paymentCard parameter is empty"
 			end
 			if (options['checkoutToken'] != nil)
 				parameters['checkoutToken'] = options['checkoutToken']
 			end
 			if (options['paymentCard'] != nil)
-				parameters['paymentCard'] = options['paymentCard']
+				if validateParamsPresence?(options['paymentCard'], ['number', 'cvvNumber', 'expiryMonth', 'expiryYear', 'countryCode', 'authToken'])
+					parameters['paymentCard'] = options['paymentCard']
+				end
 			end
 			url      = getCardCheckoutChargeUrl()
 			response = sendJSONRequest(url, parameters)
@@ -330,10 +332,11 @@ class Payments
 		
 end
 
-class MobileB2CResponse
-	attr_reader :provider, :phoneNumber, :providerChannel, :transactionFee, :status, :value, :transactionId
 
-	def initialize provider_, phoneNumber_, providerChannel_, transactionFee_, status_, value_, transactionId_
+class MobileB2CResponse
+	attr_reader :provider, :phoneNumber, :providerChannel, :transactionFee, :status, :value, :transactionId, :errorMessage
+
+	def initialize provider_, phoneNumber_, providerChannel_, transactionFee_, status_, value_, transactionId_, errorMessage_
 			@provider        = provider_
 			@phoneNumber     = phoneNumber_
 			@providerChannel = providerChannel_
@@ -341,17 +344,19 @@ class MobileB2CResponse
 			@status          = status_
 			@value           = value_
 			@transactionId   = transactionId_
+			@errorMessage   = errorMessage_
 	end
 end	
 
 class MobileB2BResponse
-	attr_reader :status, :transactionId, :transactionFee, :providerChannel
+	attr_reader :status, :transactionId, :transactionFee, :providerChannel, :errorMessage
 			
-	def initialize status_, transactionId_, transactionFee_, providerChannel_
+	def initialize status_, transactionId_, transactionFee_, providerChannel_, errorMessage_
 			@providerChannel    = providerChannel_
 			@transactionId = transactionId_
 			@transactionFee  = transactionFee_
 			@status          = status_
+			@errorMessage   = errorMessage_
 	end
 end	
 
@@ -375,12 +380,12 @@ class BankTransferResponse
 end
 
 class MobileCheckoutResponse
-	attr_reader :status, :transactionFee, :transactionId, :providerChannel
-	def initialize accountNumber_, status_, transactionId_, transactionFee_
-			@accountNumber = accountNumber_
+	attr_reader :status, :description, :transactionId, :providerChannel
+	def initialize status_, description_, transactionId_, providerChannel_
+			@description = description_
 			@status = status_
 			@transactionId  = transactionId_
-			@transactionFee  = transactionFee_
+			@providerChannel  = providerChannel_
 	end
 end
 class InitiateBankCheckoutResponse

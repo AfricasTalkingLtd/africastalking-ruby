@@ -193,6 +193,7 @@ payments.cardCheckout options
         - `number`: The payment card number. `REQUIRED`
         - `cvvNumber`: The 3 or 4 digit Card Verification Value. `REQUIRED`
         - `expiryMonth`: The expiration month on the card (e.g `8`) `REQUIRED`
+        - `expiryYear`: The expiration year on the card (e.g `2020`) `REQUIRED`
         - `authToken`: The card's ATM PIN. `REQUIRED`
         - `countryCode`: The 2-Digit countryCode where the card was issued (only `NG` is supported). `REQUIRED`
     - `metadata`: Some optional data to associate with transaction. `OPTIONAL`
@@ -217,8 +218,15 @@ payments.initiateBankChargeCheckout options
 
         - `accountName`: The name of the bank account. `REQUIRED`
         - `accountNumber`: The account number. `REQUIRED`
-        - `bankCode`: A 6-Digit [Integer Code](http://docs.africastalking.com/bank/checkout) for the bank that we allocate. See `payments.BANK.*` for supported banks. `REQUIRED`
         - `dateOfBirth`: Date of birth of the account owner (`YYYY-MM-DD`). Required for Zenith Bank Nigeria.
+        - `bankCode`: A 6-Digit [Integer Code](http://docs.africastalking.com/bank/checkout) for the bank that we allocate. Supported banks at the moment are: `REQUIRED`
+        ```ruby
+        payments.class::BANK_CODES['FCMB_NG']
+        payments.class::BANK_CODES['ZENITH_NG']
+        payments.class::BANK_CODES['ACCESS_NG']
+        payments.class::BANK_CODES['PROVIDUS_NG']
+        payments.class::BANK_CODES['STERLING_NG']
+        ```
 
     - `currencyCode`: 3-digit ISO format currency code (only `NGN` is supported). `REQUIRED`
     - `amount`: Payment amount. `REQUIRED`
@@ -246,7 +254,7 @@ payments.bankTransfer options
     	- `bankAccount`: Bank account to be charged:
     	    - `accountName`: The name of the bank account.
     	    - `accountNumber`: The account number `REQUIRED`
-    	    - `bankCode`: A 6-Digit Integer Code for the bank that we allocate; See `payments.BANK.*` for supported banks. `REQUIRED`
+    	    - `bankCode`: A 6-Digit Integer Code for the bank that we allocate; See `payments.class::BANK_CODES` for supported banks. `REQUIRED`
     	- `currencyCode`: 3-digit ISO format currency code (only `NGN` is supported). `REQUIRED`
     	- `amount`: Payment amount. `REQUIRED`
     	- `narration`: A short description of the transaction `REQUIRED`
@@ -315,7 +323,7 @@ payments.mobileB2B options
     - `currencyCode`: 3-digit ISO format currency code (e.g `KES`, `USD`, `UGX` etc.) `REQUIRED`
 
     - `amount`: Payment amount. `REQUIRED`
-    - `metadata`: Some optional data to associate with transaction.`OPTIONAL`
+    - `metadata`: Some optional data to associate with transaction.`REQUIRED`
 
 
 

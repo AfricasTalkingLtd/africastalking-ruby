@@ -38,7 +38,7 @@ RSpec::Matchers.define :inspect_FetchMessageResponse do |expected|
   match do |actual|
     # 
     obj = actual.responses.collect { |item| 
-      expect(item).to have_attributes(:status => a_value, :messageId => a_value, :number => a_value )
+      expect(item).to have_attributes(:text => a_value, :linkId => a_value, :from => a_value )
     }
     obj.all? {|e| e.eql? true}
   end
