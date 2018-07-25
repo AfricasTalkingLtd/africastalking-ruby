@@ -60,10 +60,6 @@ module AfricasTalking
 			uri		 	     = URI.parse(url_)
 			http		     = Net::HTTP.new(uri.host, uri.port)
 			http.use_ssl     = true
-			headers = {
-				"apikey" => @apikey,
-				"Accept" => "application/json"
-			}
 			if(data_ != nil)
 				request = Net::HTTP::Post.new(uri.request_uri)
 				request.set_form_data(data_)
@@ -82,19 +78,21 @@ module AfricasTalking
 			return response.body
 		end
 
-		def sendJSONRequest (url_, data_)
+		def sendJSONRequest url_, data_, get_request = false
 			uri	       = URI.parse(url_)
 			http         = Net::HTTP.new(uri.host, uri.port)
 			http.use_ssl = true
-			req          = Net::HTTP::Post.new(uri.request_uri, 'Content-Type'=>"application/json")
+			if get_request === true
+				uri.query = URI.encode_www_form(data_)
+				req = Net::HTTP::Get.new(uri.request_uri, 'Content-Type'=>"application/json")
+			else
+				req = Net::HTTP::Post.new(uri.request_uri, 'Content-Type'=>"application/json")
+				req.body = data_.to_json
+			end
 			
 			req["apikey"] = @apikey
 			req["Accept"] = "application/json"
-			
-			req.body = data_.to_json
-
 			response  = http.request(req)
-			
 			if (DEBUG)
 				puts "Full response #{response.body}"
 			end
@@ -112,7 +110,5 @@ module AfricasTalking
 				end
 			}
 			return true
-
 		end
-			
 end

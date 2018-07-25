@@ -272,6 +272,122 @@ class Payments
 		raise AfricasTalkingException, response
 	end
 
+	def fetchTransactions options
+		if validateParamsPresence?(options, ['productName', 'pageNumber', 'count'])
+			parameters = {
+				'username'    => @username,
+				'productName' => options['productName'],
+				'pageNumber' => options['pageNumber'],
+				'count' => options['count']
+			}
+			if !(options['startDate'].nil? || options['startDate'].empty?)
+				parameters['startDate'] = options['startDate']
+			end
+			if !(options['endDate'].nil? || options['endDate'].empty?)
+				parameters['endDate'] = options['endDate']
+			end
+			if !(options['category'].nil? || options['category'].empty?)
+				parameters['category'] = options['category']
+			end
+			if !(options['status'].nil? || options['status'].empty?)
+				parameters['status'] = options['status']
+			end
+			if !(options['source'].nil? || options['source'].empty?)
+				parameters['source'] = options['source']
+			end
+			if !(options['destination'].nil? || options['destination'].empty?)
+				parameters['destination'] = options['destination']
+			end
+			if !(options['providerChannel'].nil? || options['providerChannel'].empty?)
+				parameters['providerChannel'] = options['providerChannel']
+			end
+			url      = getFetchTransactionsUrl() 
+			response = sendJSONRequest(url, parameters, true)
+		end
+		if (@response_code == HTTP_OK)
+			resultObj = JSON.parse(response, :quirky_mode =>true)
+			results = []
+			if (resultObj['responses'].length > 0)
+				results = resultObj['responses'].collect{ |item|
+					FetchTransactionsEntries.new item['sourceType'], item['source'], item['provider'], item['destinationType'], item['description'], item['providerChannel'], item['providerMetadata'],
+					item['status'], item['productName'], item['category'], item['destination'], item['value'], item['transactionId'], item['creationTime'], item['requestMetadata']  
+				}
+			end
+			return FetchTransactionsResponse.new resultObj['status'], resultObj['description'], results
+		end
+		raise AfricasTalkingException, response
+	end
+
+	def fetchWallet options
+		if validateParamsPresence?(options, ['pageNumber', 'count'])
+			parameters = {
+				'username'    => @username,
+				'pageNumber' => options['pageNumber'],
+				'count' => options['count']
+			}
+			if !(options['startDate'].nil? || options['startDate'].empty?)
+				parameters['startDate'] = options['startDate']
+			end
+			if !(options['endDate'].nil? || options['endDate'].empty?)
+				parameters['endDate'] = options['endDate']
+			end
+			if !(options['categories'].nil? || options['categories'].empty?)
+				parameters['categories'] = options['categories']
+			end
+			url      = getFetchWalletUrl() 
+			response = sendJSONRequest(url, parameters, true)
+			if (@response_code == HTTP_OK)
+				resultObj = JSON.parse(response, :quirky_mode =>true)
+				results = []
+				if (resultObj['responses'].length > 0)
+					results = resultObj['responses'].collect{ |item|
+						transactionData = TransactionData.new item['transactionData']['requestMetadata'], item['transactionData']['sourceType'],
+						item['transactionData']['source'], item['transactionData']['provider'], item['transactionData']['destinationType'],item['transactionData']['description'],
+						item['transactionData']['providerChannel'], item['transactionData']['providerRefId'], item['transactionData']['providerMetadata'],item['transactionData']['status'],
+						item['transactionData']['productName'], item['transactionData']['category'], item['transactionData']['transactionDate'], item['transactionData']['destination'],
+						item['transactionData']['value'], item['transactionData']['transactionId'], item['transactionData']['creationTime']
+						FetchWalletEntries.new item['description'], item['balance'], item['date'], item['category'], item['value'], item['transactionId'], transactionData 
+					}
+				end
+				return FetchWalletResponse.new resultObj['status'], resultObj['description'], results
+			end
+			raise AfricasTalkingException, response
+		end
+	end
+
+	def findTransaction options
+		if validateParamsPresence?(options, ['transactionId'])
+			parameters = {
+				'username'    => @username,
+				'transactionId' => options['transactionId']
+			}
+			url      = getFindTransactionUrl() 
+			response = sendJSONRequest(url, parameters, true)
+		end
+		if (@response_code == HTTP_OK)
+			resultObj = JSON.parse(response, :quirky_mode =>true)
+			transactionData = nil
+			if resultObj['status'] === 'Success'
+				transactionData = TransactionData.new resultObj['data']['requestMetadata'], resultObj['data']['sourceType'],resultObj['data']['source'], resultObj['data']['provider'], resultObj['data']['destinationType'],resultObj['data']['description'],
+					resultObj['data']['providerChannel'], resultObj['data']['providerRefId'], resultObj['data']['providerMetadata'],resultObj['data']['status'], resultObj['data']['productName'], resultObj['data']['category'], 
+					resultObj['data']['transactionDate'], resultObj['data']['destination'], resultObj['data']['value'], resultObj['data']['transactionId'], resultObj['data']['creationTime']
+			end
+			return FindTransactionResponse.new resultObj['status'], transactionData
+		end
+		raise AfricasTalkingException, response
+	end
+
+	def fetchWalletBalance
+		parameters = { 'username' => @username }
+		url        = getFetchWalletBalanceUrl()
+		response = sendJSONRequest(url, parameters, true)
+		if (@response_code == HTTP_OK)
+			resultObj = JSON.parse(response, :quirky_mode =>true)
+			
+			return FetchWalletBalanceResponse.new resultObj['status'], resultObj['balance']
+		end
+	end
+
 	private
 
 		def getPaymentHost()
@@ -320,6 +436,22 @@ class Payments
 
 		def getTopupStashUrl()
 			return getPaymentHost() + "/topup/stash"
+		end
+
+		def getFetchWalletUrl()
+			return getPaymentHost() + "/query/wallet/fetch"
+		end
+
+		def getFetchWalletBalanceUrl()
+			return getPaymentHost() + "/query/wallet/balance"
+		end
+
+		def getFetchTransactionsUrl()
+			return getPaymentHost() + "/query/transaction/fetch"
+		end
+
+		def getFindTransactionUrl()
+			return getPaymentHost() + "/query/transaction/find"
 		end
 
 		def getApiHost()
@@ -437,5 +569,98 @@ class TopupStashResponse
 			@description = description_
 			@status = status_
 			@transactionId = transactionId_
+	end
+end
+
+class FetchTransactionsEntries
+	attr_reader :sourceType, :source, :provider, :destinationType, :description, :providerChannel, 
+	:providerMetadata, :status, :productName, :category, :destination, :value, :transactionId, :creationTime, :requestMetadata
+
+	def initialize sourceType_, source_, provider_, destinationType_, description_, providerChannel_, providerMetadata_, status_, productName_, category_, destination_, value_, transactionId_, creationTime_, requestMetadata_
+		@sourceType = sourceType_
+		@source = source_
+		@provider = provider_
+		@destinationType = destinationType_
+		@description = description_
+		@providerChannel = providerChannel_
+		@providerMetadata = providerMetadata_
+		@status = status_
+		@productName = productName_
+		@category = category_
+		@destination = destination_
+		@value = value_
+		@transactionId = transactionId_
+		@creationTime = creationTime_
+		@requestMetadata = requestMetadata_ 
+	end
+end
+
+class FetchTransactionsResponse
+	attr_reader :status, :description, :entries
+	def initialize status_, description_, entries_
+		@description = description_
+		@status = status_
+		@entries = entries_
+	end
+end
+
+class FetchWalletBalanceResponse
+	attr_reader :status, :balance
+	def initialize status_, balance_
+		@status = status_
+		@balance = balance_
+	end
+end
+
+class FetchWalletResponse
+	attr_reader :status, :description, :responses
+	def initialize status_, description_, responses_
+		@description = description_
+		@status = status_
+		@responses = responses_
+	end
+end
+
+class FetchWalletEntries 
+	attr_reader :description, :balance, :date, :category, :value, :transactionId, :transactionData
+	def initialize description_, balance_, date_, category_, value_, transactionId_, transactionData_
+		@description = description_
+		@balance = balance_
+		@date = date_
+		@category = category_
+		@value = value_
+		@transactionId = transactionId_
+		@transactionData = transactionData_
+	end
+end
+
+class FindTransactionResponse
+	attr_reader :status, :transactionData
+	def initialize status_, transactionData_
+		@status = status_
+		@TransactionData = transactionData_
+	end
+end
+
+class TransactionData
+	attr_reader :requestMetadata, :sourceType, :source, :provider, :destinationType, :description, :providerChannel, :providerRefId, :providerMetadata, :status, :productName, :category, :transactionDate, :destination, :value, :transactionId, :creationTime
+	def initialize requestMetadata_, sourceType_, source_, provider_, destinationType_, description_, providerChannel_, providerRefId_, providerMetadata_, status_, productName_, category_, transactionDate_, destination_, value_, transactionId_, creationTime_
+		@requestMetadata =requestMetadata_
+		@sourceType = sourceType_
+		@source = source_
+		@provider = provider_
+		@destinationType = destinationType_
+		@description = description_
+		@providerChannel = providerChannel_
+		@providerRefId = providerRefId_
+		@providerMetadata = providerMetadata_
+		@status = status_
+		@productName = productName_
+		@category = category_
+		@transactionDate = transactionDate_
+		@destination = destination_
+		@value = value_
+		@transactionId = transactionId_
+		@creationTime = creationTime_
 	end
 end

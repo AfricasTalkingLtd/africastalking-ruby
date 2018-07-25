@@ -339,6 +339,52 @@ RSpec.describe AfricasTalking do
 		expect(payments.topupStashRequest options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
+	it 'Fetch transactions of a payment product' do 
+		payments = @AT.payments
+		options = {
+			'productName' => 'RUBY_GEM_TEST',
+			'pageNumber' => '1',
+			'count' => 100,
+			'startDate' => '2018-07-17',
+			'endDate' => '2018-07-23',
+			'category' => 'MobileB2B',
+			'status' => 'Success',
+			'source' => '',
+			'destination' => '',
+			'providerChannel' => '',	
+		}
+		expect(payments.fetchTransactions options).to have_attributes(:status => 'Success')
+	end
+
+	it 'Fetch wallet transactions' do 
+		payments = @AT.payments
+		options = {
+			'productName' => 'RUBY_GEM_TEST',
+			'pageNumber' => '1',
+			'count' => 1,
+			'startDate' => '2018-07-17',
+			'endDate' => '2018-07-23',
+			'categories' => 'Debit,Credit,Refund,Topup',
+		}
+		expect(payments.fetchWallet options).to have_attributes(:status => 'Success')
+	end
+
+	it 'Find a transaction by transactionId' do 
+		payments = @AT.payments
+		options = {
+			'transactionId' => 'ATPid_672ce181b85579b98e4fc56b9a86f9e0',
+		}
+		expect(payments.findTransaction options).to have_attributes(:status => 'Success')
+	end
+
+	it 'Fetch wallet balance' do 
+		payments = @AT.payments
+		expect(payments.fetchWalletBalance).to have_attributes(:status => 'Success')
+	end
+
+
+
+
 	# ///////////////////////////////////////////////////////////////////
 
 
