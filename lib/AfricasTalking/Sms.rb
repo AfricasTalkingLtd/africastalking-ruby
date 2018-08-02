@@ -15,54 +15,39 @@ class Sms
 	# 	super
 	# end
 
-	
-	def send options
-		# 
-		post_body = {
 
-			'username'    => @username, 
-			'message'     => options['message'], 
-			'to'          => options['to']
-		}	
-		if options['from'] != nil
-			post_body['from'] = options['from']
-		end
-		if options['enqueue'] != nil
-			post_body['enqueue'] = options['enqueue']
-		end
-		if options['bulkSMSMode'] != nil
-			post_body['bulkSMSMode'] = options['bulkSMSMode']
-		end
-		if options['retryDurationInHours'] != nil
-			post_body['retryDurationInHours'] = options['retryDurationInHours']
-		end
-		# 
-		if validateParamsPresence?(options, ['message', 'to'])
-			response = sendNormalRequest(getSmsUrl(), post_body)
-		end
-		if @response_code == HTTP_CREATED
-			messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
-			recipients = messageData["Recipients"]
-			
-			if recipients.length > 0
-				reports = recipients.collect { |entry|
-					StatusReport.new entry["number"], entry["status"], entry["cost"], entry["messageId"]
-				}
-				# 
-				return reports
-			end
-			
-			raise AfricasTalkingException, messageData["Message"]
-			
-		else
-			raise AfricasTalkingException, response
-		end
-	end
+  def send(options)
+    post_body = {
+      'username'    => @username,
+      'message'     => options['message'],
+      'to'          => options['to']
+    }
+    post_body['from'] = options['from'] if options['from']
+    post_body['enqueue'] = options['enqueue'] if options['enqueue']
+    post_body['bulkSMSMode'] = options['bulkSMSMode'] if options['bulkSMSMode']
+    post_body['retryDurationInHours'] = options['retryDurationInHours'] if options['retryDurationInHours']
+
+    if validateParamsPresence?(options, %w[message to])
+      response = sendNormalRequest(getSmsUrl, post_body)
+    end
+
+    raise AfricasTalkingException, response unless @response_code == HTTP_CREATED
+    message_data = JSON.parse(response, quirks_mode: true)['SMSMessageData']
+    recipients = message_data['Recipients']
+
+    unless recipients.empty?
+      reports = recipients.collect do |entry|
+        StatusReport.new entry['number'], entry['status'], entry['cost'], entry['messageId']
+      end
+      return reports
+    end
+    raise AfricasTalkingException, message_data['Message']
+  end
 
 	def sendPremium options
 		post_body = {
-			'username'    => @username, 
-			'message'     => options['message'], 
+			'username'    => @username,
+			'message'     => options['message'],
 			'to'          => options['to'],
 			'keyword'     => options['keyword'],
 			'linkId'      => options['linkId'],
@@ -79,30 +64,31 @@ class Sms
 		if options['from'] != nil
 			post_body['from'] = options['from']
 		end
-		# 
+		#
 		if validateParamsPresence?(options, ['message', 'to', 'keyword', 'linkId'])
 			response = sendNormalRequest(getSmsUrl(), post_body)
 		end
-		
-		# 
+
+		#
 		if @response_code == HTTP_CREATED
 			messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
 			recipients = messageData["Recipients"]
-			
+
 			if recipients.length > 0
 				reports = recipients.collect { |entry|
 					StatusReport.new entry["number"], entry["status"], entry["cost"], entry["messageId"]
 				}
+        p reports
 				return SendPremiumMessagesResponse.new reports, messageData["Message"]
 			end
-			
+
 			raise AfricasTalkingException, messageData["Message"]
-			
+
 		else
 			raise AfricasTalkingException, response
 		end
 
-		# 
+		#
 	end
 
 	def fetchMessages options
@@ -127,11 +113,11 @@ class Sms
 			response = sendNormalRequest(url)
 		end
 		if(@response_code == HTTP_OK)
-			# 
+			#
 			subscriptions = JSON.parse(response)['responses'].collect{ |subscriber|
 				PremiumSubscriptionNumbers.new subscriber['phoneNumber'], subscriber['id'], subscriber['date']
 			}
-			# 
+			#
 			return subscriptions
 		else
 			raise AfricasTalkingException, response
@@ -154,7 +140,7 @@ class Sms
 		end
 		if(@response_code == HTTP_CREATED)
 			r = JSON.parse(response, :quirky_mode => true)
-			return CreateSubscriptionResponse.new r['status'], r['description'] 
+			return CreateSubscriptionResponse.new r['status'], r['description']
 		else
 			raise AfricasTalkingException, response
 		end
@@ -203,7 +189,7 @@ end
 
 
 class FetchMessagesResponse
-	attr_reader :responses, :status 
+	attr_reader :responses, :status
 	def initialize responses_, status_= nil
 		@responses = responses_
 		@status = status_
@@ -220,7 +206,7 @@ end
 
 
 class SendPremiumMessagesResponse
-	attr_reader :recipients, :overview 
+	attr_reader :recipients, :overview
 	def initialize recipients_, overview_
 		@recipients = recipients_
 		@overview = overview_
@@ -239,4 +225,3 @@ class SMSMessages
 		@date   = date_
 	end
 end
-
