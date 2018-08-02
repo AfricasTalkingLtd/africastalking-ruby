@@ -35,16 +35,13 @@ class Sms
     message_data = JSON.parse(response, quirks_mode: true)['SMSMessageData']
     recipients = message_data['Recipients']
 
-    unless recipients.empty?
-      reports = recipients.collect do |entry|
-        StatusReport.new entry['number'], entry['status'], entry['cost'], entry['messageId']
-      end
-      return reports
+    raise AfricasTalkingException, message_data['Message'] if recipients.empty?
+    recipients.collect do |entry|
+      StatusReport.new entry['number'], entry['status'], entry['cost'], entry['messageId']
     end
-    raise AfricasTalkingException, message_data['Message']
   end
 
-	def sendPremium options
+  def sendPremium options
 		post_body = {
 			'username'    => @username,
 			'message'     => options['message'],

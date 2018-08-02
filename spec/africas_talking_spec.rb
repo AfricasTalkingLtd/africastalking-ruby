@@ -33,7 +33,7 @@ RSpec.describe AfricasTalking do
       end
       it 'sends sms given all correct information' do
         expect { @sms.send @options }.not_to raise_error
-        expect(@sms.send(@options)).to inspect_BulkMessageResponse
+        expect(@sms.send(@options)).not_to be_empty
       end
       it 'raises africastalking exception with empty receipient list' do
         @options['to'] = ''
