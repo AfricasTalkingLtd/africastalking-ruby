@@ -133,8 +133,17 @@ sms.fetchSubscriptions options
 ```
 - `options`
     - `shortCode`: This is a premium short code mapped to your account. `REQUIRED`
-    - `keyword`: Value is a premium keyword under the above short code and mapped to your account. `REQUIRED`
+    - `keyword`: Premium keyword under the above short code and mapped to your account. `REQUIRED`
     - `lastReceivedId`: ID of the subscription you believe to be your last. Defaults to `0`
+
+#### Delete Subscription
+```ruby
+sms.deleteSubscriptions options
+```
+- `options`
+    - `shortCode`: This is a premium short code mapped to your account. `REQUIRED`
+    - `keyword`: Premium keyword under the above short code and mapped to your account. `REQUIRED`
+    - `phoneNumber`: PhoneNumber to be unsubscribed `REQUIRED`
 
 ### Voice
 ```ruby
@@ -286,7 +295,6 @@ payments.mobileB2C options
         - `amount`: Payment amount. `REQUIRED`
         - `providerChannel`: This represents the payment channel the payment will be made from. eg paybill number. The payment channel must be mapped to you. The AfricasTalking default provider channel is used if not specified.
         - `reason`: This field contains a string showing the purpose for the payment. If set, it should be one of the following
-            
             ```
             SalaryPayment
             SalaryPaymentWithWithdrawalChargePaid
@@ -294,7 +302,6 @@ payments.mobileB2C options
             BusinessPaymentWithWithdrawalChargePaid
             PromotionPayment
             ```
-
         - `metadata`: Some optional data to associate with transaction.
 
 #### Mobile B2B
@@ -310,23 +317,84 @@ payments.mobileB2B options
     	    ```
     	      Athena - Please note: This is not available on our production systems
     	      Mpesa
+
     	    ```
     	- `transferType`: This contains the payment provider that is facilitating this transaction. Supported providers at the moment are:
-    	    
-    	    ```
-    	      BusinessBuyGoods
-    	      BusinessPayBill
-    	      DisburseFundsToBusiness
-    	      BusinessToBusinessTransfer
-    	    ```
+	       ```
+	      BusinessBuyGoods
+	      BusinessPayBill
+	      DisburseFundsToBusiness
+	      BusinessToBusinessTransfer
+	       ```
     	- `destinationChannel`: This value contains the name or number of the channel that will receive payment by the provider. `REQUIRED`
     	- `destinationAccount`: This value contains the account name used by the business to receive money on the provided destinationChannel. `REQUIRED`
     - `currencyCode`: 3-digit ISO format currency code (e.g `KES`, `USD`, `UGX` etc.) `REQUIRED`
-
     - `amount`: Payment amount. `REQUIRED`
     - `metadata`: Some optional data to associate with transaction.`REQUIRED`
 
+#### Wallet Transfer
+```ruby
+payments.walletTransfer options
+```
+- `options`
+    - `productName`: Your Payment Product as setup on your account. `REQUIRED`
+    - `targetProductCode`: Unique code ode of payment product receiving funds on Africa's Talking `REQUIRED`
+    - `currencyCode`: 3-digit ISO format currency code. `REQUIRED`
+    - `amount`: Amount to transfer. `REQUIRED`
+    - `metadata`: Additional data to associate with the transaction. `REQUIRED`
 
+#### Topup Stash
+```ruby
+payments.topupStash options
+```
+- `options`
+    - `productName`: Your Payment Product as setup on your account. `REQUIRED`
+    - `currencyCode`: 3-digit ISO format currency code. `REQUIRED`
+    - `amount`: Amount to transfer. `REQUIRED`
+    - `metadata`: Additonal data to associate with the transaction. `REQUIRED`
+
+#### Fetch Product Transactions
+```ruby
+payments.fetchProductTransactions options
+```
+- `options`
+    - `productName`: Your Payment Product as setup on your account. `REQUIRED`
+    - `filters`: Filters to use when fetching transactions:
+        - `pageNumber`: Page number to fetch results from. Starts from `1`. `REQUIRED`
+        - `count`: Number of results to fetch. `REQUIRED`
+        - `startDate`: Start Date to consider when fetching
+        - `endDate`: End Date to consider when fetching
+        - `category`: Category to consider when fetching
+        - `provider`: Provider to consider when fetching
+        - `status`: Status to consider when fetching
+        - `source`: Source to consider when fetching
+        - `destination`: Destination to consider when fetching
+        - `providerChannel`: Provider to consider when fetching
+
+#### fetch Wallet Transactions
+```ruby
+payments.fetchWalletTransactions options
+```
+- `options`
+    - `filters`: Filters to use when fetching transactions:
+        - `pageNumber`: Page number to fetch results from. Starts from `1`. `REQUIRED`
+        - `count`: Number of results to fetch. `REQUIRED`
+        - `startDate`: Start Date to consider when fetching
+        - `endDate`: End Date to consider when fetching
+        - `categories`: Comma delimited list of categories to consider when fetching
+
+#### Find Transaction
+```ruby
+payments.findTransaction options
+```
+- `options`
+    - `transactionId`: ID of trancation to find `REQUIRED`
+
+#### Fetch Wallet Balance
+```ruby
+payments.fetchWalletBalance
+```
+- Fetch your payment wallet balance
 
 
 ## Development
