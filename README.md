@@ -72,8 +72,9 @@ airtime.send options
 ```
 - `options`
     - `recipients`: Contains an hash of arrays containing the following keys
-        - `phoneNumber`: Recipient of airtime
-        - `amount`: Amount sent `>= 10 && <= 10K` with currency e.g `KES 100`
+        - `phoneNumber`: Recipient of airtime `REQUIRED`
+        - `currency`:3-digit ISO format currency code . `REQUIRED`
+        - `amount`: Amount sent `>= 10 && <= 10K` with currency e.g `KES 100` `REQUIRED`
 
 ### Sms
 
@@ -181,7 +182,7 @@ payments = @AT.payments
 ```
 #### Credit card checkout
 ```ruby
-payments.cardCheckout options
+payments.cardCheckoutCharge options
 ```
 - `options`
     - `productName`: Payment Product as setup on your account. `REQUIRED`
@@ -201,7 +202,7 @@ payments.cardCheckout options
 #### Validate credit card checkout
 
 ```ruby
-payments.validateCardCheckout options
+payments.cardCheckoutValidate options
 ```
 - `options`
     - `transactionId`: The transaction that your application wants to validate. `REQUIRED`
@@ -210,7 +211,7 @@ payments.validateCardCheckout options
 
 #### Initiate bank charge checkout
 ```ruby
-payments.initiateBankChargeCheckout options
+payments.bankCheckoutCharge options
 ```
 - `options`
     - `productName`: Payment Product as setup on your account. `REQUIRED`
@@ -236,7 +237,7 @@ payments.initiateBankChargeCheckout options
 
 #### Validate bank checkout
 ```ruby
-payments.validateBankCheckout options
+payments.bankCheckoutValidate options
 ```
 - `options`
     - `transactionId`: The transaction that your application wants to validate. `REQUIRED`

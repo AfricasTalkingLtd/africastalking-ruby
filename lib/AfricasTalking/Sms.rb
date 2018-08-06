@@ -27,8 +27,8 @@ class Sms
 		if options['from'] != nil
 			post_body['from'] = options['from']
 		end
-		if options['enqueue'] != nil
-			post_body['enqueue'] = options['enqueue']
+		if options['enqueue'] === true
+			post_body['enqueue'] = 1
 		end
 		if options['bulkSMSMode'] != nil
 			post_body['bulkSMSMode'] = options['bulkSMSMode']
@@ -160,6 +160,28 @@ class Sms
 		end
 	end
 
+	def deleteSubcription options
+		post_body = {
+						'username'    => @username,
+						'phoneNumber' => options['phoneNumber'],
+						'shortCode'   => options['shortCode'],
+						'keyword'     => options['keyword']
+					}
+		if options['checkoutToken'] != nil
+			post_body['checkoutToken'] = options['checkoutToken']
+		end
+		url = getSmsSubscriptionUrl() + "/delete"
+		if validateParamsPresence?(options, ['shortCode', 'keyword', 'phoneNumber'])
+			response = sendNormalRequest(url, post_body)
+		end
+		if(@response_code == HTTP_CREATED)
+			r = JSON.parse(response, :quirky_mode => true)
+			return DeleteSubscriptionResponse.new r['status'], r['description'] 
+		else
+			raise AfricasTalkingException, response
+		end
+	end
+
 	private
 
 		def getSmsUrl()
@@ -211,6 +233,14 @@ class FetchMessagesResponse
 end
 
 class CreateSubscriptionResponse
+	attr_reader :status, :description
+	def initialize status_, description_
+		@description = description_
+		@status = status_
+	end
+end
+
+class DeleteSubscriptionResponse
 	attr_reader :status, :description
 	def initialize status_, description_
 		@description = description_

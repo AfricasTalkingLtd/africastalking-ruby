@@ -10,14 +10,18 @@ class Airtime
 	end
 
 	def send options
-		recipients = options.collect{ |r| r }
-		post_body = {
-						'username'   => @username,
-						'recipients' => recipients.to_json
-					}
 		url      = getAirtimeUrl() + "/send"
-		response = sendNormalRequest(url, post_body)
-		# 
+
+		recipients = options.each{|item| 
+			validateParamsPresence? item, %w(phoneNumber currencyCode amount)
+			item['amount'].to_s.prepend(item['currencyCode'].to_s + " ") 
+			item.delete('currencyCode')
+		}
+		post_body = {
+					'username'   => @username,
+					'recipients' => recipients.to_json,
+				}
+		response = sendNormalRequest(url, post_body) 
 		if (@response_code == HTTP_CREATED)
 			responses = JSON.parse(response, :quirky_mode =>true)
 			if (responses['responses'].length > 0)
@@ -31,7 +35,6 @@ class Airtime
 			else
 				raise AfricasTalkingException, responses['errorMessage']
 			end
-		else
 			raise AfricasTalkingException, response
 		end
 	end

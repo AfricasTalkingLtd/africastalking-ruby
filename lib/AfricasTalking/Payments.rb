@@ -2,7 +2,6 @@ class Payments
 	include AfricasTalking
 	HTTP_CREATED     = 201
 	HTTP_OK          = 200
-	#Set debug flag to to true to view response body
 	BANK_CODES = {
 		'FCMB_NG' => 234001,
 		'ZENITH_NG' => 234002,
@@ -26,6 +25,13 @@ class Payments
 		'UBA_NG' => 234020,
 		'WEMA_NG' => 234021,
 		'FIRST_NG' => 234022,
+	}
+	PROVIDERS = {
+		'MPESA'   => 'Mpesa',
+		'SEGOVIA' => 'Segovia',
+		'FLUTTERWAVE' => 'Flutterwave',
+		'ADMIN' => 'Admin',
+		'ATHENA' => 'Athena',
 	}
 	def initialize username, apikey
 		@username    = username
@@ -109,7 +115,7 @@ class Payments
 		raise AfricasTalkingException, response
 	end
 
-	def bankCheckout options
+	def bankCheckoutCharge options
 		if validateParamsPresence?(options, ['bankAccount', 'productName', 'currencyCode', 'amount', 'narration', 'metadata'])
 			parameters = {
 				'username'    => @username,
@@ -131,7 +137,7 @@ class Payments
 		raise AfricasTalkingException, response
 	end	
 
-	def validateBankCheckout options
+	def bankCheckoutValidate options
 		if validateParamsPresence?(options, ['transactionId', 'otp'])
 			parameters = {
 				'username'    => @username,
@@ -177,7 +183,7 @@ class Payments
 		
 	end
 
-	def cardCheckout options
+	def cardCheckoutCharge options
 		if validateParamsPresence?(options, ['productName', 'currencyCode', 'amount', 'narration', 'metadata'])
 			parameters = {
 				'username'    => @username,
@@ -213,7 +219,7 @@ class Payments
 
 	end
 
-	def validateCardCheckout options
+	def cardCheckoutValidate options
 		if validateParamsPresence?(options, ['transactionId', 'otp'])
 			parameters = {
 				'username'    => @username,
@@ -272,38 +278,25 @@ class Payments
 		raise AfricasTalkingException, response
 	end
 
-	def fetchTransactions options
-		if validateParamsPresence?(options, ['productName', 'pageNumber', 'count'])
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'pageNumber' => options['pageNumber'],
-				'count' => options['count']
-			}
-			if !(options['startDate'].nil? || options['startDate'].empty?)
-				parameters['startDate'] = options['startDate']
-			end
-			if !(options['endDate'].nil? || options['endDate'].empty?)
-				parameters['endDate'] = options['endDate']
-			end
-			if !(options['category'].nil? || options['category'].empty?)
-				parameters['category'] = options['category']
-			end
-			if !(options['status'].nil? || options['status'].empty?)
-				parameters['status'] = options['status']
-			end
-			if !(options['source'].nil? || options['source'].empty?)
-				parameters['source'] = options['source']
-			end
-			if !(options['destination'].nil? || options['destination'].empty?)
-				parameters['destination'] = options['destination']
-			end
-			if !(options['providerChannel'].nil? || options['providerChannel'].empty?)
-				parameters['providerChannel'] = options['providerChannel']
-			end
-			url      = getFetchTransactionsUrl() 
-			response = sendJSONRequest(url, parameters, true)
-		end
+	def fetchProductTransactions options
+		validateParamsPresence? options, %w(productName filters)
+		filters = options['filters']
+		validateParamsPresence? filters, %w(pageNumber count)
+		parameters = {
+			'username'    => @username,
+			'productName' => options['productName'],
+			'pageNumber' => filters['pageNumber'],
+			'count' => filters['count']
+		}
+		parameters['startDate'] = filters['startDate'] if !(filters['startDate'].nil? || filters['startDate'].empty?)
+		parameters['endDate'] = filters['endDate'] if !(filters['endDate'].nil? || filters['endDate'].empty?)
+		parameters['category'] = filters['category'] if !(filters['category'].nil? || filters['category'].empty?)
+		parameters['status'] = filters['status'] if !(filters['status'].nil? || filters['status'].empty?)
+		parameters['source'] = filters['source'] if !(filters['source'].nil? || filters['source'].empty?)
+	 	parameters['destination'] = filters['destination'] if !(filters['destination'].nil? || filters['destination'].empty?)
+		parameters['providerChannel'] = filters['providerChannel'] if !(filters['providerChannel'].nil? || filters['providerChannel'].empty?)
+		url      = getFetchTransactionsUrl() 
+		response = sendJSONRequest(url, parameters, true)
 		if (@response_code == HTTP_OK)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			results = []
@@ -318,41 +311,42 @@ class Payments
 		raise AfricasTalkingException, response
 	end
 
-	def fetchWallet options
-		if validateParamsPresence?(options, ['pageNumber', 'count'])
-			parameters = {
-				'username'    => @username,
-				'pageNumber' => options['pageNumber'],
-				'count' => options['count']
-			}
-			if !(options['startDate'].nil? || options['startDate'].empty?)
-				parameters['startDate'] = options['startDate']
-			end
-			if !(options['endDate'].nil? || options['endDate'].empty?)
-				parameters['endDate'] = options['endDate']
-			end
-			if !(options['categories'].nil? || options['categories'].empty?)
-				parameters['categories'] = options['categories']
-			end
-			url      = getFetchWalletUrl() 
-			response = sendJSONRequest(url, parameters, true)
-			if (@response_code == HTTP_OK)
-				resultObj = JSON.parse(response, :quirky_mode =>true)
-				results = []
-				if (resultObj['responses'].length > 0)
-					results = resultObj['responses'].collect{ |item|
-						transactionData = TransactionData.new item['transactionData']['requestMetadata'], item['transactionData']['sourceType'],
-						item['transactionData']['source'], item['transactionData']['provider'], item['transactionData']['destinationType'],item['transactionData']['description'],
-						item['transactionData']['providerChannel'], item['transactionData']['providerRefId'], item['transactionData']['providerMetadata'],item['transactionData']['status'],
-						item['transactionData']['productName'], item['transactionData']['category'], item['transactionData']['transactionDate'], item['transactionData']['destination'],
-						item['transactionData']['value'], item['transactionData']['transactionId'], item['transactionData']['creationTime']
-						FetchWalletEntries.new item['description'], item['balance'], item['date'], item['category'], item['value'], item['transactionId'], transactionData 
-					}
-				end
-				return FetchWalletResponse.new resultObj['status'], resultObj['description'], results
-			end
-			raise AfricasTalkingException, response
+	def fetchWalletTransactions options
+		validateParamsPresence? options %w(filters)
+		filters = options['filters']
+		validateParamsPresence? filters, %w(pageNumber count)
+		parameters = {
+			'username'    => @username,
+			'pageNumber' => filters['pageNumber'],
+			'count' => filters['count']
+		}
+		if !(filters['startDate'].nil? || filters['startDate'].empty?)
+			parameters['startDate'] = filters['startDate']
 		end
+		if !(filters['endDate'].nil? || filters['endDate'].empty?)
+			parameters['endDate'] = filters['endDate']
+		end
+		if !(filters['categories'].nil? || filters['categories'].empty?)
+			parameters['categories'] = filters['categories']
+		end
+		url      = getFetchWalletUrl() 
+		response = sendJSONRequest(url, parameters, true)
+		if (@response_code == HTTP_OK)
+			resultObj = JSON.parse(response, :quirky_mode =>true)
+			results = []
+			if (resultObj['responses'].length > 0)
+				results = resultObj['responses'].collect{ |item|
+					transactionData = TransactionData.new item['transactionData']['requestMetadata'], item['transactionData']['sourceType'],
+					item['transactionData']['source'], item['transactionData']['provider'], item['transactionData']['destinationType'],item['transactionData']['description'],
+					item['transactionData']['providerChannel'], item['transactionData']['providerRefId'], item['transactionData']['providerMetadata'],item['transactionData']['status'],
+					item['transactionData']['productName'], item['transactionData']['category'], item['transactionData']['transactionDate'], item['transactionData']['destination'],
+					item['transactionData']['value'], item['transactionData']['transactionId'], item['transactionData']['creationTime']
+					FetchWalletEntries.new item['description'], item['balance'], item['date'], item['category'], item['value'], item['transactionId'], transactionData 
+				}
+			end
+			return FetchWalletResponse.new resultObj['status'], resultObj['description'], results
+		end
+		raise AfricasTalkingException, response
 	end
 
 	def findTransaction options
@@ -386,6 +380,7 @@ class Payments
 			
 			return FetchWalletBalanceResponse.new resultObj['status'], resultObj['balance']
 		end
+		raise AfricasTalkingException, response
 	end
 
 	private
@@ -638,7 +633,7 @@ class FindTransactionResponse
 	attr_reader :status, :transactionData
 	def initialize status_, transactionData_
 		@status = status_
-		@TransactionData = transactionData_
+		@transactionData = transactionData_
 	end
 end
 

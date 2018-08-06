@@ -83,12 +83,23 @@ RSpec.describe AfricasTalking do
 		# p @AT.fetch_messages
 		sms = @AT.sms
 		options = {
-			'shortCode' => '202020',
+			'shortCode' => '19764',
 			'keyword' => 'premium',
 			'phoneNumber' => '0723232323',
 			'checkoutToken' => 'checkoutToken'
 		}
 		expect(sms.createSubcription options).to have_attributes(:status => a_value, :description => a_value)
+	end
+
+	it "should be able to delete subscriptions" do
+		# p @AT.fetch_messages
+		sms = @AT.sms
+		options = {
+			'shortCode' => '19764',
+			'keyword' => 'premium',
+			'phoneNumber' => '0723232323',
+		}
+		expect(sms.deleteSubcription options).to have_attributes(:status => a_value, :description => a_value)
 	end
 
 
@@ -98,8 +109,8 @@ RSpec.describe AfricasTalking do
 	it "should be able to send airtime to a phone number" do 
 		airtime = @AT.airtime
 		options = [
-			{'phoneNumber' => "+25472232#{rand(1000...9999)}", 'amount' => 'KES 100'},
-			{'phoneNumber' => "+25476334#{rand(1000...9999)}", 'amount' => 'KES 100'}
+			{'phoneNumber' => "+25472232#{rand(1000...9999)}", 'currencyCode'=> 'KES', 'amount' => '100'},
+			{'phoneNumber' => "+25476334#{rand(1000...9999)}", 'currencyCode'=> 'KES', 'amount' => '100'}
 		]
 		expect(airtime.send options).to inspect_SendAirtimeResult
 	end
@@ -153,7 +164,7 @@ RSpec.describe AfricasTalking do
 		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
-			'phoneNumber' => '0722232323',
+			'phoneNumber' => '+254722326747',
 			'currencyCode'=> 'KES',
 			'amount' => '200',
 			'metadata'=> {}
@@ -232,7 +243,7 @@ RSpec.describe AfricasTalking do
 				'dateOfBirth' => '2017-11-22'
 			}
 		}
-		expect(payments.bankCheckout options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
+		expect(payments.bankCheckoutCharge options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
 	it "validate bank account checkout" do
@@ -241,11 +252,12 @@ RSpec.describe AfricasTalking do
 			'transactionId' => 'ATPid_SampleTxnId1',
 			'otp' => '1234'
 		}
-		expect(payments.validateBankCheckout options).to have_attributes(:status => a_value, :description => a_value)
+		expect(payments.bankCheckoutValidate options).to have_attributes(:status => a_value, :description => a_value)
 	end
 
 	it "initiate bank transfer request" do
 		payments = @AT.payments
+
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'recipients' => [
@@ -300,7 +312,7 @@ RSpec.describe AfricasTalking do
 				"authToken"=> "12345",
 			}
 		}
-		expect(payments.cardCheckout options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
+		expect(payments.cardCheckoutCharge options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
 	it "validate card checkout" do
@@ -309,7 +321,7 @@ RSpec.describe AfricasTalking do
 			'transactionId' => 'ATPid_39a71bc00951cd1d3ed56d419d0ab3b6',
 			'otp' => '1234'
 		}
-		expect(payments.validateCardCheckout options ).to have_attributes(:status => a_value, :description => a_value, :checkoutToken => a_value)
+		expect(payments.cardCheckoutValidate options ).to have_attributes(:status => a_value, :description => a_value, :checkoutToken => a_value)
 	end
 
 	it 'initiate wallet transfer request' do 
@@ -343,36 +355,40 @@ RSpec.describe AfricasTalking do
 		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
-			'pageNumber' => '1',
-			'count' => 100,
-			'startDate' => '2018-07-17',
-			'endDate' => '2018-07-23',
-			'category' => 'MobileB2B',
-			'status' => 'Success',
-			'source' => '',
-			'destination' => '',
-			'providerChannel' => '',	
+			'filters' => {
+				'pageNumber' => '1',
+				'count' => 100,
+				'startDate' => '2018-07-17',
+				'endDate' => '2018-07-23',
+				'category' => 'AdminWalletRefund',
+				'status' => 'Success',
+				'source' => '',
+				'destination' => '',
+				'providerChannel' => '',
+			}
 		}
-		expect(payments.fetchTransactions options).to have_attributes(:status => 'Success')
+		expect(payments.fetchProductTransactions options).to have_attributes(:status => 'Success')
 	end
 
 	it 'Fetch wallet transactions' do 
 		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
-			'pageNumber' => '1',
-			'count' => 1,
-			'startDate' => '2018-07-17',
-			'endDate' => '2018-07-23',
-			'categories' => 'Debit,Credit,Refund,Topup',
+			'filters' => {
+				'pageNumber' => '1',
+				'count' => 1,
+				'startDate' => '2018-07-17',
+				'endDate' => '2018-07-23',
+				'categories' => 'Debit,Credit,Refund,Topup',
+			}
 		}
-		expect(payments.fetchWallet options).to have_attributes(:status => 'Success')
+		expect(payments.fetchWalletTransactions options).to have_attributes(:status => 'Success')
 	end
 
 	it 'Find a transaction by transactionId' do 
 		payments = @AT.payments
 		options = {
-			'transactionId' => 'ATPid_672ce181b85579b98e4fc56b9a86f9e0',
+			'transactionId' => 'ATPid_5e8d4a243a4ff07516bfc51f1ff251e0',
 		}
 		expect(payments.findTransaction options).to have_attributes(:status => 'Success')
 	end
