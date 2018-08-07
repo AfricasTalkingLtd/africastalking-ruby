@@ -39,20 +39,18 @@ class Payments
 	end
 
 	def mobileCheckout options
+		validateParamsPresence? options, %w(productName phoneNumber currencyCode amount metadata)
+		parameters = {
+			'username'     => @username,
+			'productName'  => options['productName'],
+			'phoneNumber'  => options['phoneNumber'],
+			'currencyCode' => options['currencyCode'],
+			'amount'       => options['amount'],
+			'metadata'     => options['metadata']
+		}
 		url      = getMobilePaymentCheckoutUrl()
-		if validateParamsPresence?(options, ['productName', 'phoneNumber', 'currencyCode', 'amount', 'metadata'])
-			parameters = {
-				'username'     => @username,
-				'productName'  => options['productName'],
-				'phoneNumber'  => options['phoneNumber'],
-				'currencyCode' => options['currencyCode'],
-				'amount'       => options['amount'],
-				'metadata'     => options['metadata']
-			}
-			response = sendJSONRequest(url, parameters)
-		end
-
-		if (@response_code == HTTP_CREATED)
+		response = sendJSONRequest(url, parameters)
+		if @response_code == HTTP_CREATED
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			# 
 			if (resultObj['status'] == 'PendingConfirmation')
@@ -64,23 +62,21 @@ class Payments
 	end
 
 	def mobileB2B options
-		validOptions = validateParamsPresence?(options, ['productName', 'providerData', 'currencyCode', 'amount', 'metadata'])
-		validProviderData = validateParamsPresence?(options['providerData'], ['provider', 'destinationAccount', 'destinationChannel', 'transferType'])
-		if validOptions && validProviderData
-			parameters = {
-				'username'           => @username,
-				'productName'        => options['productName'],
-				'provider'           => options['providerData']['provider'],
-				'destinationChannel' => options['providerData']['destinationChannel'],
-				'destinationAccount' => options['providerData']['destinationAccount'],
-				'transferType'       => options['providerData']['transferType'],
-				'currencyCode'       => options['currencyCode'],
-				'amount'             => options['amount'],
-				'metadata'           => options['metadata']
-			}
-			url      = getMobilePaymentB2BUrl()   
-			response = sendJSONRequest(url, parameters)
-		end
+		validateParamsPresence? options, %w(productName providerData currencyCode amount metadata)
+		validateParamsPresence? options['providerData'], %w(provider destinationAccount destinationChannel transferType)
+		parameters = {
+			'username'           => @username,
+			'productName'        => options['productName'],
+			'provider'           => options['providerData']['provider'],
+			'destinationChannel' => options['providerData']['destinationChannel'],
+			'destinationAccount' => options['providerData']['destinationAccount'],
+			'transferType'       => options['providerData']['transferType'],
+			'currencyCode'       => options['currencyCode'],
+			'amount'             => options['amount'],
+			'metadata'           => options['metadata']
+		}
+		url      = getMobilePaymentB2BUrl()   
+		response = sendJSONRequest(url, parameters)
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			# 
@@ -91,15 +87,14 @@ class Payments
 
 
 	def mobileB2C options
-		if validateParamsPresence?(options, ['recipients', 'productName'])
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'recipients'  => options['recipients']
-			}
-			url      = getMobilePaymentB2CUrl()
-			response = sendJSONRequest(url, parameters)
-		end
+		validateParamsPresence? options, %w(recipients productName)
+		parameters = {
+			'username'    => @username,
+			'productName' => options['productName'],
+			'recipients'  => options['recipients']
+		}
+		url      = getMobilePaymentB2CUrl()
+		response = sendJSONRequest(url, parameters)
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			if (resultObj['entries'].length > 0)
@@ -116,19 +111,18 @@ class Payments
 	end
 
 	def bankCheckoutCharge options
-		if validateParamsPresence?(options, ['bankAccount', 'productName', 'currencyCode', 'amount', 'narration', 'metadata'])
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'bankAccount'  => options['bankAccount'],
-				'currencyCode' => options['currencyCode'],
-				'amount' => options['amount'],
-				'narration' => options['narration'],
-				'metadata' => options['metadata']
-			}
-			url      = getBankChargeCheckoutUrl()
-			response = sendJSONRequest(url, parameters)
-		end
+		validateParamsPresence? options, %w(bankAccount productName currencyCode amount narration metadata)
+		parameters = {
+			'username'    => @username,
+			'productName' => options['productName'],
+			'bankAccount'  => options['bankAccount'],
+			'currencyCode' => options['currencyCode'],
+			'amount' => options['amount'],
+			'narration' => options['narration'],
+			'metadata' => options['metadata']
+		}
+		url      = getBankChargeCheckoutUrl()
+		response = sendJSONRequest(url, parameters)
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			# 
@@ -138,16 +132,15 @@ class Payments
 	end	
 
 	def bankCheckoutValidate options
-		if validateParamsPresence?(options, ['transactionId', 'otp'])
-			parameters = {
-				'username'    => @username,
-				'transactionId' => options['transactionId'],
-				'otp'  => options['otp']
-			}
-			# 
-			url      = getValidateBankCheckoutUrl()
-			response = sendJSONRequest(url, parameters)
-		end
+		validateParamsPresence? options, %w(transactionId otp)
+		parameters = {
+			'username'    => @username,
+			'transactionId' => options['transactionId'],
+			'otp'  => options['otp']
+		}
+		# 
+		url      = getValidateBankCheckoutUrl()
+		response = sendJSONRequest(url, parameters)
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			return ValidateBankCheckoutResponse.new resultObj['status'], resultObj['description']
@@ -156,15 +149,14 @@ class Payments
 	end
 
 	def bankTransfer options
-		if validateParamsPresence?(options, ['productName', 'recipients'])
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'recipients'  => options['recipients']
-			}
-			url      = getBankTransferRequestUrl()
-			response = sendJSONRequest(url, parameters)		
-		end
+		validateParamsPresence? options, %w(productName recipients)
+		parameters = {
+			'username'    => @username,
+			'productName' => options['productName'],
+			'recipients'  => options['recipients']
+		}
+		url      = getBankTransferRequestUrl()
+		response = sendJSONRequest(url, parameters)		
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 
@@ -184,32 +176,30 @@ class Payments
 	end
 
 	def cardCheckoutCharge options
-		if validateParamsPresence?(options, ['productName', 'currencyCode', 'amount', 'narration', 'metadata'])
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'currencyCode' => options['currencyCode'],
-				'amount' => options['amount'],
-				'narration' => options['narration'],
-				'metadata' => options['metadata']
-			}
-			if (options['checkoutToken'] == nil && options['paymentCard'] == nil)
-				raise AfricasTalkingException, "Please make sure either the checkoutToken or paymentCard parameter is not empty"
-			elsif (options['checkoutToken'] != nil && options['paymentCard'] != nil)
-
-				raise AfricasTalkingException, "If you have a checkoutToken please make sure paymentCard parameter is empty"
-			end
-			if (options['checkoutToken'] != nil)
-				parameters['checkoutToken'] = options['checkoutToken']
-			end
-			if (options['paymentCard'] != nil)
-				if validateParamsPresence?(options['paymentCard'], ['number', 'cvvNumber', 'expiryMonth', 'expiryYear', 'countryCode', 'authToken'])
-					parameters['paymentCard'] = options['paymentCard']
-				end
-			end
-			url      = getCardCheckoutChargeUrl()
-			response = sendJSONRequest(url, parameters)
+		validateParamsPresence? options, %w(productName currencyCode amount narration metadata)
+		parameters = {
+			'username'    => @username,
+			'productName' => options['productName'],
+			'currencyCode' => options['currencyCode'],
+			'amount' => options['amount'],
+			'narration' => options['narration'],
+			'metadata' => options['metadata']
+		}
+		if (options['checkoutToken'] == nil && options['paymentCard'] == nil)
+			raise AfricasTalkingException, "Please make sure either the checkoutToken or paymentCard parameter is not empty"
+		elsif (options['checkoutToken'] != nil && options['paymentCard'] != nil)
+			raise AfricasTalkingException, "If you have a checkoutToken please make sure paymentCard parameter is empty"
 		end
+		if (options['checkoutToken'] != nil)
+			parameters['checkoutToken'] = options['checkoutToken']
+		end
+		if (options['paymentCard'] != nil)
+			if validateParamsPresence?(options['paymentCard'], ['number', 'cvvNumber', 'expiryMonth', 'expiryYear', 'countryCode', 'authToken'])
+				parameters['paymentCard'] = options['paymentCard']
+			end
+		end
+		url      = getCardCheckoutChargeUrl()
+		response = sendJSONRequest(url, parameters)
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			# 
@@ -220,16 +210,14 @@ class Payments
 	end
 
 	def cardCheckoutValidate options
-		if validateParamsPresence?(options, ['transactionId', 'otp'])
-			parameters = {
-				'username'    => @username,
-				'transactionId' => options['transactionId'],
-				'otp'  => options['otp']
-			}
-			url      = getValidateCardCheckoutUrl()
-			# 
-			response = sendJSONRequest(url, parameters)
-		end
+		validateParamsPresence? options, %w(transactionId otp)
+		parameters = {
+			'username'    => @username,
+			'transactionId' => options['transactionId'],
+			'otp'  => options['otp']
+		}
+		url      = getValidateCardCheckoutUrl()
+		response = sendJSONRequest(url, parameters)
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			return ValidateCardCheckoutResponse.new resultObj['status'], resultObj['description'], resultObj['checkoutToken']
@@ -238,19 +226,18 @@ class Payments
 		raise AfricasTalkingException, response
 	end
 
-	def walletTransferRequest options
-		if validateParamsPresence?(options, ['productName', 'targetProductCode', 'currencyCode', 'amount', 'metadata'])
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'targetProductCode' => options['targetProductCode'],
-				'currencyCode' => options['currencyCode'],
-				'amount' => options['amount'],
-				'metadata' => options['metadata'] 
-			}
-			url      = getWalletTransferUrl()
-			response = sendJSONRequest(url, parameters)
-		end
+	def walletTransfer options
+		validateParamsPresence? options, %w(productName targetProductCode currencyCode amount metadata)
+		parameters = {
+			'username'    => @username,
+			'productName' => options['productName'],
+			'targetProductCode' => options['targetProductCode'],
+			'currencyCode' => options['currencyCode'],
+			'amount' => options['amount'],
+			'metadata' => options['metadata'] 
+		}
+		url      = getWalletTransferUrl()
+		response = sendJSONRequest(url, parameters)
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			# 
@@ -259,18 +246,17 @@ class Payments
 		raise AfricasTalkingException, response
 	end
 
-	def topupStashRequest options
-		if validateParamsPresence?(options, ['productName', 'currencyCode', 'amount', 'metadata'])
-			parameters = {
-				'username'    => @username,
-				'productName' => options['productName'],
-				'currencyCode' => options['currencyCode'],
-				'amount' => options['amount'],
-				'metadata' => options['metadata'] 
-			}
-			url      = getTopupStashUrl() 
-			response = sendJSONRequest(url, parameters)
-		end
+	def topupStash options
+		validateParamsPresence? options, %w(productName currencyCode amount metadata)
+		parameters = {
+			'username'    => @username,
+			'productName' => options['productName'],
+			'currencyCode' => options['currencyCode'],
+			'amount' => options['amount'],
+			'metadata' => options['metadata'] 
+		}
+		url      = getTopupStashUrl() 
+		response = sendJSONRequest(url, parameters)
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			return TopupStashResponse.new resultObj['status'], resultObj['description'], resultObj['transactionId']
@@ -312,7 +298,7 @@ class Payments
 	end
 
 	def fetchWalletTransactions options
-		validateParamsPresence? options %w(filters)
+		validateParamsPresence? options, ['filters']
 		filters = options['filters']
 		validateParamsPresence? filters, %w(pageNumber count)
 		parameters = {
@@ -320,15 +306,9 @@ class Payments
 			'pageNumber' => filters['pageNumber'],
 			'count' => filters['count']
 		}
-		if !(filters['startDate'].nil? || filters['startDate'].empty?)
-			parameters['startDate'] = filters['startDate']
-		end
-		if !(filters['endDate'].nil? || filters['endDate'].empty?)
-			parameters['endDate'] = filters['endDate']
-		end
-		if !(filters['categories'].nil? || filters['categories'].empty?)
-			parameters['categories'] = filters['categories']
-		end
+		parameters['startDate'] = filters['startDate'] if !(filters['startDate'].nil? || filters['startDate'].empty?)
+		parameters['endDate'] = filters['endDate'] if !(filters['endDate'].nil? || filters['endDate'].empty?)
+		parameters['categories'] = filters['categories'] if !(filters['categories'].nil? || filters['categories'].empty?)
 		url      = getFetchWalletUrl() 
 		response = sendJSONRequest(url, parameters, true)
 		if (@response_code == HTTP_OK)
@@ -350,14 +330,13 @@ class Payments
 	end
 
 	def findTransaction options
-		if validateParamsPresence?(options, ['transactionId'])
-			parameters = {
-				'username'    => @username,
-				'transactionId' => options['transactionId']
-			}
-			url      = getFindTransactionUrl() 
-			response = sendJSONRequest(url, parameters, true)
-		end
+		validateParamsPresence? options, ['transactionId']
+		parameters = {
+			'username'    => @username,
+			'transactionId' => options['transactionId']
+		}
+		url      = getFindTransactionUrl() 
+		response = sendJSONRequest(url, parameters, true)
 		if (@response_code == HTTP_OK)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			transactionData = nil

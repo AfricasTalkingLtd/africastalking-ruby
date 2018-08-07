@@ -1,7 +1,7 @@
 RSpec.describe AfricasTalking do
 	before(:each) do
-		username = 'sandbox'
-		apiKey = 'b74f8d0f1e6695bcd264e14e74f8a78db8685451a836b83d6ac0e8e6baec5b97'
+		username = ENV['AT_UNAME']
+		apiKey = ENV['AT_API']
 		@AT=AfricasTalking::Initialize.new username, apiKey
 	   
 	end
@@ -12,14 +12,12 @@ RSpec.describe AfricasTalking do
 
 	# ///////////////////TOKEN////////////////////////
 	it "should be able to generate checkout token" do
-		# p @AT
 		token = @AT.token
 		options ={ 'phoneNumber'=> "+25476334#{rand(1000...9999)}"}
 		expect(token.createCheckoutToken options).to have_attributes(:description => "Success", :token => a_value)
 	end
 
 	it "should be able to generate checkout token" do
-		# p @AT
 		token = @AT.token
 		expect(token.generateAuthToken).to have_attributes(:lifetimeInSeconds => a_value, :token => a_value)
 	end
@@ -30,7 +28,6 @@ RSpec.describe AfricasTalking do
 	# ///////////////////SMS////////////////////////
 
 	it "should be able to send bulk message" do
-		# p @AT
 		sms = @AT.sms
 		options = {
 			'message' => 'sample message',
@@ -68,7 +65,6 @@ RSpec.describe AfricasTalking do
 
 	# not completed this test. remember to consider empty responses
 	it "should be able to fetch subscriptions" do
-		# p @AT.fetch_messages
 		sms = @AT.sms
 		options = {
 			'shortCode' => '77777',
@@ -80,7 +76,6 @@ RSpec.describe AfricasTalking do
 
 	# not complete. you need to check what the checkoutToken is
 	it "should be able to create subscriptions" do
-		# p @AT.fetch_messages
 		sms = @AT.sms
 		options = {
 			'shortCode' => '19764',
@@ -92,7 +87,6 @@ RSpec.describe AfricasTalking do
 	end
 
 	it "should be able to delete subscriptions" do
-		# p @AT.fetch_messages
 		sms = @AT.sms
 		options = {
 			'shortCode' => '19764',
@@ -335,7 +329,7 @@ RSpec.describe AfricasTalking do
 				"description" => "May Rent"
 			}
 		}
-		expect(payments.walletTransferRequest options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
+		expect(payments.walletTransfer options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
 	it 'initiate topup stash request' do 
@@ -348,7 +342,21 @@ RSpec.describe AfricasTalking do
 				"description" => "moving money"
 			}
 		}
-		expect(payments.topupStashRequest options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
+		expect(payments.topupStash options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
+	end
+
+	it 'Fetch wallet transactions' do 
+		payments = @AT.payments
+		options = {
+			'filters' => {
+				'pageNumber' => '1',
+				'count' => '2',
+				'startDate' => '2018-07-17',
+				'endDate' => '2018-07-23',
+				'categories' => 'Debit,Credit,Refund,Topup',
+			}
+		}
+		expect(payments.fetchWalletTransactions options).to have_attributes(:status => 'Success')
 	end
 
 	it 'Fetch transactions of a payment product' do 
@@ -357,7 +365,7 @@ RSpec.describe AfricasTalking do
 			'productName' => 'RUBY_GEM_TEST',
 			'filters' => {
 				'pageNumber' => '1',
-				'count' => 100,
+				'count' => '100',
 				'startDate' => '2018-07-17',
 				'endDate' => '2018-07-23',
 				'category' => 'AdminWalletRefund',
@@ -367,28 +375,14 @@ RSpec.describe AfricasTalking do
 				'providerChannel' => '',
 			}
 		}
+		sleep 1
 		expect(payments.fetchProductTransactions options).to have_attributes(:status => 'Success')
-	end
-
-	it 'Fetch wallet transactions' do 
-		payments = @AT.payments
-		options = {
-			'productName' => 'RUBY_GEM_TEST',
-			'filters' => {
-				'pageNumber' => '1',
-				'count' => 1,
-				'startDate' => '2018-07-17',
-				'endDate' => '2018-07-23',
-				'categories' => 'Debit,Credit,Refund,Topup',
-			}
-		}
-		expect(payments.fetchWalletTransactions options).to have_attributes(:status => 'Success')
 	end
 
 	it 'Find a transaction by transactionId' do 
 		payments = @AT.payments
 		options = {
-			'transactionId' => 'ATPid_5e8d4a243a4ff07516bfc51f1ff251e0',
+			'transactionId' => 'ATPid_3eed2c348e9ce8e7c1a9b49b1b3cbdbc',
 		}
 		expect(payments.findTransaction options).to have_attributes(:status => 'Success')
 	end
