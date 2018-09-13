@@ -19,19 +19,10 @@ class Sms
     }
 
     set_optional_params post_body, options
-
-    if validateParamsPresence?(options, %w[message to])
-      response = sendNormalRequest(getSmsUrl, post_body)
-    end
-
-    raise AfricasTalkingException, response unless @response_code == HTTP_CREATED
-    message_data = JSON.parse(response, quirks_mode: true)['SMSMessageData']
-    recipients = message_data['Recipients']
-
-    raise AfricasTalkingException, message_data['Message'] if recipients.empty?
-    recipients.collect do |entry|
-      StatusReport.new entry['number'], entry['status'], entry['cost'], entry['messageId']
-    end
+    validateParamsPresence?(options, %w[message to])
+    response = sendNormalRequest(getSmsUrl, post_body)
+    recepients = decode_response(response)[:recepients]
+    send_status_reports(recepients)
   end
 
   def sendPremium(options)
@@ -43,18 +34,12 @@ class Sms
       'linkId'      => options['linkId']
     }
     set_optional_params post_body, options
-    valid_params = validateParamsPresence?(options, ['message', 'to', 'keyword', 'linkId'])
-    response = sendNormalRequest(getSmsUrl, post_body) if valid_params
-
-    raise AfricasTalkingException, response unless @response_code == HTTP_CREATED
-    message_data = JSON.parse(response, quirks_mode: true)['SMSMessageData']
-    recipients = message_data['Recipients']
-
-    raise AfricasTalkingException, message_data['Message'] if recipients.empty?
-    reports = recipients.collect do |entry|
-      StatusReport.new entry['number'], entry['status'], entry['cost'], entry['messageId']
-    end
-    SendPremiumMessagesResponse.new reports, message_data['Message']
+    validateParamsPresence?(options, ['message', 'to', 'keyword', 'linkId'])
+    response = sendNormalRequest(getSmsUrl, post_body)
+    recepients = decode_response(response)[:recepients]
+    reports = send_status_reports(recepients)
+    message = decode_response(response)[:message]
+    SendPremiumMessagesResponse.new reports, message
   end
 
   def fetchMessages options
@@ -157,6 +142,20 @@ class Sms
     post_body['bulkSMSMode'] = options['bulkSMSMode'] if options['bulkSMSMode']
     post_body['enqueue'] = options['enqueue'] if options['enqueue']
     post_body['from'] = options['from'] if options['from']
+  end
+
+  def decode_response(response)
+    raise AfricasTalkingException, response unless @response_code == HTTP_CREATED
+    message_data = JSON.parse(response, quirks_mode: true)['SMSMessageData']
+    recepients = message_data['Recipients']
+    raise AfricasTalkingException, message_data['Message'] if recepients.empty?
+    {recepients: recepients, message: message_data['Message']}
+  end
+
+  def send_status_reports(receipients)
+    receipients.collect do |entry|
+      StatusReport.new entry['number'], entry['status'], entry['cost'], entry['messageId']
+    end
   end
 end
 

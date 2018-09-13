@@ -1,7 +1,7 @@
 RSpec.describe AfricasTalking do
   before(:each) do
-    username = ENV['AT_UNAME']
-    api_key = ENV['AT_API']
+    username = 'sandbox'
+    api_key = ENV['AT_SANDBOX_API']
     @AT = AfricasTalking::Initialize.new username, api_key
   end
 
