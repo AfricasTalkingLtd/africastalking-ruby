@@ -22,7 +22,7 @@ class Sms
     validateParamsPresence?(options, %w[message to])
     response = sendNormalRequest(getSmsUrl, post_body)
     recepients = decode_response(response)[:recepients]
-    send_status_reports(recepients)
+    status_report(recepients)
   end
 
   def sendPremium(options)
@@ -34,12 +34,11 @@ class Sms
       'linkId'      => options['linkId']
     }
     set_optional_params post_body, options
-    validateParamsPresence?(options, ['message', 'to', 'keyword', 'linkId'])
+    validateParamsPresence?(options, %w[message to keyword linkId])
     response = sendNormalRequest(getSmsUrl, post_body)
     recepients = decode_response(response)[:recepients]
-    reports = send_status_reports(recepients)
-    message = decode_response(response)[:message]
-    SendPremiumMessagesResponse.new reports, message
+    SendPremiumMessagesResponse.new status_report(recepients),
+                                    decode_response(response)[:message]
   end
 
   def fetchMessages options
@@ -152,7 +151,7 @@ class Sms
     {recepients: recepients, message: message_data['Message']}
   end
 
-  def send_status_reports(receipients)
+  def status_report(receipients)
     receipients.collect do |entry|
       StatusReport.new entry['number'], entry['status'], entry['cost'], entry['messageId']
     end
