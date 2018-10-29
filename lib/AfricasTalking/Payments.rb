@@ -39,15 +39,16 @@ class Payments
 	end
 
 	def mobileCheckout options
-		validateParamsPresence? options, %w(productName phoneNumber currencyCode amount metadata)
+		validateParamsPresence? options, %w(productName phoneNumber currencyCode amount)
 		parameters = {
 			'username'     => @username,
 			'productName'  => options['productName'],
 			'phoneNumber'  => options['phoneNumber'],
 			'currencyCode' => options['currencyCode'],
-			'amount'       => options['amount'],
-			'metadata'     => options['metadata']
+			'amount'       => options['amount']
 		}
+		parameters['providerChannel'] = options['providerChannel'] if !(options['providerChannel'].nil? || options['providerChannel'].empty?)
+		parameters['metadata'] = options['metadata'] if !(options['metadata'].nil? || options['metadata'].empty?)
 		url      = getMobilePaymentCheckoutUrl()
 		response = sendJSONRequest(url, parameters)
 		if @response_code == HTTP_CREATED

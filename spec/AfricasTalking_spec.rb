@@ -159,6 +159,7 @@ RSpec.describe AfricasTalking do
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
 			'phoneNumber' => '+254722326747',
+			'providerChannel' => '121212',
 			'currencyCode'=> 'KES',
 			'amount' => '200',
 			'metadata'=> {}
@@ -382,7 +383,7 @@ RSpec.describe AfricasTalking do
 	it 'Find a transaction by transactionId' do 
 		payments = @AT.payments
 		options = {
-			'transactionId' => 'ATPid_3eed2c348e9ce8e7c1a9b49b1b3cbdbc',
+			'transactionId' => 'ATPid_38acd1c7979458f145adac23e2dc8f5e',
 		}
 		expect(payments.findTransaction options).to have_attributes(:status => 'Success')
 	end
