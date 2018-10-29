@@ -281,6 +281,7 @@ payments.mobileCheckout options
     - `currencyCode`: 3-digit ISO format currency code (e.g `KES`, `USD`, `UGX` etc.) `REQUIRED`
     - `amount`: This is the amount. `REQUIRED`
     - `metadata`: Some optional data to associate with transaction.`OPTIONAL`
+    - `providerChannel`: This represents the payment channel the payment will be made from. eg paybill number. The payment channel must be mapped to you. The AfricasTalking default provider channel is used if not specified.`OPTIONAL`
 
 #### Mobile B2C
 ```ruby
