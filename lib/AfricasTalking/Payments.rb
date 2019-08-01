@@ -111,6 +111,30 @@ class Payments
 		raise AfricasTalkingException, response
 	end
 
+    def mobileData options
+      validateParamsPresence? options, %w(productName, recipients)
+      parameters = {
+			'username'    => @username,
+			'productName' => options['productName'],
+			'recipients'  => options['recipients']
+	  }
+      url      = getMobileDataUrl()
+      response = sendJSONRequest(url, parameters)
+      if (@response_code == HTTP_CREATED)
+			resultObj = JSON.parse(response, :quirky_mode =>true)
+			if (resultObj['entries'].length > 0)
+				results = resultObj['entries'].collect{ |data|
+					MobileDataResponse.new data['phoneNumber'], data['provider'], data['status'], data['transactionId'], data['value'], data['errorMessage']
+				}
+				# 
+				return results
+			end
+
+			raise AfricasTalkingException, resultObj['errorMessage']
+      end
+	  raise AfricasTalkingException, response
+    end
+
 	def bankCheckoutCharge options
 		validateParamsPresence? options, %w(bankAccount productName currencyCode amount narration metadata)
 		parameters = {
@@ -381,6 +405,10 @@ class Payments
 			return getPaymentHost() + "/mobile/b2c/request"
 		end
 
+        def getMobileDataUrl()
+		  return getPaymentHost() + "/mobile/data/request"
+        end
+
 		def getMobilePaymentB2BUrl()
 			return getPaymentHost() + "/mobile/b2b/request"
 		end
@@ -453,7 +481,20 @@ class MobileB2CResponse
 			@transactionId   = transactionId_
 			@errorMessage   = errorMessage_
 	end
-end	
+end
+
+class MobileDataResponse
+	attr_reader :phoneNumber, :provider, :status, :transactionId, :value, :errorMessage
+
+	def initialize phoneNumber_, provider_, status_, transactionId_, value_, errorMessage_
+			@phoneNumber     = phoneNumber_
+			@provider        = provider_
+			@status          = status_
+            @transactionId   = transactionId_
+			@value           = value_
+			@errorMessage   = errorMessage_
+	end
+end
 
 class MobileB2BResponse
 	attr_reader :status, :transactionId, :transactionFee, :providerChannel, :errorMessage

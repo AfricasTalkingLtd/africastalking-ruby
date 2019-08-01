@@ -199,6 +199,27 @@ RSpec.describe AfricasTalking do
 		
 	end
 
+    it "initiate mobile Data Request" do
+		payments = @AT.payments
+		options = {
+			'productName' => 'RUBY_GEM_TEST',
+			'recipients' => [
+				{
+					"phoneNumber"=> '+254722222222',
+					"quantity"=> 10,
+					"unit"=> 'GB',
+					"validity"=> "Daily",
+					"metadata" => {
+						"description" => "promo bundles",
+						"name" => "tester"
+					}
+				}
+			]
+		}
+		expect(payments.mobileData options).to inspect_MobileDataResponse
+		
+	end
+
 	it "initiate mobile B2B request" do
 		payments = @AT.payments
 		options = {
