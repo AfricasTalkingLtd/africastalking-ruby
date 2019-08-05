@@ -333,6 +333,20 @@ payments.mobileB2B options
     - `amount`: Payment amount. `REQUIRED`
     - `metadata`: Some optional data to associate with transaction.`REQUIRED`
 
+#### Mobile Data
+```ruby
+payments.mobileData options
+```
+- `options`
+    - `productName`: Your Payment Product. `REQUIRED`
+    - `recipients`: A list of recipients. Each recipient has:
+
+        - `phoneNumber`: Customer phone number (in international format). `REQUIRED`
+        - `quantity`: Mobile data amount. `REQUIRED`
+        - `unit`: Mobile data unit. Can either be `MB` or `GB`. `REQUIRED`
+        - `validity`: How long the mobile data is valid for. Must be one of `Daily`, `Weekly` and `Monthly`. `REQUIRED`
+        - `metadata`: Additional data to associate with the transaction. `REQUIRED`
+
 #### Wallet Transfer
 ```ruby
 payments.walletTransfer options
