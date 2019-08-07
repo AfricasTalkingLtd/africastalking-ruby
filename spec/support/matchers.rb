@@ -79,6 +79,20 @@ RSpec::Matchers.define :inspect_MobileB2CResponse do |expected|
   end
 end
 
+RSpec::Matchers.define :inspect_MobileDataResponse do |expected|
+  status = []
+  match do |actual|
+    # 
+    obj = actual.collect { |item| 
+      expect(item).to have_attributes(:phoneNumber => a_value, :provider => a_value, :status => a_value, :transactionId => a_value, :value => a_value)
+    }
+    obj.all? {|e| e.eql? true}
+  end
+  failure_message_when_negated do |actual|
+    "something went wrong. initiate mobile B2C response test failing"
+  end
+end
+
 
 RSpec::Matchers.define :inspect_BankTransferResponse do |expected|
   status = []

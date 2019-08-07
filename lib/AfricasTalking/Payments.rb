@@ -112,15 +112,18 @@ class Payments
 	end
 
     def mobileData options
-      validateParamsPresence? options, %w(productName, recipients)
-      parameters = {
+		validateParamsPresence? options, %w(productName)
+		recipients = options['recipients'].each{|item| 
+			validateParamsPresence? item, %w(phoneNumber quantity unit validity metadata)
+		}
+		parameters = {
 			'username'    => @username,
 			'productName' => options['productName'],
-			'recipients'  => options['recipients']
-	  }
-      url      = getMobileDataUrl()
-      response = sendJSONRequest(url, parameters)
-      if (@response_code == HTTP_CREATED)
+			'recipients' => recipients,
+		}
+		url      = getMobileDataUrl()
+		response = sendJSONRequest(url, parameters)
+		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
 			if (resultObj['entries'].length > 0)
 				results = resultObj['entries'].collect{ |data|
@@ -131,8 +134,8 @@ class Payments
 			end
 
 			raise AfricasTalkingException, resultObj['errorMessage']
-      end
-	  raise AfricasTalkingException, response
+		end
+		raise AfricasTalkingException, response
     end
 
 	def bankCheckoutCharge options
