@@ -9,12 +9,13 @@ require 'AfricasTalking/Voice'
 require 'AfricasTalking/Token'
 require 'AfricasTalking/Application'
 
+# main module
 module AfricasTalking
   DEBUG = false
   @username = nil
   @apikey = nil
   @response_code = nil
-
+  # class Initialize
   class Initialize
     attr_accessor :username, :apikey
     def initialize(username, apikey)
