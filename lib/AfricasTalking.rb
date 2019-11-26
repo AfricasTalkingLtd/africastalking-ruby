@@ -98,7 +98,7 @@ module AfricasTalking
   end
 
   def validateParamsPresence?(params, values)
-    status = values.each do |v|
+    values.each do |v|
       if !params.key?(v)
         raise AfricasTalkingException, "Please make sure your params has key #{v}"
       elsif v.empty?
