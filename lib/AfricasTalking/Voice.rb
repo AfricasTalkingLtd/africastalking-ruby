@@ -13,9 +13,10 @@ class Voice
 	def call options
 		if validateParamsPresence?(options, ['from', 'to'])
 			post_body = {
-				'username' => @username, 
-				'from'     => options['from'], 
-				'to'       => options['to']
+				'username'              => @username,
+				'from'                  => options['from'],
+				'to'                    => options['to'],
+				'clientRequestId'       => options['clientRequestId']
 			}
 			# 
 			response = sendNormalRequest(getVoiceHost() + "/call", post_body)
