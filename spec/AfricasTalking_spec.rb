@@ -118,7 +118,9 @@ RSpec.describe AfricasTalking do
 		voice = @AT.voice
 		options = {
 			'from' => "+254722123456",
-			'to'   => "+25471147#{rand(1000...9999)}, +25473383#{rand(1000...9999)}"
+			# 'to'   => "+25471147#{rand(1000...9999)}, +25473383#{rand(1000...9999)}",
+			'to'   => '+254712345678',
+			'clientRequestId' => "agent1"
 	}
 		expect(voice.call options).to inspect_CallResponse
 	end
