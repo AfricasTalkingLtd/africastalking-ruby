@@ -1,11 +1,7 @@
-require "AfricasTalking/version"
 require 'httparty'
-require "AfricasTalking/Sms"
-require "AfricasTalking/Airtime"
-require "AfricasTalking/Payments"
-require "AfricasTalking/Voice"
-require "AfricasTalking/Token"
-require "AfricasTalking/Application"
+Dir[File.expand_path('AfricasTalking/*.rb', __dir__)].reverse.each do |f|
+  require f
+end
 
 module AfricasTalking
 	DEBUG            = false
