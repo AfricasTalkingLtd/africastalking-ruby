@@ -158,6 +158,7 @@ voice.call options
     - `to`: A single recipient or an array of recipients. `REQUIRED`
         - array of recipients contains ['2XXXXXXXX', '2XXXXXXXX']
     - `from`: Shortcode or alphanumeric ID that is registered with Africa's Talking account.`REQUIRED`
+    - `clientRequestId`: String sent to your Events Callback URL that can be used to tag the call. `OPTIONAL`
 
 
 #### Fetch queued calls
