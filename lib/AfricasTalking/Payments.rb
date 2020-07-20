@@ -76,7 +76,10 @@ class Payments
 			'amount'             => options['amount'],
 			'metadata'           => options['metadata']
 		}
-		url      = getMobilePaymentB2BUrl()   
+		url = getMobilePaymentB2BUrl()
+        if options['requester'] != nil
+		  parameters['requester'] = options['requester']
+        end
 		response = sendJSONRequest(url, parameters)
 		if (@response_code == HTTP_CREATED)
 			resultObj = JSON.parse(response, :quirky_mode =>true)
