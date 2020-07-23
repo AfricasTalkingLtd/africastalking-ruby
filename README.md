@@ -332,6 +332,7 @@ payments.mobileB2B options
     	- `destinationAccount`: This value contains the account name used by the business to receive money on the provided destinationChannel. `REQUIRED`
     - `currencyCode`: 3-digit ISO format currency code (e.g `KES`, `USD`, `UGX` etc.) `REQUIRED`
     - `amount`: Payment amount. `REQUIRED`
+    - `requester`: PhoneNumber through which KPLC will send tokens when using B2B to buy electricity tokens.
     - `metadata`: Some optional data to associate with transaction.`REQUIRED`
 
 #### Mobile Data
