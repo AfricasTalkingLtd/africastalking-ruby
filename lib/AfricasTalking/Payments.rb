@@ -77,7 +77,7 @@ class Payments
 			'metadata'           => options['metadata']
 		}
 		url = getMobilePaymentB2BUrl()
-        if options['requester'] != nil
+        if options.key?('requester')
 		  parameters['requester'] = options['requester']
         end
 		response = sendJSONRequest(url, parameters)
