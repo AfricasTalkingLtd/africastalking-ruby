@@ -24,21 +24,6 @@ class Token
 		end
 	end
 
-	def createCheckoutToken options
-		post_body = {
-			'phoneNumber' => options['phoneNumber']
-		}
-		url = getApiHost() + "/checkout/token/create"
-		response = sendNormalRequest(url, post_body)
-		# 
-		if(@response_code == HTTP_CREATED)
-			r= JSON.parse(response, :quirky_mode => true)
-			return CheckoutTokenResponse.new r['token'], r['description']
-		else
-			raise AfricasTalkingException, response
-		end
-	end
-
 	private
 
 		def getApiHost()
@@ -55,12 +40,5 @@ class AuthTokenResponse
 	def initialize token_, lifetimeInSeconds_
 		@token      = token_
 		@lifetimeInSeconds = lifetimeInSeconds_
-	end
-end
-class CheckoutTokenResponse
-	attr_accessor :token, :description
-	def initialize token_, description_
-		@token      = token_
-		@description = description_
 	end
 end

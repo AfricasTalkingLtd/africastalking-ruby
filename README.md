@@ -49,14 +49,6 @@ token = @AT.token
 #### Create authentication Token
 
 ```ruby
-token.createCheckoutToken options
-```
-- `options`
-    - `phoneNumber`: The phone number you want to create a subscription for
-
-#### Create Checkout Token
-
-```ruby
 token.generateAuthToken phoneNumber
 ```
 

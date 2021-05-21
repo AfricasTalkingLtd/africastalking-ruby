@@ -11,13 +11,7 @@ RSpec.describe AfricasTalking do
 	end
 
 	# ///////////////////TOKEN////////////////////////
-	it "should be able to generate checkout token" do
-		token = @AT.token
-		options ={ 'phoneNumber'=> "+25476334#{rand(1000...9999)}"}
-		expect(token.createCheckoutToken options).to have_attributes(:description => "Success", :token => a_value)
-	end
-
-	it "should be able to generate checkout token" do
+	it "should be able to generate auth token" do
 		token = @AT.token
 		expect(token.generateAuthToken).to have_attributes(:lifetimeInSeconds => a_value, :token => a_value)
 	end
@@ -74,14 +68,12 @@ RSpec.describe AfricasTalking do
 		expect(sms.fetchSubscriptions options).to inspect_FetchSubscriptionResponse
 	end	
 
-	# not complete. you need to check what the checkoutToken is
 	it "should be able to create subscriptions" do
 		sms = @AT.sms
 		options = {
 			'shortCode' => '19764',
 			'keyword' => 'premium',
-			'phoneNumber' => '0723232323',
-			'checkoutToken' => 'checkoutToken'
+			'phoneNumber' => '0723232323'
 		}
 		expect(sms.createSubcription options).to have_attributes(:status => a_value, :description => a_value)
 	end
