@@ -12,15 +12,23 @@ class Airtime
 	def send options
 		url      = getAirtimeUrl() + "/send"
 
-		recipients = options.each{|item| 
+		recipients = options['recipients'].each{|item| 
 			validateParamsPresence? item, %w(phoneNumber currencyCode amount)
 			item['amount'].to_s.prepend(item['currencyCode'].to_s + " ") 
 			item.delete('currencyCode')
 		}
 		post_body = {
-					'username'   => @username,
-					'recipients' => recipients.to_json,
-				}
+			'username'   => @username,
+			'recipients' => recipients.to_json,
+		}
+
+		if options['maxNumRetry'] && options['maxNumRetry'] > 0
+            post_body['maxNumRetry'] = options['maxNumRetry'].to_i
+
+        else
+            puts "Please make sure #{options['maxNumRetry']} is a number and greater than zero!"
+        end
+
 		response = sendNormalRequest(url, post_body) 
 		if (@response_code == HTTP_CREATED)
 			responses = JSON.parse(response, :quirky_mode =>true)
