@@ -145,9 +145,6 @@ class Sms
 						'shortCode'   => options['shortCode'],
 						'keyword'     => options['keyword']
 					}
-		if options['checkoutToken'] != nil
-			post_body['checkoutToken'] = options['checkoutToken']
-		end
 		url = getSmsSubscriptionUrl() + "/create"
 		if validateParamsPresence?(options, ['shortCode', 'keyword', 'phoneNumber'])
 			response = sendNormalRequest(url, post_body)
