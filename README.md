@@ -76,6 +76,8 @@ airtime.send options
         - `currency`:3-digit ISO format currency code . `REQUIRED`
         - `amount`: Amount sent `>= 10 && <= 10K` with currency e.g `KES 100` `REQUIRED`
 
+ - `maxNumRetry`: This allows you to specify the maximum number of retries in case of failed airtime deliveries due to various reasons such as telco unavailability. The default retry period is 8 hours and retries occur every 60seconds. For example, setting `maxNumRetry=4` means the transaction will be retried every 60seconds for the next 4 hours.`OPTIONAL`.
+  
 ### Sms
 
 ```ruby
