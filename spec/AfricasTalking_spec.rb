@@ -94,10 +94,20 @@ RSpec.describe AfricasTalking do
 
 	it "should be able to send airtime to a phone number" do 
 		airtime = @AT.airtime
-		options = [
-			{'phoneNumber' => "+25472232#{rand(1000...9999)}", 'currencyCode'=> 'KES', 'amount' => '100'},
-			{'phoneNumber' => "+25476334#{rand(1000...9999)}", 'currencyCode'=> 'KES', 'amount' => '100'}
-		]
+		
+		options =  {
+			'recipients' => [{
+				'phoneNumber' => "+25472232#{rand(1000...9999)}",
+				'currencyCode' => 'KES',
+				'amount' => '100',
+			},
+			{
+				'phoneNumber' => "+25476334#{rand(1000...9999)}",
+				'currencyCode' => 'KES',
+				'amount' => '40',
+			}],
+			'maxNumRetry' => 3,
+		}
 		expect(airtime.send options).to inspect_SendAirtimeResult
 	end
 
