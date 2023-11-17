@@ -3,7 +3,7 @@ RSpec.describe AfricasTalking do
 		username = 'username'
 		apiKey = 'apiKey'
 		@AT=AfricasTalking::Initialize.new username, apiKey
-	   
+
 	end
 
 	it "has a version number" do
@@ -66,7 +66,7 @@ RSpec.describe AfricasTalking do
 			'lastReceivedId' => nil
 		}
 		expect(sms.fetchSubscriptions options).to inspect_FetchSubscriptionResponse
-	end	
+	end
 
 	it "should be able to create subscriptions" do
 		sms = @AT.sms
@@ -92,9 +92,9 @@ RSpec.describe AfricasTalking do
 
 	# ///////////////////AIRTIME//////////////////////
 
-	it "should be able to send airtime to a phone number" do 
+	it "should be able to send airtime to a phone number" do
 		airtime = @AT.airtime
-		
+
 		options =  {
 			'recipients' => [{
 				'phoneNumber' => "+25472232#{rand(1000...9999)}",
@@ -115,7 +115,7 @@ RSpec.describe AfricasTalking do
 
 	# ////////////////////////////VOICE///////////////////////////////////
 
-	# returns a string instead of 
+	# returns a string instead of
 	it "should be able to make call" do
 		voice = @AT.voice
 		options = {
@@ -200,28 +200,7 @@ RSpec.describe AfricasTalking do
 			]
 		}
 		expect(payments.mobileB2C options).to inspect_MobileB2CResponse
-		
-	end
 
-    it "initiate mobile Data Request" do
-		payments = @AT.payments
-		options = {
-			'productName' => 'RUBY_GEM_TEST',
-			'recipients' => [
-				{
-					"phoneNumber"=> '+254722222222',
-					"quantity"=> 10,
-					"unit"=> 'GB',
-					"validity"=> "Daily",
-					"metadata" => {
-						"description" => "promo bundles",
-						"name" => "tester"
-					}
-				}
-			]
-		}
-		expect(payments.mobileData options).to inspect_MobileDataResponse
-		
 	end
 
 	it "initiate mobile B2B request" do
@@ -242,7 +221,7 @@ RSpec.describe AfricasTalking do
 			}
 		}
 		expect(payments.mobileB2B options).to have_attributes(:status => a_value, :transactionId => a_value, :transactionFee => a_value, :providerChannel => a_value)
-		
+
 	end
 
 	it "initiate bank charge checkout" do
@@ -344,7 +323,7 @@ RSpec.describe AfricasTalking do
 		expect(payments.cardCheckoutValidate options ).to have_attributes(:status => a_value, :description => a_value, :checkoutToken => a_value)
 	end
 
-	it 'initiate wallet transfer request' do 
+	it 'initiate wallet transfer request' do
 		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
@@ -358,7 +337,7 @@ RSpec.describe AfricasTalking do
 		expect(payments.walletTransfer options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
-	it 'initiate topup stash request' do 
+	it 'initiate topup stash request' do
 		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
@@ -371,7 +350,7 @@ RSpec.describe AfricasTalking do
 		expect(payments.topupStash options ).to have_attributes(:status => a_value, :description => a_value, :transactionId => a_value)
 	end
 
-	it 'Fetch wallet transactions' do 
+	it 'Fetch wallet transactions' do
 		payments = @AT.payments
 		options = {
 			'filters' => {
@@ -385,7 +364,7 @@ RSpec.describe AfricasTalking do
 		expect(payments.fetchWalletTransactions options).to have_attributes(:status => 'Success')
 	end
 
-	it 'Fetch transactions of a payment product' do 
+	it 'Fetch transactions of a payment product' do
 		payments = @AT.payments
 		options = {
 			'productName' => 'RUBY_GEM_TEST',
@@ -405,7 +384,7 @@ RSpec.describe AfricasTalking do
 		expect(payments.fetchProductTransactions options).to have_attributes(:status => 'Success')
 	end
 
-	it 'Find a transaction by transactionId' do 
+	it 'Find a transaction by transactionId' do
 		payments = @AT.payments
 		options = {
 			'transactionId' => 'ATPid_38acd1c7979458f145adac23e2dc8f5e',
@@ -413,13 +392,49 @@ RSpec.describe AfricasTalking do
 		expect(payments.findTransaction options).to have_attributes(:status => 'Success')
 	end
 
-	it 'Fetch wallet balance' do 
+	it 'Fetch wallet balance' do
 		payments = @AT.payments
 		expect(payments.fetchWalletBalance).to have_attributes(:status => 'Success')
 	end
 
+	# /////////////////////////MOBILEDATA////////////////////////////
 
+	it "Initiate mobile Data Request" do
+		mobiledata = @AT.mobiledata
+		options = {
+		  'idempotencyKey' => '506789',
+		  'productName' => 'Mobile Data',
+		  'recipients' => [
+			{
+			  "phoneNumber" => '+254716800998',
+			  "quantity" => 50,
+			  "unit" => 'MB',
+			  "validity" => "Day",
+			  "metadata" => {
+				"isTesting" => "data bundles",
+				"first_name" => "testone",
+				"last_name" => "testname"
+			  }
+			}
+		  ]
+		}
+		response = mobiledata.send(options)
+		expect(response).not_to be_nil
+		expect(response).to inspect_MobileDataResponse
+	end
 
+	it 'Find a mobile data transaction by transactionId' do
+		mobiledata = @AT.mobiledata
+		options = {
+			'transactionId' => 'ATPid_a93f020f2d8e71c1b7bd8c3bf1402f0a',
+		}
+		expect(mobiledata.findTransaction options).to have_attributes(:status => 'Success')
+	end
+
+	it 'Fetch mobile data wallet balance' do
+		mobiledata = @AT.mobiledata
+		expect(mobiledata.fetchWalletBalance).to have_attributes(:status => 'Success')
+	end
 
 	# ///////////////////////////////////////////////////////////////////
 
