@@ -3,6 +3,7 @@ require 'httparty'
 require "AfricasTalking/Sms"
 require "AfricasTalking/Airtime"
 require "AfricasTalking/Payments"
+require "AfricasTalking/Mobiledata"
 require "AfricasTalking/Voice"
 require "AfricasTalking/Token"
 require "AfricasTalking/Application"
@@ -17,29 +18,33 @@ module AfricasTalking
 		attr_accessor :username, :apikey
 		def initialize username, apikey
 			@username    = username
-			@apikey      = apikey 
+			@apikey      = apikey
 		end
-		
+
 		def sms
-			return Sms.new @username, @apikey		
+			return Sms.new @username, @apikey
 		end
-	
+
 		def payments
 			return Payments.new @username, @apikey
 		end
-	
+
+		def mobiledata
+			return Mobiledata.new @username, @apikey
+		end
+
 		def airtime
 			return Airtime.new @username, @apikey
 		end
-	
+
 		def voice
 			return Voice.new @username, @apikey
 		end
-	
+
 		def token
 			return Token.new @username, @apikey
 		end
-	
+
 		def application
 			return Application.new @username, @apikey
 		end
@@ -54,8 +59,8 @@ module AfricasTalking
 	end
 
 
-	private 
-		
+	private
+
 		def sendNormalRequest url_, data_ = nil
 			uri		 	     = URI.parse(url_)
 			http		     = Net::HTTP.new(uri.host, uri.port)
@@ -78,7 +83,7 @@ module AfricasTalking
 			return response.body
 		end
 
-		def sendJSONRequest url_, data_, get_request = false
+		def sendJSONRequest url_, data_, get_request = false, idempotency_key
 			uri	       = URI.parse(url_)
 			http         = Net::HTTP.new(uri.host, uri.port)
 			http.use_ssl = true
@@ -88,11 +93,18 @@ module AfricasTalking
 			else
 				req = Net::HTTP::Post.new(uri.request_uri, 'Content-Type'=>"application/json")
 				req.body = data_.to_json
+
 			end
-			
+
 			req["apikey"] = @apikey
 			req["Accept"] = "application/json"
+
+			if idempotency_key
+				req['Idempotency-Key'] = idempotency_key
+			end
+
 			response  = http.request(req)
+
 			if (DEBUG)
 				puts "Full response #{response.body}"
 			end
