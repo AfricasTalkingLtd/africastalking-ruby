@@ -180,6 +180,41 @@ account = @AT.account
 account.fetchUserData
 ```
 
+### Mobile Data
+
+Send mobile data to phone numbers
+
+```ruby
+mobiledata = @AT.mobiledata
+
+mobiledata.send options
+```
+- `options`
+    - `productName`:  This is the application's product name. `REQUIRED`
+    - `recipients`: An array of objects containing the following keys:
+
+        - `phoneNumber`: Recipient of the mobile data. `REQUIRED`
+        - `quantity`:  a numeric value for the amount of mobile data. It is based on the available mobile data package[(see "Bundle Package" column of mobile data pricing)](https://africastalking.com/pricing). `REQUIRED`
+        - `unit`: The units for the specified data quantity, the format is: ``MB`` or ``GB``. It is based on the available mobile data package[(see "Bundle Package" column of mobile data pricing)](https://africastalking.com/pricing). `REQUIRED`
+        - `validity`: The period of the data bundle’s validity this can be `Day`, `Week`, `BiWeek`, `Month`, or `Quarterly`. It is based on the available mobile data package [(see "Validity" column of mobile data pricing)](https://africastalking.com/pricing). `REQUIRED`
+        - `metadata`:  A JSON object of any metadata that you would like us to associate with the request. `OPTIONAL`
+
+#### Find Transaction
+```ruby
+mobiledata.findTransaction options
+```
+- Find a mobile data transaction
+- `options`
+    - `transactionId`: ID of trancation to find `REQUIRED`
+
+#### Fetch Wallet Balance
+```ruby
+mobiledata.fetchWalletBalance
+```
+- Fetch a mobile data product balance
+
+For more information, please read the [https://developers.africastalking.com/docs/data/overview](https://developers.africastalking.com/docs/data/overview) 
+
 ### Payments
 ```ruby
 payments = @AT.payments
@@ -329,19 +364,7 @@ payments.mobileB2B options
     - `requester`: PhoneNumber through which KPLC will send tokens when using B2B to buy electricity tokens.
     - `metadata`: Some optional data to associate with transaction.`REQUIRED`
 
-#### Mobile Data
-```ruby
-payments.mobileData options
-```
-- `options`
-    - `productName`: Your Payment Product. `REQUIRED`
-    - `recipients`: A list of recipients. Each recipient has:
 
-        - `phoneNumber`: Customer phone number (in international format). `REQUIRED`
-        - `quantity`: Mobile data amount. `REQUIRED`
-        - `unit`: Mobile data unit. Can either be `MB` or `GB`. `REQUIRED`
-        - `validity`: How long the mobile data is valid for. Must be one of `Day`, `Week` and `Month`. `REQUIRED`
-        - `metadata`: Additional data to associate with the transaction. `REQUIRED`
 
 #### Wallet Transfer
 ```ruby
@@ -394,18 +417,7 @@ payments.fetchWalletTransactions options
         - `endDate`: End Date to consider when fetching
         - `categories`: Comma delimited list of categories to consider when fetching
 
-#### Find Transaction
-```ruby
-payments.findTransaction options
-```
-- `options`
-    - `transactionId`: ID of trancation to find `REQUIRED`
 
-#### Fetch Wallet Balance
-```ruby
-payments.fetchWalletBalance
-```
-- Fetch your payment wallet balance
 
 
 ## Development
