@@ -63,40 +63,6 @@ RSpec::Matchers.define :inspect_FetchSubscriptionResponse do |expected|
 end
 
 
-# /////////////////////////////PAYMENTS/////////////////////////////////////////////
-
-RSpec::Matchers.define :inspect_MobileB2CResponse do |expected|
-  status = []
-  match do |actual|
-    #
-    obj = actual.collect { |item|
-      expect(item).to have_attributes(:provider => a_value, :phoneNumber => a_value, :providerChannel => a_value, :transactionFee => a_value, :status => a_value, :value => a_value, :transactionId => a_value)
-    }
-    obj.all? {|e| e.eql? true}
-  end
-  failure_message_when_negated do |actual|
-    "something went wrong. initiate mobile B2C response test failing"
-  end
-end
-
-
-
-RSpec::Matchers.define :inspect_BankTransferResponse do |expected|
-  status = []
-  match do |actual|
-    #
-    obj = actual.entries.collect { |item|
-      expect(item).to have_attributes(:accountNumber => a_value, :status => a_value, :transactionId => a_value, :transactionFee => a_value, :errorMessage => a_value)
-    }
-    #
-    (obj.all? {|e| e.eql? true} && actual.errorMessage.nil?)
-
-  end
-  failure_message_when_negated do |actual|
-    "something went wrong. bank transfer response test failing"
-  end
-end
-
 # ///////////////////////// AIRTIME ////////////////////////////////////
 
 RSpec::Matchers.define :inspect_SendAirtimeResult do |expected|
