@@ -2,7 +2,6 @@ require "AfricasTalking/version"
 require 'httparty'
 require "AfricasTalking/Sms"
 require "AfricasTalking/Airtime"
-require "AfricasTalking/Payments"
 require "AfricasTalking/Mobiledata"
 require "AfricasTalking/Voice"
 require "AfricasTalking/Token"
@@ -23,10 +22,6 @@ module AfricasTalking
 
 		def sms
 			return Sms.new @username, @apikey
-		end
-
-		def payments
-			return Payments.new @username, @apikey
 		end
 
 		def mobiledata
@@ -83,7 +78,7 @@ module AfricasTalking
 			return response.body
 		end
 
-		def sendJSONRequest url_, data_, get_request = false, idempotency_key
+		def sendJSONRequest url_, data_, get_request = false, idempotency_key = nil
 			uri	       = URI.parse(url_)
 			http         = Net::HTTP.new(uri.host, uri.port)
 			http.use_ssl = true
