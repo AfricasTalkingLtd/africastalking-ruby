@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    africastalking-ruby (2.1.9)
+    africastalking-ruby (2.2.0)
       httparty (>= 0.21.0)
 
 GEM
