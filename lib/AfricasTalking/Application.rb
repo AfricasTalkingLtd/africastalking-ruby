@@ -14,7 +14,7 @@ class Application
 		response = sendNormalRequest(url)
 		# 
 		if (@response_code == HTTP_OK )
-			result = JSON.parse(response, :quirky_mode =>true)
+			result = JSON.parse(response)
 			return ApplicationDataResponse.new result["balance"]
 		else
 			raise AfricasTalkingException, response

@@ -41,7 +41,7 @@ class Sms
 			response = sendNormalRequest(getSmsUrl(), post_body)
 		end
 		if @response_code == HTTP_CREATED
-			messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
+			messageData = JSON.parse(response)["SMSMessageData"]
 			recipients = messageData["Recipients"]
 			
 			if recipients.length > 0
@@ -86,7 +86,7 @@ class Sms
 		
 		# 
 		if @response_code == HTTP_CREATED
-			messageData = JSON.parse(response,:quirks_mode=>true)["SMSMessageData"]
+			messageData = JSON.parse(response)["SMSMessageData"]
 			recipients = messageData["Recipients"]
 			
 			if recipients.length > 0
@@ -109,7 +109,7 @@ class Sms
 		url = getSmsUrl() + "?username=#{@username}&lastReceivedId=#{options['last_received_id']}"
 		response = sendNormalRequest(url)
 		if @response_code == HTTP_OK
-			messages = JSON.parse(response, :quirky_mode => true)["SMSMessageData"]["Messages"].collect { |msg|
+			messages = JSON.parse(response)["SMSMessageData"]["Messages"].collect { |msg|
 				SMSMessages.new msg["id"], msg["text"], msg["from"] , msg["to"], msg["linkId"], msg["date"]
 			}
 				# messages
@@ -150,7 +150,7 @@ class Sms
 			response = sendNormalRequest(url, post_body)
 		end
 		if(@response_code == HTTP_CREATED)
-			r = JSON.parse(response, :quirky_mode => true)
+			r = JSON.parse(response)
 			return CreateSubscriptionResponse.new r['status'], r['description'] 
 		else
 			raise AfricasTalkingException, response
@@ -172,7 +172,7 @@ class Sms
 			response = sendNormalRequest(url, post_body)
 		end
 		if(@response_code == HTTP_CREATED)
-			r = JSON.parse(response, :quirky_mode => true)
+			r = JSON.parse(response)
 			return DeleteSubscriptionResponse.new r['status'], r['description'] 
 		else
 			raise AfricasTalkingException, response

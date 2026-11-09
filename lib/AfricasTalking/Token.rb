@@ -17,7 +17,7 @@ class Token
 		response = sendJSONRequest(url, post_body)
 		# 
 		if(@response_code == HTTP_CREATED)
-			r=JSON.parse(response, :quirky_mode => true)
+			r=JSON.parse(response)
 			return AuthTokenResponse.new r["token"], r["lifetimeInSeconds"]
 		else
 			raise AfricasTalkingException, response

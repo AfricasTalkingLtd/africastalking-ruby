@@ -35,7 +35,7 @@ class Mobiledata
 		response = sendJSONRequest(url, post_body, idempotency_key)
 
 		if (@response_code == HTTP_CREATED)
-			responses = JSON.parse(response, :quirky_mode =>true)
+			responses = JSON.parse(response)
 
 			if (responses['entries'].length > 0)
 
@@ -61,7 +61,7 @@ class Mobiledata
 		url      = getFindTransactionUrl()
 		response = sendJSONRequest(url, parameters, true, false)
 		if (@response_code == HTTP_OK)
-			resultObj = JSON.parse(response, :quirky_mode =>true)
+			resultObj = JSON.parse(response)
 			transactionData = nil
 			if resultObj['status'] === 'Success'
 				transactionData = TransactionData.new resultObj['data']['requestMetadata'], resultObj['data']['sourceType'],resultObj['data']['source'], resultObj['data']['provider'], resultObj['data']['destinationType'],resultObj['data']['description'],
@@ -78,7 +78,7 @@ class Mobiledata
 		url        = getFetchWalletBalanceUrl()
 		response = sendJSONRequest(url, parameters, true, false)
 		if (@response_code == HTTP_OK)
-			resultObj = JSON.parse(response, :quirky_mode =>true)
+			resultObj = JSON.parse(response)
 
 			return FetchWalletBalanceResponse.new resultObj['status'], resultObj['balance']
 		end
