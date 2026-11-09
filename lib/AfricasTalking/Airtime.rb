@@ -31,7 +31,7 @@ class Airtime
 
 		response = sendNormalRequest(url, post_body) 
 		if (@response_code == HTTP_CREATED)
-			responses = JSON.parse(response, :quirky_mode =>true)
+			responses = JSON.parse(response)
 			if (responses['responses'].length > 0)
 				# 
 				results = responses['responses'].collect{ |result|

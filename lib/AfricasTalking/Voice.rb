@@ -22,7 +22,7 @@ class Voice
 			response = sendNormalRequest(getVoiceHost() + "/call", post_body)
 		end
 		if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
-			ob = JSON.parse(response, :quirky_mode => true)
+			ob = JSON.parse(response)
 			# 
 			if (ob['entries'].length > 0)
 				results = ob['entries'].collect{|result|
@@ -48,7 +48,7 @@ class Voice
 		end
 		# 
 		if(@response_code == HTTP_OK || @response_code == HTTP_CREATED)
-			ob = JSON.parse(response, :quirky_mode => true)
+			ob = JSON.parse(response)
 			results = []
 			if (ob['entries'].length > 0)
 				results = ob['entries'].collect{|result|
